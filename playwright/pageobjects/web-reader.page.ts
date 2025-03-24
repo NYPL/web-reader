@@ -126,7 +126,11 @@ class HtmlReaderPage extends WebReaderPage {
       .getByText('—WHALE SONG.')
       .scrollIntoViewIfNeeded();
     await this.page
-      .getByText('EXTRACTS (Supplied by a Sub-Sub-Librarian).')
+      .locator('iframe[title="Moby-Dick"]')
+      .contentFrame()
+      .getByRole('heading', {
+        name: 'EXTRACTS (Supplied by a Sub-Sub-Librarian).',
+      })
       .scrollIntoViewIfNeeded();
   }
 }

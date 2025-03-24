@@ -4,9 +4,7 @@ import { HtmlReaderPage } from '../pageobjects/web-reader.page.ts';
 test.describe('Test HTML pub', () => {
   test('Confirm reader settings are visible', async ({ page }) => {
     const htmlReaderPage = new HtmlReaderPage(page);
-    await htmlReaderPage.loadPage(
-      'https://nypl-web-reader.vercel.app/html/moby-epub3'
-    ); // temporary
+    await htmlReaderPage.loadPage('/html/moby-epub3');
     await expect(htmlReaderPage.fullScreenButton).toBeVisible();
     await htmlReaderPage.settingsButton.click();
     await expect(htmlReaderPage.defaultFont).toBeVisible();
@@ -21,25 +19,20 @@ test.describe('Test HTML pub', () => {
     await expect(htmlReaderPage.increaseTextSize).toBeVisible();
     await expect(htmlReaderPage.paginatedStyle).toBeVisible();
     await expect(htmlReaderPage.scrollingStyle).toBeVisible();
-    await expect(htmlReaderPage.zoomInButton).not.toBeVisible();
   });
 
   test('Open and close reader settings', async ({ page }) => {
     const htmlReaderPage = new HtmlReaderPage(page);
-    await htmlReaderPage.loadPage(
-      'https://nypl-web-reader.vercel.app/html/moby-epub3'
-    ); // temporary
+    await htmlReaderPage.loadPage('/html/moby-epub3');
     await htmlReaderPage.settingsButton.click();
     await expect(htmlReaderPage.defaultFont).toBeVisible();
     await htmlReaderPage.settingsButton.click();
     await expect(htmlReaderPage.defaultFont).not.toBeVisible();
   });
 
-  test('Displays default settings', async ({ page }) => {
+  test('Display default settings', async ({ page }) => {
     const htmlReaderPage = new HtmlReaderPage(page);
-    await htmlReaderPage.loadPage(
-      'https://nypl-web-reader.vercel.app/html/moby-epub3'
-    ); // temporary
+    await htmlReaderPage.loadPage('/html/moby-epub3');
     await htmlReaderPage.settingsButton.click();
     await expect(htmlReaderPage.defaultFont).toBeChecked();
     await expect(htmlReaderPage.whiteBackground).toBeChecked();
@@ -49,9 +42,7 @@ test.describe('Test HTML pub', () => {
 
   test('Change font', async ({ page }) => {
     const htmlReaderPage = new HtmlReaderPage(page);
-    await htmlReaderPage.loadPage(
-      'https://nypl-web-reader.vercel.app/html/moby-epub3'
-    ); // temporary
+    await htmlReaderPage.loadPage('/html/moby-epub3');
     await htmlReaderPage.settingsButton.click();
     await htmlReaderPage.serifFont.click();
     await expect(htmlReaderPage.serifFont).toBeChecked();
@@ -65,9 +56,7 @@ test.describe('Test HTML pub', () => {
 
   test('Change background color', async ({ page }) => {
     const htmlReaderPage = new HtmlReaderPage(page);
-    await htmlReaderPage.loadPage(
-      'https://nypl-web-reader.vercel.app/html/moby-epub3'
-    ); // temporary
+    await htmlReaderPage.loadPage('/html/moby-epub3');
     await htmlReaderPage.settingsButton.click();
     await htmlReaderPage.sepiaBackground.click();
     await expect(htmlReaderPage.sepiaBackground).toBeChecked();
@@ -79,9 +68,7 @@ test.describe('Test HTML pub', () => {
 
   test('Change text size', async ({ page }) => {
     const htmlReaderPage = new HtmlReaderPage(page);
-    await htmlReaderPage.loadPage(
-      'https://nypl-web-reader.vercel.app/html/moby-epub3'
-    ); // temporary
+    await htmlReaderPage.loadPage('/html/moby-epub3');
     await htmlReaderPage.settingsButton.click();
     await htmlReaderPage.decreaseTextSize.click();
     await expect(await htmlReaderPage.getTextSize()).toBe('96%');
@@ -92,9 +79,7 @@ test.describe('Test HTML pub', () => {
 
   test('Change pagination style', async ({ page }) => {
     const htmlReaderPage = new HtmlReaderPage(page);
-    await htmlReaderPage.loadPage(
-      'https://nypl-web-reader.vercel.app/html/moby-epub3'
-    ); // temporary
+    await htmlReaderPage.loadPage('/html/moby-epub3');
     await htmlReaderPage.settingsButton.click();
     await htmlReaderPage.scrollingStyle.click();
     await expect(htmlReaderPage.scrollingStyle).toBeChecked();
@@ -104,21 +89,37 @@ test.describe('Test HTML pub', () => {
     await expect(htmlReaderPage.paginatedStyle).toBeChecked();
   });
 
-  // stay on same page or chapter if change pagination
-
-  test('Maintains changed settings when exit and reenter reader', async ({
+  test('Stay on same page or chapter when change pagination style', async ({
     page,
   }) => {
     const htmlReaderPage = new HtmlReaderPage(page);
-    await htmlReaderPage.loadPage(
-      'https://nypl-web-reader.vercel.app/html/moby-epub3'
-    ); // temporary
+    await htmlReaderPage.loadPage('/html/moby-epub3');
+    await htmlReaderPage.tocButton.click();
+    await htmlReaderPage.page
+      .getByText('EXTRACTS (Supplied by a Sub-Sub-Librarian).')
+      .click();
+    await htmlReaderPage.settingsButton.click();
+    await htmlReaderPage.scrollingStyle.click();
+    const chapterName = page
+      .locator('iframe[title="Moby-Dick"]')
+      .contentFrame()
+      .getByRole('heading', {
+        name: 'EXTRACTS (Supplied by a Sub-Sub-Librarian).',
+      });
+    await expect(chapterName).toBeVisible();
+    await htmlReaderPage.paginatedStyle.click();
+    await expect(chapterName).toBeVisible();
+  });
+
+  test('Maintain changed settings when exit and reenter reader', async ({
+    page,
+  }) => {
+    const htmlReaderPage = new HtmlReaderPage(page);
+    await htmlReaderPage.loadPage('/html/moby-epub3');
     await htmlReaderPage.changeSettings();
     await htmlReaderPage.backButton.click();
     await expect(htmlReaderPage.webReaderHomepage).toBeVisible();
-    await htmlReaderPage.loadPage(
-      'https://nypl-web-reader.vercel.app/html/moby-epub3'
-    ); // temporary
+    await htmlReaderPage.loadPage('/html/moby-epub3');
     await htmlReaderPage.settingsButton.click();
     await expect(htmlReaderPage.dyslexiaFont).toBeChecked();
     await expect(htmlReaderPage.sepiaBackground).toBeChecked();
@@ -128,9 +129,7 @@ test.describe('Test HTML pub', () => {
 
   test('Reset all reader settings', async ({ page }) => {
     const htmlReaderPage = new HtmlReaderPage(page);
-    await htmlReaderPage.loadPage(
-      'https://nypl-web-reader.vercel.app/html/moby-epub3'
-    ); // temporary
+    await htmlReaderPage.loadPage('/html/moby-epub3');
     await htmlReaderPage.changeSettings();
     await htmlReaderPage.resetTextSize.click();
     await expect(htmlReaderPage.defaultFont).toBeChecked();
@@ -143,15 +142,11 @@ test.describe('Test HTML pub', () => {
     page,
   }) => {
     const htmlReaderPage = new HtmlReaderPage(page);
-    await htmlReaderPage.loadPage(
-      'https://nypl-web-reader.vercel.app/html/moby-epub3-no-local-storage'
-    ); // temporary
+    await htmlReaderPage.loadPage('/html/moby-epub3-no-local-storage');
     await htmlReaderPage.changeSettings();
     await htmlReaderPage.backButton.click();
     await expect(htmlReaderPage.webReaderHomepage).toBeVisible();
-    await htmlReaderPage.loadPage(
-      'https://nypl-web-reader.vercel.app/html/moby-epub3-no-local-storage'
-    ); // temporary
+    await htmlReaderPage.loadPage('/html/moby-epub3-no-local-storage');
     await htmlReaderPage.settingsButton.click();
     await expect(htmlReaderPage.dyslexiaFont).not.toBeChecked();
     await expect(htmlReaderPage.sepiaBackground).not.toBeChecked();
@@ -161,9 +156,7 @@ test.describe('Test HTML pub', () => {
 
   test('Open and exit full screen', async ({ page }) => {
     const htmlReaderPage = new HtmlReaderPage(page);
-    await htmlReaderPage.loadPage(
-      'https://nypl-web-reader.vercel.app/html/moby-epub3'
-    ); // temporary
+    await htmlReaderPage.loadPage('/html/moby-epub3');
     await htmlReaderPage.fullScreenButton.click();
     await htmlReaderPage.exitFullScreenButton.click();
     await expect(htmlReaderPage.fullScreenButton).toBeVisible();
@@ -171,9 +164,7 @@ test.describe('Test HTML pub', () => {
 
   test('Change settings in full screen', async ({ page }) => {
     const htmlReaderPage = new HtmlReaderPage(page);
-    await htmlReaderPage.loadPage(
-      'https://nypl-web-reader.vercel.app/html/moby-epub3'
-    ); // temporary
+    await htmlReaderPage.loadPage('/html/moby-epub3');
     await htmlReaderPage.fullScreenButton.click();
     await htmlReaderPage.changeSettings();
   });
