@@ -52,8 +52,8 @@ class WebReaderPage {
     });
 
     // reader settings
-    this.zoomInButton = page.getByLabel('Zoom In');
-    this.zoomOutButton = page.getByLabel('Zoom Out');
+    this.zoomInButton = page.getByRole('button', { name: 'Zoom In' });
+    this.zoomOutButton = page.getByRole('button', { name: 'Zoom Out' });
 
     this.defaultFont = page.getByText('Default', { exact: true });
     this.serifFont = page.getByText('Serif', { exact: true });
@@ -150,21 +150,21 @@ class PdfReaderPage extends WebReaderPage {
   async zoomIn(): Promise<void> {
     const beforeScaleFactor = await this.getZoomValue();
     console.log('before: ', beforeScaleFactor);
-    this.settingsButton.click();
-    this.zoomInButton.click();
+    await this.settingsButton.click();
+    await this.zoomInButton.click();
     const afterScaleFactor = await this.getZoomValue();
-    console.log('after: ', afterScaleFactor); // currently the same value as beforeScaleFactor
-    expect(beforeScaleFactor).toBeGreaterThan(afterScaleFactor);
+    console.log('after: ', afterScaleFactor);
+    expect(afterScaleFactor).toBeGreaterThan(beforeScaleFactor);
   }
 
   async zoomOut(): Promise<void> {
     const beforeScaleFactor = await this.getZoomValue();
     console.log('before: ', beforeScaleFactor);
-    this.settingsButton.click();
-    this.zoomOutButton.click();
+    await this.settingsButton.click();
+    await this.zoomOutButton.click();
     const afterScaleFactor = await this.getZoomValue();
-    console.log('after: ', afterScaleFactor); // currently the same value as beforeScaleFactor
-    expect(beforeScaleFactor).toBeLessThan(afterScaleFactor);
+    console.log('after: ', afterScaleFactor);
+    expect(afterScaleFactor).toBeLessThan(beforeScaleFactor);
   }
 
   async scrollDown(): Promise<void> {
