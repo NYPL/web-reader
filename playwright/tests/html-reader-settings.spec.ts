@@ -84,6 +84,8 @@ test.describe('Test HTML pub', () => {
     await htmlReaderPage.scrollingStyle.click();
     await expect(htmlReaderPage.scrollingStyle).toBeChecked();
     await htmlReaderPage.scrollDown();
+    await htmlReaderPage.scrollUp();
+    await expect(htmlReaderPage.settingsButton).toBeVisible();
     await htmlReaderPage.settingsButton.click();
     await htmlReaderPage.paginatedStyle.click();
     await expect(htmlReaderPage.paginatedStyle).toBeChecked();
@@ -95,20 +97,12 @@ test.describe('Test HTML pub', () => {
     const htmlReaderPage = new HtmlReaderPage(page);
     await htmlReaderPage.loadPage('/html/moby-epub3');
     await htmlReaderPage.tocButton.click();
-    await htmlReaderPage.page
-      .getByText('EXTRACTS (Supplied by a Sub-Sub-Librarian).')
-      .click();
+    await htmlReaderPage.chapterName.click();
     await htmlReaderPage.settingsButton.click();
     await htmlReaderPage.scrollingStyle.click();
-    const chapterName = page
-      .locator('iframe[title="Moby-Dick"]')
-      .contentFrame()
-      .getByRole('heading', {
-        name: 'EXTRACTS (Supplied by a Sub-Sub-Librarian).',
-      });
-    await expect(chapterName).toBeVisible();
+    await expect(htmlReaderPage.chapterName).toBeVisible();
     await htmlReaderPage.paginatedStyle.click();
-    await expect(chapterName).toBeVisible();
+    await expect(htmlReaderPage.chapterName).toBeVisible();
   });
 
   test('Maintain changed settings when exit and reenter reader', async ({

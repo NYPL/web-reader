@@ -26,6 +26,11 @@ class WebReaderPage {
   readonly nextPageButton: Locator;
   readonly firstChapter: Locator;
   readonly lastChapter: Locator;
+  readonly chapterName: Locator;
+  readonly chapterHeading: Locator;
+  readonly specificText: Locator;
+  readonly pageOne: Locator;
+  readonly pageTwo: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -71,6 +76,28 @@ class WebReaderPage {
     this.paginatedStyle = page.getByText('Paginated', { exact: true });
     this.scrollingStyle = page.getByText('Scrolling', { exact: true });
 
+    // content
+    this.chapterName = page.getByText(
+      'EXTRACTS (Supplied by a Sub-Sub-Librarian).'
+    );
+    this.chapterHeading = page
+      .locator('iframe[title="Moby-Dick"]')
+      .contentFrame()
+      .getByRole('heading', {
+        name: 'EXTRACTS (Supplied by a Sub-Sub-Librarian).',
+        level: 1,
+      });
+    this.specificText = page
+      .locator('iframe[title="Moby-Dick"]')
+      .contentFrame()
+      .getByText('—WHALE SONG.');
+    this.pageOne = page
+      .locator('#mainContent')
+      .locator('[data-page-number="1"]');
+    this.pageTwo = page
+      .locator('#mainContent')
+      .locator('[data-page-number="2"]');
+
     // footer
     this.previousPageButton = page.getByLabel('Previous Page');
     this.nextPageButton = page.getByLabel('Next Page');
@@ -109,29 +136,17 @@ class HtmlReaderPage extends WebReaderPage {
 
   async scrollDown(): Promise<void> {
     await this.tocButton.click();
-    await this.page
-      .getByText('EXTRACTS (Supplied by a Sub-Sub-Librarian).')
-      .click();
-    await this.page
-      .locator('iframe[title="Moby-Dick"]')
-      .contentFrame()
-      .getByText('—WHALE SONG.')
-      .scrollIntoViewIfNeeded();
+    //await expect(this.tocButton).toBeVisible();
+    await this.chapterName.click();
+    await expect(await this.tocButton.getAttribute('aria-expanded')).toBe(
+      'false'
+    );
+    await this.specificText.scrollIntoViewIfNeeded();
   }
 
   async scrollUp(): Promise<void> {
-    await this.page
-      .locator('iframe[title="Moby-Dick"]')
-      .contentFrame()
-      .getByText('—WHALE SONG.')
-      .scrollIntoViewIfNeeded();
-    await this.page
-      .locator('iframe[title="Moby-Dick"]')
-      .contentFrame()
-      .getByRole('heading', {
-        name: 'EXTRACTS (Supplied by a Sub-Sub-Librarian).',
-      })
-      .scrollIntoViewIfNeeded();
+    await this.specificText.scrollIntoViewIfNeeded();
+    await this.chapterHeading.scrollIntoViewIfNeeded();
   }
 }
 
@@ -168,18 +183,12 @@ class PdfReaderPage extends WebReaderPage {
   }
 
   async scrollDown(): Promise<void> {
-    await this.page
-      .locator('#mainContent')
-      .locator('[data-page-number="2"]')
-      .scrollIntoViewIfNeeded();
+    await this.pageTwo.scrollIntoViewIfNeeded();
   }
 
   async scrollUp(): Promise<void> {
     await this.scrollDown();
-    await this.page
-      .locator('#mainContent')
-      .locator('[data-page-number="1"]')
-      .scrollIntoViewIfNeeded();
+    await this.pageOne.scrollIntoViewIfNeeded();
   }
 }
 

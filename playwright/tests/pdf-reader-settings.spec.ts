@@ -4,9 +4,7 @@ import { PdfReaderPage } from '../pageobjects/web-reader.page.ts';
 test.describe('Test PDF pub', () => {
   test('Confirm reader settings are visible', async ({ page }) => {
     const pdfReaderPage = new PdfReaderPage(page);
-    await pdfReaderPage.loadPage(
-      'https://nypl-web-reader.vercel.app/pdf/collection'
-    ); // temporary
+    await pdfReaderPage.loadPage('/pdf/collection');
     await expect(pdfReaderPage.fullScreenButton).toBeVisible();
     await pdfReaderPage.settingsButton.click();
     await expect(pdfReaderPage.zoomInButton).toBeVisible();
@@ -17,9 +15,7 @@ test.describe('Test PDF pub', () => {
 
   test('Open and close reader settings', async ({ page }) => {
     const pdfReaderPage = new PdfReaderPage(page);
-    await pdfReaderPage.loadPage(
-      'https://nypl-web-reader.vercel.app/pdf/collection'
-    ); // temporary
+    await pdfReaderPage.loadPage('/pdf/collection');
     await pdfReaderPage.settingsButton.click();
     await expect(pdfReaderPage.zoomInButton).toBeVisible();
     await pdfReaderPage.settingsButton.click();
@@ -28,18 +24,14 @@ test.describe('Test PDF pub', () => {
 
   test('Displays default settings', async ({ page }) => {
     const pdfReaderPage = new PdfReaderPage(page);
-    await pdfReaderPage.loadPage(
-      'https://nypl-web-reader.vercel.app/pdf/collection'
-    ); // temporary
+    await pdfReaderPage.loadPage('/pdf/collection');
     await pdfReaderPage.settingsButton.click();
     await expect(pdfReaderPage.paginatedStyle).toBeChecked();
   });
 
   test('Change pagination style', async ({ page }) => {
     const pdfReaderPage = new PdfReaderPage(page);
-    await pdfReaderPage.loadPage(
-      'https://nypl-web-reader.vercel.app/pdf/collection'
-    ); // temporary
+    await pdfReaderPage.loadPage('/pdf/collection');
     await pdfReaderPage.settingsButton.click();
     await pdfReaderPage.scrollingStyle.click();
     await expect(pdfReaderPage.scrollingStyle).toBeChecked();
@@ -51,25 +43,19 @@ test.describe('Test PDF pub', () => {
 
   test('Zoom in', async ({ page }) => {
     const pdfReaderPage = new PdfReaderPage(page);
-    await pdfReaderPage.loadPage(
-      'https://nypl-web-reader.vercel.app/pdf/collection'
-    ); // temporary
+    await pdfReaderPage.loadPage('/pdf/collection');
     await expect(await pdfReaderPage.zoomIn()).toBeTruthy;
   });
 
   test('Zoom out', async ({ page }) => {
     const pdfReaderPage = new PdfReaderPage(page);
-    await pdfReaderPage.loadPage(
-      'https://nypl-web-reader.vercel.app/pdf/collection'
-    ); // temporary
+    await pdfReaderPage.loadPage('/pdf/collection');
     await expect(await pdfReaderPage.zoomOut()).toBeTruthy;
   });
 
   test('Open and exit full screen', async ({ page }) => {
     const pdfReaderPage = new PdfReaderPage(page);
-    await pdfReaderPage.loadPage(
-      'https://nypl-web-reader.vercel.app/pdf/collection'
-    ); // temporary
+    await pdfReaderPage.loadPage('/pdf/collection');
     await pdfReaderPage.fullScreenButton.click();
     await pdfReaderPage.exitFullScreenButton.click();
     await expect(pdfReaderPage.fullScreenButton).toBeVisible();
@@ -77,9 +63,7 @@ test.describe('Test PDF pub', () => {
 
   test('Change settings in full screen', async ({ page }) => {
     const pdfReaderPage = new PdfReaderPage(page);
-    await pdfReaderPage.loadPage(
-      'https://nypl-web-reader.vercel.app/pdf/collection'
-    ); // temporary
+    await pdfReaderPage.loadPage('/pdf/collection');
     await pdfReaderPage.fullScreenButton.click();
     await pdfReaderPage.changeSettings();
   });
