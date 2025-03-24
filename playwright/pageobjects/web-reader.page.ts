@@ -149,21 +149,17 @@ class PdfReaderPage extends WebReaderPage {
 
   async zoomIn(): Promise<void> {
     const beforeScaleFactor = await this.getZoomValue();
-    console.log('before: ', beforeScaleFactor);
     await this.settingsButton.click();
     await this.zoomInButton.click();
     const afterScaleFactor = await this.getZoomValue();
-    console.log('after: ', afterScaleFactor);
     expect(afterScaleFactor).toBeGreaterThan(beforeScaleFactor);
   }
 
   async zoomOut(): Promise<void> {
     const beforeScaleFactor = await this.getZoomValue();
-    console.log('before: ', beforeScaleFactor);
     await this.settingsButton.click();
     await this.zoomOutButton.click();
     const afterScaleFactor = await this.getZoomValue();
-    console.log('after: ', afterScaleFactor);
     expect(afterScaleFactor).toBeLessThan(beforeScaleFactor);
   }
 
