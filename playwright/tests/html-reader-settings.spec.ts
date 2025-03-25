@@ -121,6 +121,18 @@ test.describe('Test HTML pub', () => {
     await expect(htmlReaderPage.scrollingStyle).toBeChecked();
   });
 
+  test('Maintain changed settings in other pubs', async ({ page }) => {
+    const htmlReaderPage = new HtmlReaderPage(page);
+    await htmlReaderPage.loadPage('/html/moby-epub3');
+    await htmlReaderPage.changeSettings();
+    await htmlReaderPage.loadPage('/html/moby-epub2');
+    await htmlReaderPage.settingsButton.click();
+    await expect(htmlReaderPage.dyslexiaFont).toBeChecked();
+    await expect(htmlReaderPage.sepiaBackground).toBeChecked();
+    await expect(await htmlReaderPage.getTextSize()).toBe('104%');
+    await expect(htmlReaderPage.scrollingStyle).toBeChecked();
+  });
+
   test('Reset all reader settings', async ({ page }) => {
     const htmlReaderPage = new HtmlReaderPage(page);
     await htmlReaderPage.loadPage('/html/moby-epub3');

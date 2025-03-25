@@ -23,7 +23,7 @@ test.describe('Test PDF pub', () => {
     await expect(pdfReaderPage.zoomInButton).not.toBeVisible();
   });
 
-  test('Displays default settings', async ({ page }) => {
+  test('Display default settings', async ({ page }) => {
     const pdfReaderPage = new PdfReaderPage(page);
     await pdfReaderPage.loadPage('/pdf/collection');
     await pdfReaderPage.settingsButton.click();
