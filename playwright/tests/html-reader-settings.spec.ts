@@ -100,9 +100,9 @@ test.describe('Test HTML pub', () => {
     await htmlReaderPage.chapterName.click();
     await htmlReaderPage.settingsButton.click();
     await htmlReaderPage.scrollingStyle.click();
-    await expect(htmlReaderPage.chapterName).toBeVisible();
+    await expect(htmlReaderPage.chapterHeading).toBeVisible();
     await htmlReaderPage.paginatedStyle.click();
-    await expect(htmlReaderPage.chapterName).toBeVisible();
+    await expect(htmlReaderPage.chapterHeading).toBeVisible();
   });
 
   test('Maintain changed settings when exit and reenter reader', async ({

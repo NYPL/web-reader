@@ -5,6 +5,7 @@ test.describe('Test PDF pub', () => {
   test('Confirm reader settings are visible', async ({ page }) => {
     const pdfReaderPage = new PdfReaderPage(page);
     await pdfReaderPage.loadPage('/pdf/collection');
+    await expect(pdfReaderPage.settingsButton).toBeVisible();
     await expect(pdfReaderPage.fullScreenButton).toBeVisible();
     await pdfReaderPage.settingsButton.click();
     await expect(pdfReaderPage.zoomInButton).toBeVisible();
@@ -35,8 +36,10 @@ test.describe('Test PDF pub', () => {
     await pdfReaderPage.settingsButton.click();
     await pdfReaderPage.scrollingStyle.click();
     await expect(pdfReaderPage.scrollingStyle).toBeChecked();
+    await pdfReaderPage.settingsButton.click();
     await pdfReaderPage.scrollDown();
     await pdfReaderPage.scrollUp();
+    await pdfReaderPage.settingsButton.click();
     await pdfReaderPage.paginatedStyle.click();
     await expect(pdfReaderPage.paginatedStyle).toBeChecked();
   });
@@ -56,6 +59,7 @@ test.describe('Test PDF pub', () => {
   test('Open and exit full screen', async ({ page }) => {
     const pdfReaderPage = new PdfReaderPage(page);
     await pdfReaderPage.loadPage('/pdf/collection');
+    await expect(pdfReaderPage.fullScreenButton).toBeVisible();
     await pdfReaderPage.fullScreenButton.click();
     await pdfReaderPage.exitFullScreenButton.click();
     await expect(pdfReaderPage.fullScreenButton).toBeVisible();
