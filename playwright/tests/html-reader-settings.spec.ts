@@ -173,5 +173,9 @@ test.describe('Test HTML pub', () => {
     await htmlReaderPage.loadPage('/html/moby-epub3');
     await htmlReaderPage.fullScreenButton.click();
     await htmlReaderPage.changeSettings();
+    await expect(htmlReaderPage.dyslexiaFont).toBeChecked();
+    await expect(htmlReaderPage.sepiaBackground).toBeChecked();
+    await expect(await htmlReaderPage.getTextSize()).toBe('104%');
+    await expect(htmlReaderPage.scrollingStyle).toBeChecked();
   });
 });

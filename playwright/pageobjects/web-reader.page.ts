@@ -125,13 +125,9 @@ class HtmlReaderPage extends WebReaderPage {
   async changeSettings(): Promise<void> {
     await this.settingsButton.click();
     await this.dyslexiaFont.click();
-    await expect(this.dyslexiaFont).toBeChecked();
     await this.sepiaBackground.click();
-    await expect(this.sepiaBackground).toBeChecked();
     await this.increaseTextSize.click();
-    await expect(await this.getTextSize()).toBe('104%');
     await this.scrollingStyle.click();
-    await expect(this.scrollingStyle).toBeChecked();
   }
 
   async scrollDown(): Promise<void> {
@@ -154,7 +150,6 @@ class PdfReaderPage extends WebReaderPage {
     await this.settingsButton.click();
     await this.zoomInButton.click();
     await this.scrollingStyle.click();
-    await expect(this.scrollingStyle).toBeChecked();
   }
 
   async getZoomValue(): Promise<number> {

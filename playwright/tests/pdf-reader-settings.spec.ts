@@ -70,5 +70,6 @@ test.describe('Test PDF pub', () => {
     await pdfReaderPage.loadPage('/pdf/collection');
     await pdfReaderPage.fullScreenButton.click();
     await pdfReaderPage.changeSettings();
+    await expect(pdfReaderPage.scrollingStyle).toBeChecked();
   });
 });
