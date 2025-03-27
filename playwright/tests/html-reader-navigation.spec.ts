@@ -91,9 +91,35 @@ test.describe('Test navigation in HTML pub', () => {
 // scroll to the bottom of the page, but if the screen is resized to be smaller, vertical scroll bar should re-appear to allow user to scroll down
 // small screen viewport 300x300 should disable next and previous buttons?
 
-// click internal link in paginated mode
+test('Click internal link in paginated mode', async ({ page }) => {
+  const htmlReaderPage = new HtmlReaderPage(page);
+  await htmlReaderPage.loadPage('/html/moby-epub3');
+  await expect(htmlReaderPage.nextPageButton).toBeVisible();
+  await expect(htmlReaderPage.nextPageButton).toBeEnabled();
+  await expect(htmlReaderPage.previousPageButton).toBeVisible();
+  await expect(htmlReaderPage.previousPageButton).toBeDisabled();
+  await htmlReaderPage.nextPageButton.click();
+  await expect(htmlReaderPage.internalLink).toBeVisible();
+  await htmlReaderPage.internalLink.click();
+  await expect(htmlReaderPage.titlePage).toBeVisible();
+});
+
 // click internal link in scrolling mode
-// click external link
+
+test('Click external link in paginated mode', async ({ page }) => {
+  const htmlReaderPage = new HtmlReaderPage(page);
+  await htmlReaderPage.loadPage('/html/moby-epub3');
+  await expect(htmlReaderPage.tocButton).toBeVisible();
+  await htmlReaderPage.tocButton.click();
+  await expect(htmlReaderPage.lastChapter).toBeVisible();
+  await htmlReaderPage.lastChapter.click();
+  await expect(htmlReaderPage.externalLink).toBeVisible();
+  await htmlReaderPage.externalLink.click();
+  const openLink = page.waitForEvent('popup');
+  const newTab = await openLink;
+  await newTab.waitForLoadState();
+  await expect(newTab).toHaveURL('https://www.gutenberg.org');
+});
 
 // remember last location when exit and reenter
 // remember last location when visit another remembering pub and return

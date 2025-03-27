@@ -31,6 +31,9 @@ class WebReaderPage {
   readonly specificText: Locator;
   readonly pageOne: Locator;
   readonly pageTwo: Locator;
+  readonly internalLink: Locator;
+  readonly titlePage: Locator;
+  readonly externalLink: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -97,6 +100,18 @@ class WebReaderPage {
     this.pageTwo = page
       .locator('#mainContent')
       .locator('[data-page-number="2"]');
+    this.internalLink = page
+      .locator('iframe[title="Moby-Dick"]')
+      .contentFrame()
+      .getByRole('link', { name: 'Title Page' });
+    this.titlePage = page
+      .locator('iframe[title="Moby-Dick"]')
+      .contentFrame()
+      .getByRole('img', { name: 'title page' });
+    this.externalLink = page
+      .locator('iframe[title="Moby-Dick"]')
+      .contentFrame()
+      .getByRole('link', { name: 'www.gutenberg.org' });
 
     // footer
     this.previousPageButton = page
