@@ -99,8 +99,12 @@ class WebReaderPage {
       .locator('[data-page-number="2"]');
 
     // footer
-    this.previousPageButton = page.getByLabel('Previous Page');
-    this.nextPageButton = page.getByLabel('Next Page');
+    this.previousPageButton = page
+      .getByRole('contentinfo')
+      .getByRole('button', { name: 'Previous Page' });
+    this.nextPageButton = page
+      .getByRole('contentinfo')
+      .getByRole('button', { name: 'Next Page' });
   }
 
   // hopefully better handles slow load time (use load or networkidle)
