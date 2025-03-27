@@ -1,40 +1,40 @@
 {
-    "context": "https://drb-files-qa-s3.amazonaws.com/manifests/context.jsonld",
-    "metadata": {
-        "@type": "https://schema.org/Book",
-        "title": "EIB Working Paper 2021/03 - Assessing climate change risks at the country level",
-        "author": "Ferrazzi, Matteo",
-        "conformsTo": "http://librarysimplified.org/terms/profiles/pdf"
+  "context": "https://drb-files-qa-s3.amazonaws.com/manifests/context.jsonld",
+  "metadata": {
+    "@type": "https://schema.org/Book",
+    "title": "EIB Working Paper 2021/03 - Assessing climate change risks at the country level",
+    "author": "Ferrazzi, Matteo",
+    "conformsTo": "http://librarysimplified.org/terms/profiles/pdf"
+  },
+  "links": [
+    {
+      "href": "https://library.oapen.org/bitstream/20.500.12657/50076/1/9789286150340.pdf",
+      "type": "application/pdf",
+      "rel": "alternate"
     },
-    "links": [
-        {
-            "href": "https://library.oapen.org/bitstream/20.500.12657/50076/1/9789286150340.pdf",
-            "type": "application/pdf",
-            "rel": "alternate"
-        },
-        {
-            "rel": "self",
-            "href": "https://drb-files-qa.s3.amazonaws.com/manifests/doab/20.500.12854/71362.json",
-            "type": "application/webpub+json"
-        }
-    ],
-    "readingOrder": [
-        {
-            "href": "https://library.oapen.org/bitstream/20.500.12657/50076/1/9789286150340.pdf",
-            "title": "EIB Working Paper 2021/03 - Assessing climate change risks at the country level",
-            "type": "application/pdf"
-        }
-    ],
-    "resources": [
-        {
-            "href": "https://library.oapen.org/bitstream/20.500.12657/50076/1/9789286150340.pdf",
-            "type": "application/pdf"
-        }
-    ],
-    "toc": [
-        {
-            "href": "https://library.oapen.org/bitstream/20.500.12657/50076/1/9789286150340.pdf",
-            "title": "EIB Working Paper 2021/03 - Assessing climate change risks at the country level"
-        }
-    ]
+    {
+      "rel": "self",
+      "href": "https://drb-files-qa.s3.amazonaws.com/manifests/doab/20.500.12854/71362.json",
+      "type": "application/webpub+json"
+    }
+  ],
+  "readingOrder": [
+    {
+      "href": "http://127.0.0.1:8000/video",
+      "title": "EIB Working Paper 2021/03 - Assessing climate change risks at the country level",
+      "type": "application/pdf"
+    }
+  ],
+  "resources": [
+    {
+      "href": "https://library.oapen.org/bitstream/20.500.12657/50076/1/9789286150340.pdf",
+      "type": "application/pdf"
+    }
+  ],
+  "toc": [
+    {
+      "href": "https://library.oapen.org/bitstream/20.500.12657/50076/1/9789286150340.pdf",
+      "title": "EIB Working Paper 2021/03 - Assessing climate change risks at the country level"
+    }
+  ]
 }

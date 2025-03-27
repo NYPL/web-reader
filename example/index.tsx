@@ -9,35 +9,36 @@ import {
   Link,
   useParams,
 } from 'react-router-dom';
-import WebReader, { addTocToManifest } from '../src';
+import WebReader from '../src';
 import {
   ChakraProvider,
   Heading,
   UnorderedList,
   ListItem,
   Box,
-  Text,
-  Input,
-  Button,
-  Stack,
+  // Text,
+  // Input,
+  // Button,
+  // Stack,
 } from '@chakra-ui/react';
 import { getTheme } from '../src/ui/theme';
 import readiumBefore from 'url:../src/HtmlReader/ReadiumCss/ReadiumCSS-before.css';
 import readiumDefault from 'url:../src/HtmlReader/ReadiumCss/ReadiumCSS-default.css';
 import readiumAfter from 'url:../src/HtmlReader/ReadiumCss/ReadiumCSS-after.css';
-import Tests from './Tests';
 import { Injectable } from '../src/Readium/Injectable';
 import useSWR, { Fetcher } from 'swr';
-import UseHtmlReader from './use-html-reader';
-import mobyEpub2Manifest from './static/samples/moby-epub2-exploded/manifest.json';
-import pdfSingleResourceManifest from './static/samples/pdf/single-resource-short.json';
-import { WebpubManifest } from '../src/types';
-import UsePdfReader from './use-pdf-reader';
+// import Tests from './Tests';
+// import UseHtmlReader from './use-html-reader';
+// import mobyEpub2Manifest from './static/samples/moby-epub2-exploded/manifest.json';
+// import pdfSingleResourceManifest from './static/samples/pdf/single-resource-short.json';
+// import { WebpubManifest } from '../src/types';
+// import UsePdfReader from './use-pdf-reader';
 
 const origin = window.location.origin;
 
-const pdfProxyUrl = process.env.CORS_PROXY_URL as string | undefined;
-const pdfWorkerSrc = `${origin}/pdf-worker/pdf.worker.min.js`;
+// const pdfProxyUrl = process.env.CORS_PROXY_URL as string | undefined;
+// const pdfProxyUrl = undefined;
+// const pdfWorkerSrc = `${origin}/pdf-worker/pdf.worker.min.mjs`;
 
 const cssInjectables: Injectable[] = [
   {
@@ -87,9 +88,9 @@ const App = () => {
           <Route path="/pdf">
             <PdfReaders />
           </Route>
-          <Route path="/html">
+          {/* <Route path="/html">
             <HtmlReaders />
-          </Route>
+          </Route> */}
 
           <Route path="*">
             <h1>404</h1>
@@ -107,7 +108,7 @@ const PdfReaders = () => {
       <Route path={`/pdf/single-resource-short`}>
         <SingleResourcePdf />
       </Route>
-      <Route path={`/pdf/use-pdf-reader-hook`}>
+      {/* <Route path={`/pdf/use-pdf-reader-hook`}>
         <UsePdfReader
           webpubManifestUrl="/samples/pdf/single-resource-short.json"
           manifest={pdfSingleResourceManifest as WebpubManifest}
@@ -164,7 +165,7 @@ const PdfReaders = () => {
           <Heading>The page continues...</Heading>
           <Text as="p">Here is some more content below the reader</Text>
         </Box>
-      </Route>
+      </Route> */}
     </>
   );
 };
@@ -173,19 +174,19 @@ const PdfReaders = () => {
  * This is a function we will use to get the resource through a given proxy url.
  * It will eventually be passed to the web reader instead of passing a proxy url directly.
  */
-const getProxiedResource = (proxyUrl?: string) => async (href: string) => {
-  // Generate the resource URL using the proxy
-  const url: string = proxyUrl
-    ? `${proxyUrl}${encodeURIComponent(href)}`
-    : href;
-  const response = await fetch(url, { mode: 'cors' });
-  const array = new Uint8Array(await response.arrayBuffer());
+// const getProxiedResource = (proxyUrl?: string) => async (href: string) => {
+//   // Generate the resource URL using the proxy
+//   const url: string = proxyUrl
+//     ? `${proxyUrl}${encodeURIComponent(href)}`
+//     : href;
+//   const response = await fetch(url, { mode: 'cors' });
+//   const array = new Uint8Array(await response.arrayBuffer());
 
-  if (!response.ok) {
-    throw new Error('Response not Ok for URL: ' + url);
-  }
-  return array;
-};
+//   if (!response.ok) {
+//     throw new Error('Response not Ok for URL: ' + url);
+//   }
+//   return array;
+// };
 
 /**
  * - Fetches manifest
@@ -197,13 +198,16 @@ const getProxiedResource = (proxyUrl?: string) => async (href: string) => {
 const fetchAndModifyManifest: Fetcher<string, string> = async (url) => {
   const response = await fetch(url);
   const manifest = await response.json();
-  const modifiedManifest = await addTocToManifest(
-    manifest,
-    getProxiedResource(pdfProxyUrl),
-    pdfWorkerSrc
-  );
+  // const modifiedManifest = await addTocToManifest(
+  //   manifest,
+  //   getProxiedResource(pdfProxyUrl),
+  //   pdfWorkerSrc
+  // );
+  // const syntheticUrl = URL.createObjectURL(
+  //   new Blob([JSON.stringify(modifiedManifest)])
+  // );
   const syntheticUrl = URL.createObjectURL(
-    new Blob([JSON.stringify(modifiedManifest)])
+    new Blob([JSON.stringify(manifest)])
   );
   return syntheticUrl;
 };
@@ -222,109 +226,108 @@ const SingleResourcePdf = () => {
   return (
     <WebReader
       webpubManifestUrl={modifiedManifestUrl}
-      proxyUrl={pdfProxyUrl}
-      pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.js`}
+      pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.mjs`}
     />
   );
 };
 
 const HtmlReaders = () => {
-  return (
-    <Switch>
-      <Route path={`/html/moby-epub2`}>
-        <WebReader
-          injectablesReflowable={htmlInjectablesReflowable}
-          webpubManifestUrl={`${origin}/samples/moby-epub2-exploded/manifest.json`}
-        />
-      </Route>
-      <Route path={`/html/moby-epub3`}>
-        <WebReader
-          injectablesReflowable={htmlInjectablesReflowable}
-          webpubManifestUrl={`${origin}/samples/moby-epub3-exploded/manifest.json`}
-        />
-      </Route>
-      <Route path={`/html/moby-epub3-no-local-storage`}>
-        <WebReader
-          injectablesReflowable={htmlInjectablesReflowable}
-          persistLastLocation={false}
-          persistSettings={false}
-          webpubManifestUrl={`${origin}/samples/moby-epub3-exploded/manifest.json`}
-        />
-      </Route>
-      <Route path={`/html/fixed-layout`}>
-        <WebReader
-          injectablesReflowable={htmlInjectablesReflowable}
-          webpubManifestUrl={`${origin}/samples/fixed-layout/manifest.json`}
-        />
-      </Route>
-      <Route path={`/html/fxl-poems`}>
-        <WebReader
-          injectablesReflowable={htmlInjectablesReflowable}
-          webpubManifestUrl={`${origin}/samples/fxl-poems/manifest.json`}
-        />
-      </Route>
-      <Route path={`/html/fixed-height-embedded-moby-epub2`}>
-        <Box bg="lavenderblush" p={6} w="100vw">
-          <Heading>Fixed-height Embedded Example</Heading>
-          <Text as="p">
-            This example shows how a web reader looks embedded within a page
-            instead of taking over the full page. It is fixed height, which
-            means it will not grow to fit content in scrolling mode.
-          </Text>
-          <WebReader
-            injectablesReflowable={htmlInjectablesReflowable}
-            webpubManifestUrl={`${origin}/samples/moby-epub2-exploded/manifest.json`}
-            growWhenScrolling={false}
-            height="70vh"
-          />
-          <Heading>The page continues...</Heading>
-          <Text as="p">Here is some more content below the reader</Text>
-        </Box>
-      </Route>
-      <Route path={`/html/growing-embedded-moby-epub2`}>
-        <Box bg="lavenderblush" p={6} w="100vw">
-          <Heading>Growing-height Embedded Example</Heading>
-          <Text as="p">
-            This example shows how a web reader looks embedded within a page and
-            with a growing-height policy. This example lets the PDF grow to fit
-            content of the resource in scrolling mode. In paginated mode,
-            however, it will use the value of the `height` prop.
-          </Text>
-          <WebReader
-            injectablesReflowable={htmlInjectablesReflowable}
-            webpubManifestUrl={`${origin}/samples/moby-epub2-exploded/manifest.json`}
-          />
-          <Heading>The page continues...</Heading>
-          <Text as="p">Here is some more content below the reader</Text>
-        </Box>
-      </Route>
-      <Route path={`/html/streamed-alice-epub`}>
-        <WebReader
-          injectablesReflowable={htmlInjectablesReflowable}
-          webpubManifestUrl="https://alice.dita.digital/manifest.json"
-        />
-      </Route>
-      <Route path={`/html/readium-css-docs`}>
-        <WebReader
-          injectablesReflowable={htmlInjectablesReflowable}
-          webpubManifestUrl={`${origin}/samples/ReadiumCSS-docs/manifest.json`}
-        />
-      </Route>
-      <Route path={`/html/use-html-reader-hook`}>
-        <UseHtmlReader
-          injectablesReflowable={htmlInjectablesReflowable}
-          webpubManifestUrl={`${origin}/samples/moby-epub2-exploded/manifest.json`}
-          manifest={mobyEpub2Manifest as WebpubManifest}
-        />
-      </Route>
-      <Route path={`/html/url/:manifestUrl`}>
-        <DynamicReader />
-      </Route>
-      <Route path={`/html/test`}>
-        <Tests />
-      </Route>
-    </Switch>
-  );
+  // return (
+  //   <Switch>
+  //     <Route path={`/html/moby-epub2`}>
+  //       <WebReader
+  //         injectablesReflowable={htmlInjectablesReflowable}
+  //         webpubManifestUrl={`${origin}/samples/moby-epub2-exploded/manifest.json`}
+  //       />
+  //     </Route>
+  //     <Route path={`/html/moby-epub3`}>
+  //       <WebReader
+  //         injectablesReflowable={htmlInjectablesReflowable}
+  //         webpubManifestUrl={`${origin}/samples/moby-epub3-exploded/manifest.json`}
+  //       />
+  //     </Route>
+  //     <Route path={`/html/moby-epub3-no-local-storage`}>
+  //       <WebReader
+  //         injectablesReflowable={htmlInjectablesReflowable}
+  //         persistLastLocation={false}
+  //         persistSettings={false}
+  //         webpubManifestUrl={`${origin}/samples/moby-epub3-exploded/manifest.json`}
+  //       />
+  //     </Route>
+  //     <Route path={`/html/fixed-layout`}>
+  //       <WebReader
+  //         injectablesReflowable={htmlInjectablesReflowable}
+  //         webpubManifestUrl={`${origin}/samples/fixed-layout/manifest.json`}
+  //       />
+  //     </Route>
+  //     <Route path={`/html/fxl-poems`}>
+  //       <WebReader
+  //         injectablesReflowable={htmlInjectablesReflowable}
+  //         webpubManifestUrl={`${origin}/samples/fxl-poems/manifest.json`}
+  //       />
+  //     </Route>
+  //     <Route path={`/html/fixed-height-embedded-moby-epub2`}>
+  //       <Box bg="lavenderblush" p={6} w="100vw">
+  //         <Heading>Fixed-height Embedded Example</Heading>
+  //         <Text as="p">
+  //           This example shows how a web reader looks embedded within a page
+  //           instead of taking over the full page. It is fixed height, which
+  //           means it will not grow to fit content in scrolling mode.
+  //         </Text>
+  //         <WebReader
+  //           injectablesReflowable={htmlInjectablesReflowable}
+  //           webpubManifestUrl={`${origin}/samples/moby-epub2-exploded/manifest.json`}
+  //           growWhenScrolling={false}
+  //           height="70vh"
+  //         />
+  //         <Heading>The page continues...</Heading>
+  //         <Text as="p">Here is some more content below the reader</Text>
+  //       </Box>
+  //     </Route>
+  //     <Route path={`/html/growing-embedded-moby-epub2`}>
+  //       <Box bg="lavenderblush" p={6} w="100vw">
+  //         <Heading>Growing-height Embedded Example</Heading>
+  //         <Text as="p">
+  //           This example shows how a web reader looks embedded within a page and
+  //           with a growing-height policy. This example lets the PDF grow to fit
+  //           content of the resource in scrolling mode. In paginated mode,
+  //           however, it will use the value of the `height` prop.
+  //         </Text>
+  //         <WebReader
+  //           injectablesReflowable={htmlInjectablesReflowable}
+  //           webpubManifestUrl={`${origin}/samples/moby-epub2-exploded/manifest.json`}
+  //         />
+  //         <Heading>The page continues...</Heading>
+  //         <Text as="p">Here is some more content below the reader</Text>
+  //       </Box>
+  //     </Route>
+  //     <Route path={`/html/streamed-alice-epub`}>
+  //       <WebReader
+  //         injectablesReflowable={htmlInjectablesReflowable}
+  //         webpubManifestUrl="https://alice.dita.digital/manifest.json"
+  //       />
+  //     </Route>
+  //     <Route path={`/html/readium-css-docs`}>
+  //       <WebReader
+  //         injectablesReflowable={htmlInjectablesReflowable}
+  //         webpubManifestUrl={`${origin}/samples/ReadiumCSS-docs/manifest.json`}
+  //       />
+  //     </Route>
+  //     <Route path={`/html/use-html-reader-hook`}>
+  //       <UseHtmlReader
+  //         injectablesReflowable={htmlInjectablesReflowable}
+  //         webpubManifestUrl={`${origin}/samples/moby-epub2-exploded/manifest.json`}
+  //         manifest={mobyEpub2Manifest as WebpubManifest}
+  //       />
+  //     </Route>
+  //     <Route path={`/html/url/:manifestUrl`}>
+  //       <DynamicReader />
+  //     </Route>
+  //     <Route path={`/html/test`}>
+  //       <Tests />
+  //     </Route>
+  //   </Switch>
+  // );
 };
 
 const HomePage = () => {
@@ -338,7 +341,7 @@ const HomePage = () => {
         Generic Examples
       </Heading>
       <UnorderedList p={4}>
-        <ListItem>
+        {/* <ListItem>
           EPUB2 Based Webpubs
           <UnorderedList>
             <ListItem>
@@ -401,14 +404,14 @@ const HomePage = () => {
               </Link>
             </ListItem>
           </UnorderedList>
-        </ListItem>
+        </ListItem> */}
         <ListItem>
           PDFs
           <UnorderedList>
             <ListItem>
               <Link to="/pdf/single-resource-short">Single-PDF Webpub</Link>
             </ListItem>
-            <ListItem>
+            {/* <ListItem>
               <Link to="/pdf/use-pdf-reader-hook">usePdfReader hook</Link>
             </ListItem>
             <ListItem>
@@ -426,10 +429,10 @@ const HomePage = () => {
               <Link to="/pdf/growing-height-embedded-collection">
                 Growing-height embedded PDF
               </Link>
-            </ListItem>
+            </ListItem> */}
           </UnorderedList>
         </ListItem>
-        <ListItem>
+        {/* <ListItem>
           Bring your own manifest:
           <Stack direction="row" alignItems="center">
             <Input
@@ -446,7 +449,7 @@ const HomePage = () => {
               Go
             </Button>
           </Stack>
-        </ListItem>
+        </ListItem> */}
       </UnorderedList>
     </Box>
   );

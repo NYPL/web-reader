@@ -21,11 +21,17 @@ export const fetchAsUint8Array = async (
   proxyUrl?: string
 ): Promise<Uint8Array> => {
   // Generate the resource URL using the proxy
-  const url: string = proxyUrl
-    ? `${proxyUrl}${encodeURIComponent(resourceUrl)}`
-    : resourceUrl;
-  const response = await fetch(url, { mode: 'cors' });
-  const array = new Uint8Array(await response.arrayBuffer());
+  // const url: string = proxyUrl
+  //   ? `${proxyUrl}${encodeURIComponent(resourceUrl)}`
+  //   : resourceUrl;
+  const url: string = resourceUrl;
+  const response = await fetch(url, {
+    mode: 'cors',
+    // headers: {
+    //   Range: 'bytes=0-506',
+    // },
+  });
+  const array = new Uint8Array((await response.arrayBuffer()).slice(0, 100000));
 
   if (!response.ok) {
     throw new Error('Response not Ok for URL: ' + url);

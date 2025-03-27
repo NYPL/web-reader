@@ -110,17 +110,22 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
       manifest.readingOrder
     );
 
-    const fetchResource = async () => {
-      getContent(currentResource, proxyUrl).then((data) => {
-        dispatch({
-          type: 'RESOURCE_FETCH_SUCCESS',
-          resource: { data },
-        });
-      });
-    };
-    if (manifest.readingOrder && manifest.readingOrder.length) {
-      fetchResource();
-    }
+    // NOTE: DELETE ME
+    dispatch({
+      type: 'RESOURCE_FETCH_SUCCESS',
+      resource: { data: undefined },
+    });
+    // const fetchResource = async () => {
+    //   getContent(currentResource, proxyUrl).then((data) => {
+    //     dispatch({
+    //       type: 'RESOURCE_FETCH_SUCCESS',
+    //       resource: { data },
+    //     });
+    //   });
+    // };
+    // if (manifest.readingOrder && manifest.readingOrder.length) {
+    //   fetchResource();
+    // }
   }, [state.resourceIndex, manifest, proxyUrl, getContent]);
 
   /**
@@ -286,6 +291,7 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
   // }
 
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
+    console.log('OnLoad', numPages);
     dispatch({
       type: 'PDF_PARSED',
       numPages: numPages,
@@ -293,6 +299,7 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
   };
 
   const onDocumentLoadError = (error: Error) => {
+    console.log('Error', error);
     dispatch({
       type: 'PDF_LOAD_ERROR',
       error: error,
@@ -348,9 +355,18 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
           `}
         </style>
         <Document
-          file={state.resource}
+          // NOTE: Edit this to fetch to a different endpoint/url
+          file={'http://127.0.0.1:8000/video'}
+          // file={state.resource}
           onLoadSuccess={onDocumentLoadSuccess}
           onLoadError={onDocumentLoadError}
+          // options={
+          //   {
+          //     disableAutoFetch: true,
+          //     disableStream: true,
+          //     rangeChunkSize: 65536,
+          //   }
+          // }
         >
           {isParsed && state.numPages && (
             <>
