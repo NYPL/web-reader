@@ -34,6 +34,7 @@ class WebReaderPage {
   readonly internalLink: Locator;
   readonly titlePage: Locator;
   readonly externalLink: Locator;
+  readonly epubCover: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -112,6 +113,10 @@ class WebReaderPage {
       .locator('iframe[title="Moby-Dick"]')
       .contentFrame()
       .getByRole('link', { name: 'www.gutenberg.org' });
+    this.epubCover = page
+      .locator('iframe[title="Moby Dick\\; Or\\, The Whale"]')
+      .contentFrame()
+      .getByRole('img', { name: 'Cover' });
 
     // footer
     this.previousPageButton = page

@@ -83,6 +83,8 @@ test.describe('Test navigation in HTML pub', () => {
   });
 });
 
+// navigate in full screen
+
 // move scrolling here?
 // scroll to the bottom of the page in scrolling mode
 // scroll to the top of the page in scrolling mode
@@ -104,7 +106,20 @@ test('Click internal link in paginated mode', async ({ page }) => {
   await expect(htmlReaderPage.titlePage).toBeVisible();
 });
 
-// click internal link in scrolling mode
+test('Click internal link in scrolling mode', async ({ page }) => {
+  const htmlReaderPage = new HtmlReaderPage(page);
+  await htmlReaderPage.loadPage('/html/moby-epub3');
+  await htmlReaderPage.settingsButton.click();
+  await htmlReaderPage.scrollingStyle.click();
+  await expect(htmlReaderPage.nextPageButton).toBeVisible();
+  await expect(htmlReaderPage.nextPageButton).toBeEnabled();
+  await expect(htmlReaderPage.previousPageButton).toBeVisible();
+  await expect(htmlReaderPage.previousPageButton).toBeDisabled();
+  await htmlReaderPage.nextPageButton.click();
+  await expect(htmlReaderPage.internalLink).toBeVisible();
+  await htmlReaderPage.internalLink.click();
+  await expect(htmlReaderPage.titlePage).toBeVisible();
+});
 
 test('Click external link in paginated mode', async ({ page }) => {
   const htmlReaderPage = new HtmlReaderPage(page);
@@ -122,9 +137,59 @@ test('Click external link in paginated mode', async ({ page }) => {
 });
 
 // remember last location when exit and reenter
-// remember last location when visit another remembering pub and return
-// do not remember last location in /html/moby-epub3-no-local-storage
+test('Remember last location when exit and reenter reader', async ({
+  page,
+}) => {
+  const htmlReaderPage = new HtmlReaderPage(page);
+  await htmlReaderPage.loadPage('/html/moby-epub3');
+  await expect(htmlReaderPage.tocButton).toBeVisible();
+  await htmlReaderPage.tocButton.click();
+  await htmlReaderPage.chapterName.click();
+  await expect(htmlReaderPage.chapterHeading).toBeVisible();
+  await expect(htmlReaderPage.backButton).toBeVisible();
+  await htmlReaderPage.backButton.click();
+  await expect(htmlReaderPage.webReaderHomepage).toBeVisible();
+  await htmlReaderPage.loadPage('/html/moby-epub3');
+  await expect(htmlReaderPage.chapterHeading).toBeVisible();
+});
 
-// navigate in full screen
+// remember last location when visit another remembering pub and return
+test('Remember last location when visit another remembering pub and reenter reader', async ({
+  page,
+}) => {
+  const htmlReaderPage = new HtmlReaderPage(page);
+  await htmlReaderPage.loadPage('/html/moby-epub3');
+  await expect(htmlReaderPage.tocButton).toBeVisible();
+  await htmlReaderPage.tocButton.click();
+  await htmlReaderPage.chapterName.click();
+  await expect(htmlReaderPage.chapterHeading).toBeVisible();
+  await expect(htmlReaderPage.backButton).toBeVisible();
+  await htmlReaderPage.backButton.click();
+  await expect(htmlReaderPage.webReaderHomepage).toBeVisible();
+  await htmlReaderPage.loadPage('/html/moby-epub2');
+  await expect(htmlReaderPage.epubCover).toBeVisible(); // check epub2
+  await htmlReaderPage.backButton.click();
+  await expect(htmlReaderPage.webReaderHomepage).toBeVisible();
+  await htmlReaderPage.loadPage('/html/moby-epub3');
+  await expect(htmlReaderPage.chapterHeading).toBeVisible();
+});
+
+// do not remember last location in /html/moby-epub3-no-local-storage
+test('Do not remember last location when exit and reenter reader in particular pub', async ({
+  page,
+}) => {
+  const htmlReaderPage = new HtmlReaderPage(page);
+  await htmlReaderPage.loadPage('/html/moby-epub3-no-local-storage');
+  await expect(htmlReaderPage.tocButton).toBeVisible();
+  await htmlReaderPage.tocButton.click();
+  await htmlReaderPage.chapterName.click();
+  await expect(htmlReaderPage.chapterHeading).toBeVisible();
+  await expect(htmlReaderPage.backButton).toBeVisible();
+  await htmlReaderPage.backButton.click();
+  await expect(htmlReaderPage.webReaderHomepage).toBeVisible();
+  await htmlReaderPage.loadPage('/html/moby-epub3-no-local-storage');
+  await expect(htmlReaderPage.titlePage).toBeVisible();
+  await expect(htmlReaderPage.chapterHeading).not.toBeVisible();
+});
 
 // missing TOC in /html/test/missing-toc
