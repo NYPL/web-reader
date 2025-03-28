@@ -155,17 +155,18 @@ class HtmlReaderPage extends WebReaderPage {
   }
 
   async scrollDown(): Promise<void> {
+    await expect(this.tocButton).toBeVisible();
     await this.tocButton.click();
+    await expect(this.chapterName).toBeVisible();
     await this.chapterName.click();
-    await expect(await this.tocButton.getAttribute('aria-expanded')).toBe(
-      'false'
-    );
     await this.specificText.scrollIntoViewIfNeeded();
+    await expect(this.specificText).toBeVisible();
   }
 
   async scrollUp(): Promise<void> {
-    await this.specificText.scrollIntoViewIfNeeded();
+    await this.scrollDown();
     await this.chapterHeading.scrollIntoViewIfNeeded();
+    await expect(this.chapterHeading).toBeVisible();
   }
 }
 

@@ -85,9 +85,27 @@ test.describe('Test navigation in HTML pub', () => {
 
 // navigate in full screen
 
-// move scrolling here?
-// scroll to the bottom of the page in scrolling mode
-// scroll to the top of the page in scrolling mode
+test('Scroll to the bottom of the page', async ({ page }) => {
+  const htmlReaderPage = new HtmlReaderPage(page);
+  await htmlReaderPage.loadPage('/html/moby-epub3');
+  await expect(htmlReaderPage.settingsButton).toBeVisible();
+  await htmlReaderPage.settingsButton.click();
+  await expect(htmlReaderPage.scrollingStyle).toBeVisible();
+  await htmlReaderPage.scrollingStyle.click();
+  await expect(htmlReaderPage.scrollingStyle).toBeChecked();
+  await htmlReaderPage.scrollDown();
+});
+
+test('Scroll to the top of the page', async ({ page }) => {
+  const htmlReaderPage = new HtmlReaderPage(page);
+  await htmlReaderPage.loadPage('/html/moby-epub3');
+  await expect(htmlReaderPage.settingsButton).toBeVisible();
+  await htmlReaderPage.settingsButton.click();
+  await expect(htmlReaderPage.scrollingStyle).toBeVisible();
+  await htmlReaderPage.scrollingStyle.click();
+  await expect(htmlReaderPage.scrollingStyle).toBeChecked();
+  await htmlReaderPage.scrollUp();
+});
 
 // change viewport
 // scroll to the bottom of the page, but if the screen is resized to be smaller, vertical scroll bar should re-appear to allow user to scroll down
@@ -136,7 +154,6 @@ test('Click external link in paginated mode', async ({ page }) => {
   await expect(newTab).toHaveURL('https://www.gutenberg.org');
 });
 
-// remember last location when exit and reenter
 test('Remember last location when exit and reenter reader', async ({
   page,
 }) => {
@@ -153,8 +170,7 @@ test('Remember last location when exit and reenter reader', async ({
   await expect(htmlReaderPage.chapterHeading).toBeVisible();
 });
 
-// remember last location when visit another remembering pub and return
-test('Remember last location when visit another remembering pub and reenter reader', async ({
+test('Remember last location when visit another remembering pub and reenter original pub', async ({
   page,
 }) => {
   const htmlReaderPage = new HtmlReaderPage(page);
@@ -167,15 +183,14 @@ test('Remember last location when visit another remembering pub and reenter read
   await htmlReaderPage.backButton.click();
   await expect(htmlReaderPage.webReaderHomepage).toBeVisible();
   await htmlReaderPage.loadPage('/html/moby-epub2');
-  await expect(htmlReaderPage.epubCover).toBeVisible(); // check epub2
+  await expect(htmlReaderPage.epubCover).toBeVisible();
   await htmlReaderPage.backButton.click();
   await expect(htmlReaderPage.webReaderHomepage).toBeVisible();
   await htmlReaderPage.loadPage('/html/moby-epub3');
   await expect(htmlReaderPage.chapterHeading).toBeVisible();
 });
 
-// do not remember last location in /html/moby-epub3-no-local-storage
-test('Do not remember last location when exit and reenter reader in particular pub', async ({
+test('Do not remember last location when exit and reenter reader in specific pub', async ({
   page,
 }) => {
   const htmlReaderPage = new HtmlReaderPage(page);
@@ -192,4 +207,13 @@ test('Do not remember last location when exit and reenter reader in particular p
   await expect(htmlReaderPage.chapterHeading).not.toBeVisible();
 });
 
-// missing TOC in /html/test/missing-toc
+test('Confirm missing TOC in specific pub', async ({ page }) => {
+  const htmlReaderPage = new HtmlReaderPage(page);
+  await htmlReaderPage.loadPage('/html/test/missing-toc');
+  await expect(htmlReaderPage.tocButton).toBeVisible();
+  await htmlReaderPage.tocButton.click();
+  const missingTOC = page.getByText(
+    'This publication does not have a Table of Contents.'
+  );
+  await expect(missingTOC).toBeVisible();
+});

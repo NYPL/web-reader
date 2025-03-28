@@ -80,13 +80,12 @@ test.describe('Test HTML pub', () => {
   test('Change pagination style', async ({ page }) => {
     const htmlReaderPage = new HtmlReaderPage(page);
     await htmlReaderPage.loadPage('/html/moby-epub3');
-    await htmlReaderPage.settingsButton.click();
-    await htmlReaderPage.scrollingStyle.click();
-    await expect(htmlReaderPage.scrollingStyle).toBeChecked();
-    await htmlReaderPage.scrollDown();
-    await htmlReaderPage.scrollUp();
     await expect(htmlReaderPage.settingsButton).toBeVisible();
     await htmlReaderPage.settingsButton.click();
+    await expect(htmlReaderPage.scrollingStyle).toBeVisible();
+    await htmlReaderPage.scrollingStyle.click();
+    await expect(htmlReaderPage.scrollingStyle).toBeChecked();
+    await expect(htmlReaderPage.paginatedStyle).toBeVisible();
     await htmlReaderPage.paginatedStyle.click();
     await expect(htmlReaderPage.paginatedStyle).toBeChecked();
   });
