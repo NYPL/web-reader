@@ -155,10 +155,6 @@ class HtmlReaderPage extends WebReaderPage {
   }
 
   async scrollDown(): Promise<void> {
-    await expect(this.tocButton).toBeVisible();
-    await this.tocButton.click();
-    await expect(this.chapterName).toBeVisible();
-    await this.chapterName.click();
     await this.specificText.scrollIntoViewIfNeeded();
     await expect(this.specificText).toBeVisible();
   }
@@ -167,6 +163,10 @@ class HtmlReaderPage extends WebReaderPage {
     await this.scrollDown();
     await this.chapterHeading.scrollIntoViewIfNeeded();
     await expect(this.chapterHeading).toBeVisible();
+  }
+
+  async changeScreenSize(): Promise<void> {
+    await this.page.setViewportSize({ width: 412, height: 915 }); // Samsung Galaxy S20 Ultra
   }
 }
 

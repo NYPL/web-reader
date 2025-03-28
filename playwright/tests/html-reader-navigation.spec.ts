@@ -40,7 +40,9 @@ test.describe('Test navigation in HTML pub', () => {
   }) => {
     const htmlReaderPage = new HtmlReaderPage(page);
     await page.goto('/html/moby-epub3');
+    await expect(htmlReaderPage.settingsButton).toBeVisible();
     await htmlReaderPage.settingsButton.click();
+    await expect(htmlReaderPage.scrollingStyle).toBeVisible();
     await htmlReaderPage.scrollingStyle.click();
     await expect(htmlReaderPage.nextPageButton).toBeVisible();
     await expect(htmlReaderPage.nextPageButton).toBeEnabled();
@@ -65,6 +67,36 @@ test.describe('Test navigation in HTML pub', () => {
     await page.goto('/html/moby-epub3');
     await expect(htmlReaderPage.tocButton).toBeVisible();
     await htmlReaderPage.tocButton.click();
+    await expect(htmlReaderPage.lastChapter).toBeVisible();
+    await htmlReaderPage.lastChapter.click();
+    await expect(htmlReaderPage.previousPageButton).toBeVisible();
+    await expect(htmlReaderPage.previousPageButton).toBeEnabled();
+    await expect(htmlReaderPage.nextPageButton).toBeVisible();
+    await expect(htmlReaderPage.nextPageButton).toBeDisabled();
+    await htmlReaderPage.previousPageButton.click();
+    await expect(htmlReaderPage.previousPageButton).toBeVisible();
+    await expect(htmlReaderPage.previousPageButton).toBeEnabled();
+    await expect(htmlReaderPage.nextPageButton).toBeVisible();
+    await expect(htmlReaderPage.nextPageButton).toBeEnabled();
+    await htmlReaderPage.nextPageButton.click();
+    await expect(htmlReaderPage.previousPageButton).toBeVisible();
+    await expect(htmlReaderPage.previousPageButton).toBeEnabled();
+    await expect(htmlReaderPage.nextPageButton).toBeVisible();
+    await expect(htmlReaderPage.nextPageButton).toBeDisabled();
+  });
+
+  test('Click next/previous buttons on last page in scrolling mode', async ({
+    page,
+  }) => {
+    const htmlReaderPage = new HtmlReaderPage(page);
+    await page.goto('/html/moby-epub3');
+    await expect(htmlReaderPage.settingsButton).toBeVisible();
+    await htmlReaderPage.settingsButton.click();
+    await expect(htmlReaderPage.scrollingStyle).toBeVisible();
+    await htmlReaderPage.scrollingStyle.click();
+    await expect(htmlReaderPage.tocButton).toBeVisible();
+    await htmlReaderPage.tocButton.click();
+    await expect(htmlReaderPage.lastChapter).toBeVisible();
     await htmlReaderPage.lastChapter.click();
     await expect(htmlReaderPage.previousPageButton).toBeVisible();
     await expect(htmlReaderPage.previousPageButton).toBeEnabled();
@@ -83,8 +115,6 @@ test.describe('Test navigation in HTML pub', () => {
   });
 });
 
-// navigate in full screen
-
 test('Scroll to the bottom of the page', async ({ page }) => {
   const htmlReaderPage = new HtmlReaderPage(page);
   await htmlReaderPage.loadPage('/html/moby-epub3');
@@ -93,6 +123,10 @@ test('Scroll to the bottom of the page', async ({ page }) => {
   await expect(htmlReaderPage.scrollingStyle).toBeVisible();
   await htmlReaderPage.scrollingStyle.click();
   await expect(htmlReaderPage.scrollingStyle).toBeChecked();
+  await expect(htmlReaderPage.tocButton).toBeVisible();
+  await htmlReaderPage.tocButton.click();
+  await expect(htmlReaderPage.chapterName).toBeVisible();
+  await htmlReaderPage.chapterName.click();
   await htmlReaderPage.scrollDown();
 });
 
@@ -104,12 +138,45 @@ test('Scroll to the top of the page', async ({ page }) => {
   await expect(htmlReaderPage.scrollingStyle).toBeVisible();
   await htmlReaderPage.scrollingStyle.click();
   await expect(htmlReaderPage.scrollingStyle).toBeChecked();
+  await expect(htmlReaderPage.tocButton).toBeVisible();
+  await htmlReaderPage.tocButton.click();
+  await expect(htmlReaderPage.chapterName).toBeVisible();
+  await htmlReaderPage.chapterName.click();
   await htmlReaderPage.scrollUp();
 });
 
-// change viewport
-// scroll to the bottom of the page, but if the screen is resized to be smaller, vertical scroll bar should re-appear to allow user to scroll down
-// small screen viewport 300x300 should disable next and previous buttons?
+// navigate with full screen
+
+test('Navigate reader with changed screen size', async ({ page }) => {
+  const htmlReaderPage = new HtmlReaderPage(page);
+  await htmlReaderPage.loadPage('/html/moby-epub3');
+  await htmlReaderPage.changeScreenSize();
+  await expect(htmlReaderPage.nextPageButton).toBeVisible();
+  await expect(htmlReaderPage.nextPageButton).toBeEnabled();
+  await expect(htmlReaderPage.previousPageButton).toBeVisible();
+  await expect(htmlReaderPage.previousPageButton).toBeDisabled();
+  await htmlReaderPage.nextPageButton.click();
+  await expect(htmlReaderPage.nextPageButton).toBeVisible();
+  await expect(htmlReaderPage.nextPageButton).toBeEnabled();
+  await expect(htmlReaderPage.previousPageButton).toBeVisible();
+  await expect(htmlReaderPage.previousPageButton).toBeEnabled();
+  await htmlReaderPage.previousPageButton.click();
+  await expect(htmlReaderPage.nextPageButton).toBeVisible();
+  await expect(htmlReaderPage.nextPageButton).toBeEnabled();
+  await expect(htmlReaderPage.previousPageButton).toBeVisible();
+  await expect(htmlReaderPage.previousPageButton).toBeDisabled();
+  await expect(htmlReaderPage.settingsButton).toBeVisible();
+  await htmlReaderPage.settingsButton.click();
+  await expect(htmlReaderPage.scrollingStyle).toBeVisible();
+  await htmlReaderPage.scrollingStyle.click();
+  await expect(htmlReaderPage.tocButton).toBeVisible();
+  await htmlReaderPage.tocButton.click();
+  await expect(htmlReaderPage.chapterName).toBeVisible();
+  await htmlReaderPage.chapterName.click();
+  await expect(htmlReaderPage.chapterHeading).toBeVisible();
+  await htmlReaderPage.scrollDown();
+  await htmlReaderPage.scrollUp();
+});
 
 test('Click internal link in paginated mode', async ({ page }) => {
   const htmlReaderPage = new HtmlReaderPage(page);
