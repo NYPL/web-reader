@@ -226,7 +226,7 @@ const SingleResourcePdf = () => {
   return (
     <WebReader
       webpubManifestUrl={modifiedManifestUrl}
-      pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.mjs`}
+      pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.js`}
     />
   );
 };

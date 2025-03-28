@@ -113,7 +113,7 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
     // NOTE: DELETE ME
     dispatch({
       type: 'RESOURCE_FETCH_SUCCESS',
-      resource: { data: undefined },
+      resource: { data: new Uint8Array() },
     });
     // const fetchResource = async () => {
     //   getContent(currentResource, proxyUrl).then((data) => {
