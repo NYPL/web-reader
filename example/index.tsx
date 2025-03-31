@@ -197,14 +197,18 @@ const getProxiedResource = (proxyUrl?: string) => async (href: string) => {
 const fetchAndModifyManifest: Fetcher<string, string> = async (url) => {
   const response = await fetch(url);
   const manifest = await response.json();
-  const modifiedManifest = await addTocToManifest(
-    manifest,
-    getProxiedResource(pdfProxyUrl),
-    pdfWorkerSrc
-  );
+
   const syntheticUrl = URL.createObjectURL(
-    new Blob([JSON.stringify(modifiedManifest)])
+    new Blob([JSON.stringify(manifest)])
   );
+  // const modifiedManifest = await addTocToManifest(
+  //   manifest,
+  //   getProxiedResource(pdfProxyUrl),
+  //   pdfWorkerSrc
+  // );
+  // const syntheticUrl = URL.createObjectURL(
+  //   new Blob([JSON.stringify(modifiedManifest)])
+  // );
   return syntheticUrl;
 };
 
@@ -219,11 +223,21 @@ const SingleResourcePdf = () => {
 
   if (isLoading || !modifiedManifestUrl) return <div>Loading...</div>;
 
+  const fetchUrl = async (
+    resourceUrl: string,
+    proxyUrl?: string
+  ): Promise<string> => {
+    return proxyUrl
+      ? `${proxyUrl}${encodeURIComponent(resourceUrl)}`
+      : resourceUrl;
+  };
+
   return (
     <WebReader
       webpubManifestUrl={modifiedManifestUrl}
       proxyUrl={pdfProxyUrl}
       pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.js`}
+      getContent={fetchUrl}
     />
   );
 };

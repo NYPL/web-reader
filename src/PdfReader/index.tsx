@@ -16,6 +16,7 @@ import LoadingSkeleton from '../ui/LoadingSkeleton';
 import { fetchAsUint8Array, getResourceUrl, SCALE_STEP } from './lib';
 import { makePdfReducer } from './reducer';
 import { PdfReaderArguments } from './types';
+import { OnLoadProgressArgs } from 'react-pdf/dist/cjs/shared/types';
 
 /**
  * The PDF reader
@@ -110,6 +111,11 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
       manifest.readingOrder
     );
 
+    // dispatch({
+    //   type: 'RESOURCE_FETCH_SUCCESS',
+    //   resource: { data: new Uint8Array() },
+    // });
+
     const fetchResource = async () => {
       getContent(currentResource, proxyUrl).then((data) => {
         dispatch({
@@ -122,6 +128,12 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
       fetchResource();
     }
   }, [state.resourceIndex, manifest, proxyUrl, getContent]);
+
+  const url = React.useMemo(() => {
+    return window.location.search
+      ? 'http://127.0.0.1:8000/full'
+      : 'http://127.0.0.1:8000';
+  }, []);
 
   /**
    * calculate the height or width of the pdf page in paginated mode.
@@ -348,9 +360,27 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
           `}
         </style>
         <Document
-          file={state.resource}
+          // NOTE: We will use state.resource because we will be providing our custom getContent func, this is just for testing
+          // file={state.resource}
+          file={url}
           onLoadSuccess={onDocumentLoadSuccess}
           onLoadError={onDocumentLoadError}
+          // onLoadProgress={(args) => {
+          // The onload only runs after the file is downlaoded
+          //   console.log(args);
+          // }}
+          // options={options}
+          loading={
+            <p
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                fontSize: '24px',
+              }}
+            >
+              Loading PDF content...
+            </p>
+          }
         >
           {isParsed && state.numPages && (
             <>

@@ -51,6 +51,17 @@ const ScrollPage: FC<ScrollPageProps> = ({
           scale={scale}
           width={width}
           onLoadSuccess={onLoadSuccess}
+          loading={
+            <p
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                fontSize: '24px',
+              }}
+            >
+              Loading PDF content...
+            </p>
+          }
         />
       ) : (
         <Placeholder
