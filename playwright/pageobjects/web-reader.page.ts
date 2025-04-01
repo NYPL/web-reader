@@ -18,12 +18,11 @@ class WebReaderPage {
   readonly increaseTextSize: Locator;
   readonly zoomInButton: Locator;
   readonly zoomOutButton: Locator;
-  readonly paginatedStyle: Locator;
-  readonly scrollingStyle: Locator;
+  readonly paginatedMode: Locator;
+  readonly scrollingMode: Locator;
   readonly fullScreenButton: Locator;
   readonly exitFullScreenButton: Locator;
   readonly previousPageButton: Locator;
-  readonly nextPageButton: Locator;
   readonly firstChapter: Locator;
   readonly lastChapter: Locator;
   readonly chapterName: Locator;
@@ -77,8 +76,8 @@ class WebReaderPage {
     this.decreaseTextSize = page.getByLabel('Decrease font size');
     this.increaseTextSize = page.getByLabel('Increase font size');
 
-    this.paginatedStyle = page.getByText('Paginated', { exact: true });
-    this.scrollingStyle = page.getByText('Scrolling', { exact: true });
+    this.paginatedMode = page.getByText('Paginated', { exact: true });
+    this.scrollingMode = page.getByText('Scrolling', { exact: true });
 
     // content
     this.chapterName = page.getByText(
@@ -122,19 +121,33 @@ class WebReaderPage {
     this.previousPageButton = page
       .getByRole('contentinfo')
       .getByRole('button', { name: 'Previous Page' });
-    this.nextPageButton = page
-      .getByRole('contentinfo')
-      .getByRole('button', { name: 'Next Page' });
   }
 
-  // hopefully better handles slow load time (use load or networkidle)
-  async loadPage(gotoPage: string): Promise<WebReaderPage> {
-    await this.page.goto(gotoPage, { waitUntil: 'load' });
-    return new WebReaderPage(this.page);
+  async changeScreenSize(): Promise<void> {
+    await this.page.setViewportSize({ width: 412, height: 915 }); // Samsung Galaxy S20 Ultra
   }
 }
 
 class HtmlReaderPage extends WebReaderPage {
+  readonly nextPageButton = this.page
+    .getByRole('contentinfo')
+    .getByRole('button', { name: 'Next Page' });
+
+  async loadPub(gotoPage: string): Promise<WebReaderPage> {
+    await this.page.goto(gotoPage, { waitUntil: 'domcontentloaded' });
+    const loadingBook = this.page.getByLabel('Loading book...');
+    await expect(loadingBook).not.toBeVisible();
+    await expect(this.titlePage).toBeVisible();
+    return new WebReaderPage(this.page);
+  }
+
+  async loadPage(): Promise<void> {
+    const loadingBook = this.page.getByLabel('Loading book...');
+    await expect(loadingBook).not.toBeVisible();
+    const loadingPDF = this.page.getByText('Loading PDF…');
+    await expect(loadingPDF).not.toBeVisible();
+  }
+
   async getIframe(): Promise<Locator> {
     const htmlElement = this.page.frameLocator('#mainContent').locator('html');
     return htmlElement;
@@ -151,7 +164,7 @@ class HtmlReaderPage extends WebReaderPage {
     await this.dyslexiaFont.click();
     await this.sepiaBackground.click();
     await this.increaseTextSize.click();
-    await this.scrollingStyle.click();
+    await this.scrollingMode.click();
   }
 
   async scrollDown(): Promise<void> {
@@ -164,17 +177,34 @@ class HtmlReaderPage extends WebReaderPage {
     await this.chapterHeading.scrollIntoViewIfNeeded();
     await expect(this.chapterHeading).toBeVisible();
   }
-
-  async changeScreenSize(): Promise<void> {
-    await this.page.setViewportSize({ width: 412, height: 915 }); // Samsung Galaxy S20 Ultra
-  }
 }
 
 class PdfReaderPage extends WebReaderPage {
+  readonly nextPageButton = this.page.getByRole('button', {
+    name: 'Next Page',
+  });
+
+  async loadPub(gotoPage: string): Promise<WebReaderPage> {
+    await this.page.goto(gotoPage, { waitUntil: 'domcontentloaded' });
+    await this.loadPage();
+    await expect(this.pageOne).toBeVisible();
+    return new WebReaderPage(this.page);
+  }
+
+  async loadPage(): Promise<void> {
+    const loadingBook = this.page.getByLabel('Loading book...');
+    await expect(loadingBook).not.toBeVisible();
+    const loadingPDF = this.page.getByText('Loading PDF…');
+    await expect(loadingPDF).not.toBeVisible();
+  }
+
   async changeSettings(): Promise<void> {
+    await expect(this.settingsButton).toBeVisible();
     await this.settingsButton.click();
+    await expect(this.zoomInButton).toBeVisible();
     await this.zoomInButton.click();
-    await this.scrollingStyle.click();
+    await expect(this.scrollingMode).toBeVisible();
+    await this.scrollingMode.click();
   }
 
   async getZoomValue(): Promise<number> {
@@ -187,7 +217,9 @@ class PdfReaderPage extends WebReaderPage {
 
   async zoomIn(): Promise<void> {
     const beforeScaleFactor = await this.getZoomValue();
+    await expect(this.settingsButton).toBeVisible();
     await this.settingsButton.click();
+    await expect(this.zoomInButton).toBeVisible();
     await this.zoomInButton.click();
     const afterScaleFactor = await this.getZoomValue();
     expect(afterScaleFactor).toBeGreaterThan(beforeScaleFactor);
@@ -195,21 +227,23 @@ class PdfReaderPage extends WebReaderPage {
 
   async zoomOut(): Promise<void> {
     const beforeScaleFactor = await this.getZoomValue();
+    await expect(this.settingsButton).toBeVisible();
     await this.settingsButton.click();
+    await expect(this.zoomOutButton).toBeVisible();
     await this.zoomOutButton.click();
     const afterScaleFactor = await this.getZoomValue();
     expect(afterScaleFactor).toBeLessThan(beforeScaleFactor);
   }
 
   async scrollDown(): Promise<void> {
-    await expect(this.pageTwo).toBeVisible();
     await this.pageTwo.scrollIntoViewIfNeeded();
+    await expect(this.pageTwo).toBeVisible();
   }
 
   async scrollUp(): Promise<void> {
     await this.scrollDown();
-    await expect(this.pageOne).toBeVisible();
     await this.pageOne.scrollIntoViewIfNeeded();
+    await expect(this.pageOne).toBeVisible();
   }
 }
 
