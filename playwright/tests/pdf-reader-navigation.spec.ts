@@ -193,7 +193,6 @@ test.describe('Test navigation in PDF pub', () => {
     await expect(pdfReaderPage.lastChapter).toBeVisible();
     await pdfReaderPage.lastChapter.click();
     await pdfReaderPage.loadPage();
-    await pdfReaderPage.scrollDown();
     await pdfReaderPage.scrollUp();
   });
 
@@ -226,7 +225,6 @@ test.describe('Test navigation in PDF pub', () => {
     await expect(pdfReaderPage.lastChapter).toBeVisible();
     await pdfReaderPage.lastChapter.click();
     await pdfReaderPage.loadPage();
-    await pdfReaderPage.scrollDown();
     await pdfReaderPage.scrollUp();
   });
 

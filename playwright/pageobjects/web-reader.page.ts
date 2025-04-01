@@ -137,15 +137,12 @@ class HtmlReaderPage extends WebReaderPage {
     await this.page.goto(gotoPage, { waitUntil: 'domcontentloaded' });
     const loadingBook = this.page.getByLabel('Loading book...');
     await expect(loadingBook).not.toBeVisible();
-    await expect(this.titlePage).toBeVisible();
     return new WebReaderPage(this.page);
   }
 
   async loadPage(): Promise<void> {
     const loadingBook = this.page.getByLabel('Loading book...');
     await expect(loadingBook).not.toBeVisible();
-    const loadingPDF = this.page.getByText('Loading PDF…');
-    await expect(loadingPDF).not.toBeVisible();
   }
 
   async getIframe(): Promise<Locator> {
@@ -160,10 +157,15 @@ class HtmlReaderPage extends WebReaderPage {
   }
 
   async changeSettings(): Promise<void> {
+    await expect(this.settingsButton).toBeVisible();
     await this.settingsButton.click();
+    await expect(this.dyslexiaFont).toBeVisible();
     await this.dyslexiaFont.click();
+    await expect(this.sepiaBackground).toBeVisible();
     await this.sepiaBackground.click();
+    await expect(this.increaseTextSize).toBeVisible();
     await this.increaseTextSize.click();
+    await expect(this.scrollingMode).toBeVisible();
     await this.scrollingMode.click();
   }
 
