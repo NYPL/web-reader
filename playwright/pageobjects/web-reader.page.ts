@@ -152,6 +152,36 @@ class HtmlReaderPage extends WebReaderPage {
     await this.chapterHeading.scrollIntoViewIfNeeded();
     await expect(this.chapterHeading).toBeVisible();
   }
+
+  async navigateReader(): Promise<void> {
+    await expect(this.nextPageButton).toBeVisible();
+    await expect(this.nextPageButton).toBeEnabled();
+    await expect(this.previousPageButton).toBeVisible();
+    await expect(this.previousPageButton).toBeDisabled();
+    await this.nextPageButton.click();
+    await this.loadPage();
+    await expect(this.nextPageButton).toBeVisible();
+    await expect(this.nextPageButton).toBeEnabled();
+    await expect(this.previousPageButton).toBeVisible();
+    await expect(this.previousPageButton).toBeEnabled();
+    await this.previousPageButton.click();
+    await this.loadPage();
+    await expect(this.nextPageButton).toBeVisible();
+    await expect(this.nextPageButton).toBeEnabled();
+    await expect(this.previousPageButton).toBeVisible();
+    await expect(this.previousPageButton).toBeDisabled();
+    await expect(this.settingsButton).toBeVisible();
+    await this.settingsButton.click();
+    await expect(this.scrollingMode).toBeVisible();
+    await this.scrollingMode.click();
+    await expect(this.tocButton).toBeVisible();
+    await this.tocButton.click();
+    await expect(this.chapterName).toBeVisible();
+    await this.chapterName.click();
+    await this.loadPage();
+    await expect(this.chapterHeading).toBeVisible();
+    await this.scrollUp();
+  }
 }
 
 class PdfReaderPage extends WebReaderPage {

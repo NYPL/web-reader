@@ -37,7 +37,6 @@ test.describe('Test PDF pub', () => {
     await pdfReaderPage.scrollingMode.click();
     await expect(pdfReaderPage.scrollingMode).toBeChecked();
     await pdfReaderPage.settingsButton.click();
-    await pdfReaderPage.scrollDown();
     await pdfReaderPage.scrollUp();
     await pdfReaderPage.settingsButton.click();
     await pdfReaderPage.paginatedMode.click();
