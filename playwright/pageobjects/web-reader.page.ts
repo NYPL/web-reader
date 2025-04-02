@@ -10,6 +10,7 @@ class WebReaderPage {
   readonly scrollingMode: Locator;
   readonly fullScreenButton: Locator;
   readonly exitFullScreenButton: Locator;
+  readonly nextPageButton: Locator;
   readonly previousPageButton: Locator;
   readonly firstChapter: Locator;
   readonly lastChapter: Locator;
@@ -43,6 +44,11 @@ class WebReaderPage {
     this.scrollingMode = page.getByText('Scrolling', { exact: true });
 
     // footer
+    this.nextPageButton = this.page
+      .getByRole('contentinfo')
+      .getByRole('button', {
+        name: 'Next Page',
+      });
     this.previousPageButton = page
       .getByRole('contentinfo')
       .getByRole('button', { name: 'Previous Page' });
@@ -100,11 +106,6 @@ class HtmlReaderPage extends WebReaderPage {
     .contentFrame()
     .getByRole('img', { name: 'Cover' });
 
-  // footer
-  readonly nextPageButton = this.page
-    .getByRole('contentinfo')
-    .getByRole('button', { name: 'Next Page' });
-
   async loadPub(gotoPage: string): Promise<WebReaderPage> {
     await this.page.goto(gotoPage, { waitUntil: 'domcontentloaded' });
     const loadingBook = this.page.getByLabel('Loading book...');
@@ -117,7 +118,6 @@ class HtmlReaderPage extends WebReaderPage {
     await expect(loadingBook).not.toBeVisible();
   }
 
-  // is this useful?
   async getIframe(): Promise<Locator> {
     const htmlElement = this.page.frameLocator('#mainContent').locator('html');
     return htmlElement;
@@ -171,11 +171,6 @@ class PdfReaderPage extends WebReaderPage {
   readonly permissionsPage = this.page
     .locator('[data-page-number="2"]')
     .getByText('Permissions', { exact: true });
-
-  // footer
-  readonly nextPageButton = this.page.getByRole('button', {
-    name: 'Next Page',
-  });
 
   async loadPub(gotoPage: string): Promise<WebReaderPage> {
     await this.page.goto(gotoPage, { waitUntil: 'domcontentloaded' });
