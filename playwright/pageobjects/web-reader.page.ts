@@ -6,18 +6,6 @@ class WebReaderPage {
   readonly backButton: Locator;
   readonly tocButton: Locator;
   readonly settingsButton: Locator;
-  readonly defaultFont: Locator;
-  readonly serifFont: Locator;
-  readonly sansSerifFont: Locator;
-  readonly dyslexiaFont: Locator;
-  readonly whiteBackground: Locator;
-  readonly sepiaBackground: Locator;
-  readonly blackBackground: Locator;
-  readonly resetTextSize: Locator;
-  readonly decreaseTextSize: Locator;
-  readonly increaseTextSize: Locator;
-  readonly zoomInButton: Locator;
-  readonly zoomOutButton: Locator;
   readonly paginatedMode: Locator;
   readonly scrollingMode: Locator;
   readonly fullScreenButton: Locator;
@@ -25,15 +13,6 @@ class WebReaderPage {
   readonly previousPageButton: Locator;
   readonly firstChapter: Locator;
   readonly lastChapter: Locator;
-  readonly chapterName: Locator;
-  readonly chapterHeading: Locator;
-  readonly specificText: Locator;
-  readonly pageOne: Locator;
-  readonly pageTwo: Locator;
-  readonly internalLink: Locator;
-  readonly titlePage: Locator;
-  readonly externalLink: Locator;
-  readonly epubCover: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -59,63 +38,9 @@ class WebReaderPage {
       exact: true,
     });
 
-    // reader settings
-    this.zoomInButton = page.getByRole('button', { name: 'Zoom In' });
-    this.zoomOutButton = page.getByRole('button', { name: 'Zoom Out' });
-
-    this.defaultFont = page.getByText('Default', { exact: true });
-    this.serifFont = page.getByText('Serif', { exact: true });
-    this.sansSerifFont = page.getByText('Sans-Serif', { exact: true });
-    this.dyslexiaFont = page.getByText('Dyslexia', { exact: true });
-
-    this.whiteBackground = page.getByText('Day', { exact: true });
-    this.sepiaBackground = page.getByText('Sepia', { exact: true });
-    this.blackBackground = page.getByText('Night', { exact: true });
-
-    this.resetTextSize = page.getByLabel('Reset settings');
-    this.decreaseTextSize = page.getByLabel('Decrease font size');
-    this.increaseTextSize = page.getByLabel('Increase font size');
-
+    // settings
     this.paginatedMode = page.getByText('Paginated', { exact: true });
     this.scrollingMode = page.getByText('Scrolling', { exact: true });
-
-    // content
-    this.chapterName = page.getByText(
-      'EXTRACTS (Supplied by a Sub-Sub-Librarian).'
-    );
-    this.chapterHeading = page
-      .locator('iframe[title="Moby-Dick"]')
-      .contentFrame()
-      .getByRole('heading', {
-        name: 'EXTRACTS (Supplied by a Sub-Sub-Librarian).',
-        level: 1,
-      });
-    this.specificText = page
-      .locator('iframe[title="Moby-Dick"]')
-      .contentFrame()
-      .getByText('—WHALE SONG.');
-    this.pageOne = page
-      .locator('#mainContent')
-      .locator('[data-page-number="1"]');
-    this.pageTwo = page
-      .locator('#mainContent')
-      .locator('[data-page-number="2"]');
-    this.internalLink = page
-      .locator('iframe[title="Moby-Dick"]')
-      .contentFrame()
-      .getByRole('link', { name: 'Title Page' });
-    this.titlePage = page
-      .locator('iframe[title="Moby-Dick"]')
-      .contentFrame()
-      .getByRole('img', { name: 'title page' });
-    this.externalLink = page
-      .locator('iframe[title="Moby-Dick"]')
-      .contentFrame()
-      .getByRole('link', { name: 'www.gutenberg.org' });
-    this.epubCover = page
-      .locator('iframe[title="Moby Dick\\; Or\\, The Whale"]')
-      .contentFrame()
-      .getByRole('img', { name: 'Cover' });
 
     // footer
     this.previousPageButton = page
@@ -129,6 +54,53 @@ class WebReaderPage {
 }
 
 class HtmlReaderPage extends WebReaderPage {
+  // settings
+  readonly defaultFont = this.page.getByText('Default', { exact: true });
+  readonly serifFont = this.page.getByText('Serif', { exact: true });
+  readonly sansSerifFont = this.page.getByText('Sans-Serif', { exact: true });
+  readonly dyslexiaFont = this.page.getByText('Dyslexia', { exact: true });
+
+  readonly whiteBackground = this.page.getByText('Day', { exact: true });
+  readonly sepiaBackground = this.page.getByText('Sepia', { exact: true });
+  readonly blackBackground = this.page.getByText('Night', { exact: true });
+
+  readonly resetTextSize = this.page.getByLabel('Reset settings');
+  readonly decreaseTextSize = this.page.getByLabel('Decrease font size');
+  readonly increaseTextSize = this.page.getByLabel('Increase font size');
+
+  // content
+  readonly chapterName = this.page.getByText(
+    'EXTRACTS (Supplied by a Sub-Sub-Librarian).'
+  );
+  readonly chapterHeading = this.page
+    .locator('iframe[title="Moby-Dick"]')
+    .contentFrame()
+    .getByRole('heading', {
+      name: 'EXTRACTS (Supplied by a Sub-Sub-Librarian).',
+      level: 1,
+    });
+  readonly specificText = this.page
+    .locator('iframe[title="Moby-Dick"]')
+    .contentFrame()
+    .getByText('—WHALE SONG.');
+  readonly internalLink = this.page
+    .locator('iframe[title="Moby-Dick"]')
+    .contentFrame()
+    .getByRole('link', { name: 'Title Page' });
+  readonly titlePage = this.page
+    .locator('iframe[title="Moby-Dick"]')
+    .contentFrame()
+    .getByRole('img', { name: 'title page' });
+  readonly externalLink = this.page
+    .locator('iframe[title="Moby-Dick"]')
+    .contentFrame()
+    .getByRole('link', { name: 'www.gutenberg.org' });
+  readonly epubCover = this.page
+    .locator('iframe[title="Moby Dick\\; Or\\, The Whale"]')
+    .contentFrame()
+    .getByRole('img', { name: 'Cover' });
+
+  // footer
   readonly nextPageButton = this.page
     .getByRole('contentinfo')
     .getByRole('button', { name: 'Next Page' });
@@ -145,6 +117,7 @@ class HtmlReaderPage extends WebReaderPage {
     await expect(loadingBook).not.toBeVisible();
   }
 
+  // is this useful?
   async getIframe(): Promise<Locator> {
     const htmlElement = this.page.frameLocator('#mainContent').locator('html');
     return htmlElement;
@@ -182,14 +155,27 @@ class HtmlReaderPage extends WebReaderPage {
 }
 
 class PdfReaderPage extends WebReaderPage {
-  readonly nextPageButton = this.page.getByRole('button', {
-    name: 'Next Page',
-  });
+  // settings
+  readonly zoomInButton = this.page.getByRole('button', { name: 'Zoom In' });
+  readonly zoomOutButton = this.page.getByRole('button', { name: 'Zoom Out' });
+
+  // content
+  readonly pageOne = this.page
+    .locator('#mainContent')
+    .locator('[data-page-number="1"]');
+  readonly pageTwo = this.page
+    .locator('#mainContent')
+    .locator('[data-page-number="2"]');
   readonly firstIndexPage = this.page.getByText('367', { exact: true });
   readonly lastIndexPage = this.page.getByText('376', { exact: true });
   readonly permissionsPage = this.page
     .locator('[data-page-number="2"]')
     .getByText('Permissions', { exact: true });
+
+  // footer
+  readonly nextPageButton = this.page.getByRole('button', {
+    name: 'Next Page',
+  });
 
   async loadPub(gotoPage: string): Promise<WebReaderPage> {
     await this.page.goto(gotoPage, { waitUntil: 'domcontentloaded' });
