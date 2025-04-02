@@ -168,54 +168,48 @@ test.describe('Test navigation in PDF pub', () => {
     await pdfReaderPage.loadPub('/pdf/collection');
     await expect(pdfReaderPage.fullScreenButton).toBeVisible();
     await pdfReaderPage.fullScreenButton.click();
-    await expect(pdfReaderPage.nextPageButton).toBeVisible();
-    await expect(pdfReaderPage.nextPageButton).toBeEnabled();
-    await expect(pdfReaderPage.previousPageButton).toBeVisible();
-    await expect(pdfReaderPage.previousPageButton).toBeDisabled();
-    await pdfReaderPage.nextPageButton.click();
-    await pdfReaderPage.loadPage();
-    await expect(pdfReaderPage.nextPageButton).toBeVisible();
-    await expect(pdfReaderPage.nextPageButton).toBeEnabled();
-    await expect(pdfReaderPage.previousPageButton).toBeVisible();
-    await expect(pdfReaderPage.previousPageButton).toBeEnabled();
-    await pdfReaderPage.previousPageButton.click();
-    await pdfReaderPage.loadPage();
-    await expect(pdfReaderPage.nextPageButton).toBeVisible();
-    await expect(pdfReaderPage.nextPageButton).toBeEnabled();
-    await expect(pdfReaderPage.previousPageButton).toBeVisible();
-    await expect(pdfReaderPage.previousPageButton).toBeDisabled();
-    await expect(pdfReaderPage.settingsButton).toBeVisible();
-    await pdfReaderPage.settingsButton.click();
-    await expect(pdfReaderPage.scrollingMode).toBeVisible();
-    await pdfReaderPage.scrollingMode.click();
-    await expect(pdfReaderPage.tocButton).toBeVisible();
-    await pdfReaderPage.tocButton.click();
-    await expect(pdfReaderPage.lastChapter).toBeVisible();
-    await pdfReaderPage.lastChapter.click();
-    await pdfReaderPage.loadPage();
-    await pdfReaderPage.scrollUp();
+    await pdfReaderPage.navigateReader();
+    await expect(pdfReaderPage.pageOne).toBeVisible();
   });
 
   test('Navigate reader with changed screen size', async ({ page }) => {
     const pdfReaderPage = new PdfReaderPage(page);
     await pdfReaderPage.loadPub('/pdf/collection');
     await pdfReaderPage.changeScreenSize();
-    await expect(pdfReaderPage.nextPageButton).toBeVisible();
-    await expect(pdfReaderPage.nextPageButton).toBeEnabled();
-    await expect(pdfReaderPage.previousPageButton).toBeVisible();
-    await expect(pdfReaderPage.previousPageButton).toBeDisabled();
-    await pdfReaderPage.nextPageButton.click();
+    await pdfReaderPage.navigateReader();
+    await expect(pdfReaderPage.pageOne).toBeVisible();
+  });
+
+  test('Navigate reader while zoomed in', async ({ page }) => {
+    const pdfReaderPage = new PdfReaderPage(page);
+    await pdfReaderPage.loadPub('/pdf/collection');
+    await pdfReaderPage.zoomIn();
+    await pdfReaderPage.navigateReader();
+    await expect(pdfReaderPage.pageOne).toBeVisible();
+  });
+
+  test('Navigate reader while zoomed out', async ({ page }) => {
+    const pdfReaderPage = new PdfReaderPage(page);
+    await pdfReaderPage.loadPub('/pdf/collection');
+    await pdfReaderPage.zoomOut();
+    await pdfReaderPage.navigateReader();
+    await expect(pdfReaderPage.pageOne).toBeVisible();
+  });
+
+  test('Use table of contents in paginated mode', async ({ page }) => {
+    const pdfReaderPage = new PdfReaderPage(page);
+    await pdfReaderPage.loadPub('/pdf/collection');
+    await expect(pdfReaderPage.tocButton).toBeVisible();
+    await pdfReaderPage.tocButton.click();
+    await expect(pdfReaderPage.lastChapter).toBeVisible();
+    await pdfReaderPage.lastChapter.click();
     await pdfReaderPage.loadPage();
-    await expect(pdfReaderPage.nextPageButton).toBeVisible();
-    await expect(pdfReaderPage.nextPageButton).toBeEnabled();
-    await expect(pdfReaderPage.previousPageButton).toBeVisible();
-    await expect(pdfReaderPage.previousPageButton).toBeEnabled();
-    await pdfReaderPage.previousPageButton.click();
-    await pdfReaderPage.loadPage();
-    await expect(pdfReaderPage.nextPageButton).toBeVisible();
-    await expect(pdfReaderPage.nextPageButton).toBeEnabled();
-    await expect(pdfReaderPage.previousPageButton).toBeVisible();
-    await expect(pdfReaderPage.previousPageButton).toBeDisabled();
+    await expect(pdfReaderPage.pageTwo).toBeVisible();
+  });
+
+  test('Use table of contents in scrolling mode', async ({ page }) => {
+    const pdfReaderPage = new PdfReaderPage(page);
+    await pdfReaderPage.loadPub('/pdf/collection');
     await expect(pdfReaderPage.settingsButton).toBeVisible();
     await pdfReaderPage.settingsButton.click();
     await expect(pdfReaderPage.scrollingMode).toBeVisible();
@@ -225,11 +219,6 @@ test.describe('Test navigation in PDF pub', () => {
     await expect(pdfReaderPage.lastChapter).toBeVisible();
     await pdfReaderPage.lastChapter.click();
     await pdfReaderPage.loadPage();
-    await pdfReaderPage.scrollUp();
+    await expect(pdfReaderPage.pageTwo).toBeVisible();
   });
-
-  // navigate reader while zoomed in and zoomed out
-
-  // use toc in paginated
-  // use toc in scrolling
 });
