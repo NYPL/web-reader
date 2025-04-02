@@ -19,7 +19,6 @@ test.describe('Test navigation in PDF pub', () => {
   }) => {
     const pdfReaderPage = new PdfReaderPage(page);
     await pdfReaderPage.loadPub('/pdf/collection');
-    await expect(pdfReaderPage.tocButton).toBeVisible();
     await expect(pdfReaderPage.nextPageButton).toBeVisible();
     await expect(pdfReaderPage.nextPageButton).toBeEnabled();
     await expect(pdfReaderPage.previousPageButton).toBeVisible();
@@ -56,14 +55,17 @@ test.describe('Test navigation in PDF pub', () => {
     await expect(pdfReaderPage.previousPageButton).toBeDisabled();
     await pdfReaderPage.nextPageButton.click();
     await pdfReaderPage.loadPage();
-    await expect(pdfReaderPage.pageTwo).toBeVisible();
+    const copyrightPage = page.getByText(
+      '© 2009 by the University Press of Colorado'
+    ); // move to pg obj
+    await expect(copyrightPage).toBeVisible();
     await expect(pdfReaderPage.nextPageButton).toBeVisible();
     await expect(pdfReaderPage.nextPageButton).toBeEnabled();
     await expect(pdfReaderPage.previousPageButton).toBeVisible();
     await expect(pdfReaderPage.previousPageButton).toBeEnabled();
     await pdfReaderPage.previousPageButton.click();
     await pdfReaderPage.loadPage();
-    await expect(pdfReaderPage.pageOne).toBeVisible();
+    await expect(pdfReaderPage.pageTwo).toBeVisible();
     await expect(pdfReaderPage.nextPageButton).toBeVisible();
     await expect(pdfReaderPage.nextPageButton).toBeEnabled();
     await expect(pdfReaderPage.previousPageButton).toBeVisible();
@@ -80,12 +82,14 @@ test.describe('Test navigation in PDF pub', () => {
     await expect(pdfReaderPage.lastChapter).toBeVisible();
     await pdfReaderPage.lastChapter.click();
     await pdfReaderPage.loadPage();
+    await expect(pdfReaderPage.firstIndexPage).toBeVisible();
     while (await pdfReaderPage.nextPageButton.isEnabled()) {
       await expect(pdfReaderPage.nextPageButton).toBeVisible();
       await expect(pdfReaderPage.nextPageButton).toBeEnabled();
       await pdfReaderPage.nextPageButton.click();
       await pdfReaderPage.loadPage();
     }
+    await expect(pdfReaderPage.lastIndexPage).toBeVisible();
     await expect(pdfReaderPage.previousPageButton).toBeVisible();
     await expect(pdfReaderPage.previousPageButton).toBeEnabled();
     await expect(pdfReaderPage.nextPageButton).toBeVisible();
@@ -98,6 +102,7 @@ test.describe('Test navigation in PDF pub', () => {
     await expect(pdfReaderPage.nextPageButton).toBeEnabled();
     await pdfReaderPage.nextPageButton.click();
     await pdfReaderPage.loadPage();
+    await expect(pdfReaderPage.lastIndexPage).toBeVisible();
     await expect(pdfReaderPage.previousPageButton).toBeVisible();
     await expect(pdfReaderPage.previousPageButton).toBeEnabled();
     await expect(pdfReaderPage.nextPageButton).toBeVisible();
@@ -118,18 +123,23 @@ test.describe('Test navigation in PDF pub', () => {
     await expect(pdfReaderPage.lastChapter).toBeVisible();
     await pdfReaderPage.lastChapter.click();
     await pdfReaderPage.loadPage();
+    await expect(pdfReaderPage.firstIndexPage).toBeVisible();
+    await expect(pdfReaderPage.lastIndexPage).toBeVisible();
     await expect(pdfReaderPage.previousPageButton).toBeVisible();
     await expect(pdfReaderPage.previousPageButton).toBeEnabled();
     await expect(pdfReaderPage.nextPageButton).toBeVisible();
     await expect(pdfReaderPage.nextPageButton).toBeDisabled();
     await pdfReaderPage.previousPageButton.click();
     await pdfReaderPage.loadPage();
+    await expect(pdfReaderPage.permissionsPage).toBeVisible();
     await expect(pdfReaderPage.previousPageButton).toBeVisible();
     await expect(pdfReaderPage.previousPageButton).toBeEnabled();
     await expect(pdfReaderPage.nextPageButton).toBeVisible();
     await expect(pdfReaderPage.nextPageButton).toBeEnabled();
     await pdfReaderPage.nextPageButton.click();
     await pdfReaderPage.loadPage();
+    await expect(pdfReaderPage.firstIndexPage).toBeVisible();
+    await expect(pdfReaderPage.lastIndexPage).toBeVisible();
     await expect(pdfReaderPage.previousPageButton).toBeVisible();
     await expect(pdfReaderPage.previousPageButton).toBeEnabled();
     await expect(pdfReaderPage.nextPageButton).toBeVisible();
@@ -199,7 +209,7 @@ test.describe('Test navigation in PDF pub', () => {
     await expect(pdfReaderPage.lastChapter).toBeVisible();
     await pdfReaderPage.lastChapter.click();
     await pdfReaderPage.loadPage();
-    await expect(pdfReaderPage.pageTwo).toBeVisible();
+    await expect(pdfReaderPage.firstIndexPage).toBeVisible();
   });
 
   test('Use table of contents in scrolling mode', async ({ page }) => {
@@ -214,6 +224,7 @@ test.describe('Test navigation in PDF pub', () => {
     await expect(pdfReaderPage.lastChapter).toBeVisible();
     await pdfReaderPage.lastChapter.click();
     await pdfReaderPage.loadPage();
-    await expect(pdfReaderPage.pageTwo).toBeVisible();
+    await expect(pdfReaderPage.firstIndexPage).toBeVisible();
+    await expect(pdfReaderPage.lastIndexPage).toBeVisible();
   });
 });

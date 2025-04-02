@@ -185,6 +185,11 @@ class PdfReaderPage extends WebReaderPage {
   readonly nextPageButton = this.page.getByRole('button', {
     name: 'Next Page',
   });
+  readonly firstIndexPage = this.page.getByText('367', { exact: true });
+  readonly lastIndexPage = this.page.getByText('376', { exact: true });
+  readonly permissionsPage = this.page
+    .locator('[data-page-number="2"]')
+    .getByText('Permissions', { exact: true });
 
   async loadPub(gotoPage: string): Promise<WebReaderPage> {
     await this.page.goto(gotoPage, { waitUntil: 'domcontentloaded' });
