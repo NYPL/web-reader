@@ -80,16 +80,11 @@ test.describe('Test navigation in PDF pub', () => {
     await expect(pdfReaderPage.lastChapter).toBeVisible();
     await pdfReaderPage.lastChapter.click();
     await pdfReaderPage.loadPage();
-    let i = 0;
-    for (i = 0; i < 9; i++) {
-      if (await pdfReaderPage.nextPageButton.isEnabled()) {
-        await expect(pdfReaderPage.nextPageButton).toBeVisible();
-        await expect(pdfReaderPage.nextPageButton).toBeEnabled();
-        await pdfReaderPage.nextPageButton.click();
-        await pdfReaderPage.loadPage();
-      } else {
-        break;
-      }
+    while (await pdfReaderPage.nextPageButton.isEnabled()) {
+      await expect(pdfReaderPage.nextPageButton).toBeVisible();
+      await expect(pdfReaderPage.nextPageButton).toBeEnabled();
+      await pdfReaderPage.nextPageButton.click();
+      await pdfReaderPage.loadPage();
     }
     await expect(pdfReaderPage.previousPageButton).toBeVisible();
     await expect(pdfReaderPage.previousPageButton).toBeEnabled();
