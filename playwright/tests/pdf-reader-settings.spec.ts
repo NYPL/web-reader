@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { PdfReaderPage } from '../pageobjects/web-reader.page.ts';
 
-test.describe('Test PDF pub', () => {
+test.describe('Test settings in PDF pub', () => {
   test('Confirm reader settings are visible', async ({ page }) => {
     const pdfReaderPage = new PdfReaderPage(page);
     await pdfReaderPage.loadPub('/pdf/collection');
@@ -17,8 +17,10 @@ test.describe('Test PDF pub', () => {
   test('Open and close reader settings', async ({ page }) => {
     const pdfReaderPage = new PdfReaderPage(page);
     await pdfReaderPage.loadPub('/pdf/collection');
+    await expect(pdfReaderPage.settingsButton).toBeVisible();
     await pdfReaderPage.settingsButton.click();
     await expect(pdfReaderPage.zoomInButton).toBeVisible();
+    await expect(pdfReaderPage.settingsButton).toBeVisible();
     await pdfReaderPage.settingsButton.click();
     await expect(pdfReaderPage.zoomInButton).not.toBeVisible();
   });
@@ -26,19 +28,21 @@ test.describe('Test PDF pub', () => {
   test('Display default settings', async ({ page }) => {
     const pdfReaderPage = new PdfReaderPage(page);
     await pdfReaderPage.loadPub('/pdf/collection');
+    await expect(pdfReaderPage.settingsButton).toBeVisible();
     await pdfReaderPage.settingsButton.click();
+    await expect(pdfReaderPage.paginatedMode).toBeVisible();
     await expect(pdfReaderPage.paginatedMode).toBeChecked();
   });
 
   test('Change pagination style', async ({ page }) => {
     const pdfReaderPage = new PdfReaderPage(page);
     await pdfReaderPage.loadPub('/pdf/collection');
+    await expect(pdfReaderPage.settingsButton).toBeVisible();
     await pdfReaderPage.settingsButton.click();
+    await expect(pdfReaderPage.scrollingMode).toBeVisible();
     await pdfReaderPage.scrollingMode.click();
     await expect(pdfReaderPage.scrollingMode).toBeChecked();
-    await pdfReaderPage.settingsButton.click();
-    await pdfReaderPage.scrollUp();
-    await pdfReaderPage.settingsButton.click();
+    await expect(pdfReaderPage.paginatedMode).toBeVisible();
     await pdfReaderPage.paginatedMode.click();
     await expect(pdfReaderPage.paginatedMode).toBeChecked();
   });
@@ -60,6 +64,7 @@ test.describe('Test PDF pub', () => {
     await pdfReaderPage.loadPub('/pdf/collection');
     await expect(pdfReaderPage.fullScreenButton).toBeVisible();
     await pdfReaderPage.fullScreenButton.click();
+    await expect(pdfReaderPage.exitFullScreenButton).toBeVisible();
     await pdfReaderPage.exitFullScreenButton.click();
     await expect(pdfReaderPage.fullScreenButton).toBeVisible();
   });
@@ -67,8 +72,10 @@ test.describe('Test PDF pub', () => {
   test('Change settings in full screen', async ({ page }) => {
     const pdfReaderPage = new PdfReaderPage(page);
     await pdfReaderPage.loadPub('/pdf/collection');
+    await expect(pdfReaderPage.fullScreenButton).toBeVisible();
     await pdfReaderPage.fullScreenButton.click();
     await pdfReaderPage.changeSettings();
+    await expect(pdfReaderPage.scrollingMode).toBeVisible();
     await expect(pdfReaderPage.scrollingMode).toBeChecked();
   });
 });
