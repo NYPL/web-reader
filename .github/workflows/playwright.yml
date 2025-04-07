@@ -3,7 +3,7 @@ on:
   schedule:
     - cron: '00 14 * * 1-5'
   pull_request:
-    branches: [production]
+    #branches: [production]
     types: [opened, synchronize, reopened]
 jobs:
   test:
