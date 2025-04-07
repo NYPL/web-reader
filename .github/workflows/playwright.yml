@@ -1,0 +1,42 @@
+name: Playwright Tests for Web Reader
+on:
+  schedule:
+    - cron: '00 14 * * 1-5'
+  pull_request:
+    branches: [production]
+    types: [opened, synchronize, reopened]
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      - name: Build app
+        run: npm run example:nocache
+
+      - name: Start proxy
+        run: npm run cors-proxy
+
+      - name: Run Playwright tests
+        run: npm run playwright
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
