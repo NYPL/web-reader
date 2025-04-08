@@ -24,8 +24,8 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
-      # - name: Build app
-      #   run: npm run example:nocache
+      - name: Build app
+        run: npm run test:ci:integration
 
       # - name: Start proxy
       #   run: npm run cors-proxy
