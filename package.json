@@ -19,7 +19,7 @@
     "build": "tsup",
     "test": "jest --watch",
     "test:ci": "jest --ci --silent --coverage --maxWorkers=2",
-    "test:ci:integration": "start-server-and-test example http://localhost:1234 playwright",
+    "test:ci:integration": "start-server-and-test example http://localhost:1234",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
     "cypress:run:chrome": "cypress run --browser chrome",
