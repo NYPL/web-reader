@@ -27,12 +27,6 @@ jobs:
       - name: Build app
         run: npm run test:ci:integration
 
-      # - name: Start proxy
-      #   run: npm run cors-proxy
-
-      # - name: Run Playwright tests
-      #   run: npm run playwright
-
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
