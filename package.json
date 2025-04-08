@@ -19,7 +19,7 @@
     "build": "tsup",
     "test": "jest --watch",
     "test:ci": "jest --ci --silent --coverage --maxWorkers=2",
-    "test:ci:integration": "start-server-and-test example http://localhost:1234 cypress:run",
+    "test:ci:integration": "start-server-and-test example http://localhost:1234 playwright",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
     "cypress:run:chrome": "cypress run --browser chrome",
@@ -33,7 +33,12 @@
     "cors-proxy": "node example/cors-proxy.js",
     "release": "release-it --verbose",
     "release:alpha": "release-it --verbose --preRelease=alpha",
-    "playwright": "npx playwright test"
+    "playwright": "npx playwright test",
+    "postinstall": "npm update browserstack-node-sdk",
+    "test-browserstack": "browserstack-node-sdk jest --watch",
+    "test:ci-browserstack": "browserstack-node-sdk jest --ci --silent --coverage --maxWorkers=2",
+    "cors-proxy-browserstack": "browserstack-node-sdk node example/cors-proxy.js",
+    "playwright-browserstack": "npx browserstack-node-sdk playwright test"
   },
   "peerDependencies": {
     "@chakra-ui/react": "2.x",
@@ -87,6 +92,7 @@
     "@typescript-eslint/parser": "4.33.0",
     "babel-jest": "29.7.0",
     "babel-loader": "8.3.0",
+    "browserstack-node-sdk": "^1.34.49",
     "cypress": "9.5.1",
     "esbuild-jest": "0.5.0",
     "eslint": "7.32.0",
