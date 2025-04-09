@@ -24,8 +24,18 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
-      - name: Build app
+      - name: Build app and run tests
+        id: test-status
         run: npm run test:ci:integration
+
+      # https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#job-status-check-functions
+      # - name: Set successful workflow status ✅
+      #   if: contains(steps.test-status.outputs.test, 'error')
+      #   run: # success
+
+      - name: Set failure workflow status 🚨
+        if: contains(steps.test-status.outputs.test, 'error')
+        run: echo 'failure' # failure
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
