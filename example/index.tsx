@@ -241,7 +241,6 @@ const LoadPdfWithUrl = () => {
     async (url: string) => {
       const response = await fetch(url);
       const manifest = await response.json();
-      console.log(manifest);
       const syntheticUrl = URL.createObjectURL(
         new Blob([JSON.stringify(manifest)])
       );
