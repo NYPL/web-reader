@@ -1,8 +1,11 @@
 import { Injectable } from './Readium/Injectable';
 import { Locator } from './Readium/Locator';
 import { WebpubManifest } from './WebpubManifestTypes/WebpubManifest';
+import { File as PdfFileType } from 'react-pdf/dist/cjs/shared/types';
 
 export { WebpubManifest };
+
+export { PdfFileType };
 
 // the MimeType for a packaged epub
 export const EpubMimeType = 'application/epub';
@@ -87,7 +90,7 @@ export type ActiveReader = PDFActiveReader | HTMLActiveReader;
 export type ReaderReturn = InactiveReader | LoadingReader | ActiveReader;
 
 // should fetch and decrypt a resource
-export type GetContent<T extends string | Uint8Array> = (
+export type GetContent<T extends Uint8Array | PdfFileType> = (
   href: string,
   proxyUrl?: string
 ) => Promise<T>;
@@ -96,7 +99,7 @@ export type ReaderManagerArguments = {
   headerLeft?: JSX.Element; // Top-left header section
 };
 
-export type UseWebReaderArguments<T extends string | Uint8Array> = {
+export type UseWebReaderArguments<T extends Uint8Array | PdfFileType> = {
   webpubManifestUrl: string;
   proxyUrl?: string;
   getContent?: GetContent<T>;
@@ -141,7 +144,7 @@ export type UseWebReaderArguments<T extends string | Uint8Array> = {
 };
 
 export type ActiveReaderArguments<
-  T extends string | Uint8Array
+  T extends Uint8Array | PdfFileType
 > = UseWebReaderArguments<T> & {
   manifest: WebpubManifest;
 };

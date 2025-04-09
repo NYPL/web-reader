@@ -1,4 +1,4 @@
-import { WebpubManifest } from '../types';
+import { PdfFileType, WebpubManifest } from '../types';
 import { ReadiumLink } from '../WebpubManifestTypes/ReadiumLink';
 
 export const SCALE_STEP = 0.1;
@@ -19,7 +19,7 @@ export const getResourceUrl = (
 export const fetchAsUint8Array = async (
   resourceUrl: string,
   proxyUrl?: string
-): Promise<Uint8Array> => {
+): Promise<PdfFileType> => {
   // Generate the resource URL using the proxy
   const url: string = proxyUrl
     ? `${proxyUrl}${encodeURIComponent(resourceUrl)}`
@@ -30,7 +30,7 @@ export const fetchAsUint8Array = async (
   if (!response.ok) {
     throw new Error('Response not Ok for URL: ' + url);
   }
-  return array;
+  return { data: array };
 };
 
 /**

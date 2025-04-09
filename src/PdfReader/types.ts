@@ -1,13 +1,14 @@
 import {
   ActiveReaderArguments,
   InactiveReaderArguments,
+  PdfFileType,
   ReaderSettings,
   ReaderState,
 } from '../types';
 
 export type InternalState = {
   resourceIndex: number;
-  resource: { data: Uint8Array } | null;
+  resource: PdfFileType;
   // we only know the numPages once the resource has been parsed
   numPages: number | null;
   // if pageNumber is -1, we will navigate to the end of the
@@ -37,7 +38,7 @@ export type ErrorState = ReaderState &
 export type PdfState = InactiveState | ActiveState | ErrorState;
 
 export type PdfReaderArguments =
-  | ActiveReaderArguments<Uint8Array>
+  | ActiveReaderArguments<PdfFileType>
   | InactiveReaderArguments;
 
 export type PdfReaderAction =
@@ -48,7 +49,7 @@ export type PdfReaderAction =
   | { type: 'GO_FORWARD' }
   | { type: 'GO_BACKWARD' }
   | { type: 'GO_TO_HREF'; href: string }
-  | { type: 'RESOURCE_FETCH_SUCCESS'; resource: { data: Uint8Array } }
+  | { type: 'RESOURCE_FETCH_SUCCESS'; resource: PdfFileType }
   | { type: 'PDF_PARSED'; numPages: number }
   | { type: 'PDF_LOAD_ERROR'; error: Error }
   | { type: 'SET_SCALE'; scale: number }

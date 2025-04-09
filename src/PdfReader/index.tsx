@@ -114,7 +114,7 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
       getContent(currentResource, proxyUrl).then((data) => {
         dispatch({
           type: 'RESOURCE_FETCH_SUCCESS',
-          resource: { data },
+          resource: data,
         });
       });
     };

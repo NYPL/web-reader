@@ -107,6 +107,9 @@ const PdfReaders = () => {
       <Route path={`/pdf/single-resource-short`}>
         <SingleResourcePdf />
       </Route>
+      <Route path={`/pdf/fetch-url`}>
+        <LoadPdfWithUrl />
+      </Route>
       <Route path={`/pdf/use-pdf-reader-hook`}>
         <UsePdfReader
           webpubManifestUrl="/samples/pdf/single-resource-short.json"
@@ -224,6 +227,50 @@ const SingleResourcePdf = () => {
       webpubManifestUrl={modifiedManifestUrl}
       proxyUrl={pdfProxyUrl}
       pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.js`}
+    />
+  );
+};
+
+/**
+ * This is an example for passing in a custom getContent callback function to the webreader hook
+ * where the pdf `file` type accepts an `url` string instead of the default BinaryData
+ */
+const LoadPdfWithUrl = () => {
+  const { data: modifiedManifestUrl, isLoading } = useSWR<string>(
+    '/samples/pdf/single-resource-short.json',
+    async (url: string) => {
+      const response = await fetch(url);
+      const manifest = await response.json();
+      const syntheticUrl = URL.createObjectURL(
+        new Blob([JSON.stringify(manifest)])
+      );
+      return syntheticUrl;
+    },
+    {
+      revalidateOnFocus: false,
+    }
+  );
+
+  if (isLoading || !modifiedManifestUrl) return <div>Loading...</div>;
+
+  /**
+   * Use the URL string as the source for the <Document /> file props
+   */
+  const fetchAsUrl = async (
+    resourceUrl: string,
+    proxyUrl?: string
+  ): Promise<string> => {
+    return proxyUrl
+      ? `${proxyUrl}${encodeURIComponent(resourceUrl)}`
+      : resourceUrl;
+  };
+
+  return (
+    <WebReader
+      webpubManifestUrl={modifiedManifestUrl}
+      proxyUrl={pdfProxyUrl}
+      pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.js`}
+      getContent={fetchAsUrl}
     />
   );
 };
@@ -407,6 +454,9 @@ const HomePage = () => {
           <UnorderedList>
             <ListItem>
               <Link to="/pdf/single-resource-short">Single-PDF Webpub</Link>
+            </ListItem>
+            <ListItem>
+              <Link to="/pdf/fetch-url">Fetch PDF URL - Webpub</Link>
             </ListItem>
             <ListItem>
               <Link to="/pdf/use-pdf-reader-hook">usePdfReader hook</Link>
