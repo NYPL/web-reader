@@ -40,7 +40,7 @@ jobs:
       #   run: # success
 
       - name: Set failure workflow status 🚨
-        if: contains(steps.build-app.outputs.test, 'error')
+        if: contains(steps.build-app.outputs, 'error')
         run: echo 'failure' # failure
 
       - name: Upload Playwright report
