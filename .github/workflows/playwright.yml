@@ -6,9 +6,10 @@ on:
     #branches: [production]
     types: [opened, synchronize, reopened]
 jobs:
-  test:
-    name: Run tests
+  build:
+    name: Build app
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,24 +29,57 @@ jobs:
         id: build-app
         run: npm run example:nocache
 
+  test:
+    needs: [build]
+    name: Run tests
+    runs-on: ubuntu-latest
+
+    steps:
       - name: Run tests
         id: test-status
-        if: contains(steps.build-app.outputs, 'Built in')
+        #     if: contains(steps.build-app.outputs, 'Built in')
         run: npm run playwright
 
-      # https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#job-status-check-functions
-      # - name: Set successful workflow status ✅
-      #   if: contains(steps.test-status.outputs.test, 'error')
-      #   run: # success
+  # test:
+  #   name: Run tests
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
 
-      - name: Set failure workflow status 🚨
-        if: contains(steps.test-status.outputs.test, 'error')
-        run: echo 'failure' # failure
+  #     - name: Setup node
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version-file: '.nvmrc'
 
-      - name: Upload Playwright report
-        uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 30
+  #     - name: Install dependencies
+  #       run: npm ci
+
+  #     - name: Install Playwright Browsers
+  #       run: npx playwright install --with-deps
+
+  #     - name: Build app
+  #       id: build-app
+  #       run: npm run example:nocache
+
+  #     - name: Run tests
+  #       id: test-status
+  #       if: contains(steps.build-app.outputs, 'Built in')
+  #       run: npm run playwright
+
+  #     # https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#job-status-check-functions
+  #     # - name: Set successful workflow status ✅
+  #     #   if: contains(steps.test-status.outputs.test, 'error')
+  #     #   run: # success
+
+  #     - name: Set failure workflow status 🚨
+  #       if: contains(steps.test-status.outputs.test, 'error')
+  #       run: echo 'failure' # failure
+
+  #     - name: Upload Playwright report
+  #       uses: actions/upload-artifact@v4
+  #       if: ${{ !cancelled() }}
+  #       with:
+  #         name: playwright-report
+  #         path: playwright-report/
+  #         retention-days: 30
