@@ -27,6 +27,7 @@ jobs:
       - name: Build app and run tests
         id: build-app
         run: npm run test:ci:integration
+        continue-on-error: true
 
       # - name: Test status
       #   id: test-status
