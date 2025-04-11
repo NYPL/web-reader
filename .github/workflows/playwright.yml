@@ -25,22 +25,16 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Build app and run tests
-        id: build-app
+        id: run-tests
         run: npm run test:ci:integration
         continue-on-error: true
 
-      # - name: Test status
-      #   id: test-status
-      #   if: contains(steps.build-app.outputs, 'Built in')
-      #   run: npm run playwright
-
-      # https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#job-status-check-functions
       - name: Set successful workflow status ✅
-        if: steps.build-app.outcome == 'success'
+        if: steps.run-tests.outcome == 'success'
         run: exit 0
 
       - name: Set failure workflow status 🚨
-        if: steps.build-app.outcome != 'success'
+        if: steps.run-tests.outcome != 'success'
         run: exit 1
 
       - name: Upload Playwright report
