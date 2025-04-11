@@ -40,8 +40,8 @@ jobs:
       #   run: # success
 
       - name: Set failure workflow status 🚨
-        if: contains(steps.build-app.outputs.response, 'Error')
-        run: echo 'failure' # failure
+        if: steps.build-app.outcome != 'success'
+        run: exit 1
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
