@@ -1,9 +1,8 @@
 name: Playwright Tests for Web Reader
 on:
   schedule:
-    - cron: '00 14 * * 1-5'
+    - cron: '00 14 * * 1-5' # every day at 9-10 AM ET (2 PM wherever the server is) excluding weekends
   pull_request:
-    #branches: [production]
     types: [opened, synchronize, reopened]
 jobs:
   test:
@@ -44,3 +43,13 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
+
+      - name: Slack Notification
+        if: ${{ always() }}
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: test_reports
+          SLACK_MESSAGE: playwright-report/
+          SLACK_TITLE: Web Reader Playwright Test Results
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_USERNAME: nyplorgBot
