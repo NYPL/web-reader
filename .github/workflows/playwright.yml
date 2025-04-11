@@ -35,9 +35,9 @@ jobs:
       #   run: npm run playwright
 
       # https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#job-status-check-functions
-      # - name: Set successful workflow status ✅
-      #   if: contains(steps.test-status.outputs.test, 'error')
-      #   run: # success
+      - name: Set successful workflow status ✅
+        if: steps.build-app.outcome == 'success'
+        run: exit 0
 
       - name: Set failure workflow status 🚨
         if: steps.build-app.outcome != 'success'
