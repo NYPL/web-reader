@@ -33,12 +33,7 @@
     "cors-proxy": "node example/cors-proxy.js",
     "release": "release-it --verbose",
     "release:alpha": "release-it --verbose --preRelease=alpha",
-    "playwright": "npx playwright test",
-    "postinstall": "npm update browserstack-node-sdk",
-    "test-browserstack": "browserstack-node-sdk jest --watch",
-    "test:ci-browserstack": "browserstack-node-sdk jest --ci --silent --coverage --maxWorkers=2",
-    "cors-proxy-browserstack": "browserstack-node-sdk node example/cors-proxy.js",
-    "playwright-browserstack": "npx browserstack-node-sdk playwright test"
+    "playwright": "npx playwright test"
   },
   "peerDependencies": {
     "@chakra-ui/react": "2.x",
