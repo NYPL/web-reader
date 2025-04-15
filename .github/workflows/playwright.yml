@@ -25,8 +25,33 @@ jobs:
 
       - name: Build app and run tests
         id: run-tests
-        run: npm run test:ci:integration
+        run: |
+          npm run test:ci:integration > output.txt
+          cat output.txt
         continue-on-error: true
+
+      # - name: Save test results to output
+      #   id: test-results
+      #   run: |
+      #     echo "The test run had 5 failed tests and 2 flaky tests overall" > output.txt
+      #     cat output.txt
+
+      - name: Extract text between keywords (more robust)
+        id: extract
+        run: |
+          output=$(cat output.txt)
+            
+          # For multiline content, use a different delimiter
+          extracted=$(echo "$output" | perl -n -e '/failed(.*?)flaky/ && print $1')
+            
+          echo "Extracted text: '$extracted'"
+          echo "extracted<<EOF" >> $GITHUB_OUTPUT
+          echo "$extracted" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Use extracted text
+        run: |
+          echo "The text between those words is: ${{ steps.extract.outputs.extracted }}"
 
       - name: Set successful workflow status ✅
         if: steps.run-tests.outcome == 'success'
@@ -49,7 +74,7 @@ jobs:
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_CHANNEL: test_reports
-          SLACK_MESSAGE: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/#:~:text=playwright-report
+          SLACK_MESSAGE: See "Build app and run tests" step in ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           SLACK_TITLE: Web Reader Playwright Test Results
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_USERNAME: nyplorgBot
