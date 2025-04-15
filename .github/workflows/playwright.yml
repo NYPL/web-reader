@@ -59,7 +59,9 @@ jobs:
 
       - name: Set failure workflow status 🚨
         if: steps.run-tests.outcome != 'success'
-        run: echo '${{ steps.extract.outputs.extracted }}' && exit 1
+        run: |
+          echo '${{ steps.extract.outputs.extracted }}'
+          exit 1
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
