@@ -47,15 +47,15 @@ jobs:
           echo "$extracted" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: Set successful workflow status ✅
-        if: steps.run-tests.outcome == 'success' && steps.extract.outputs.extracted == ''
-        run: exit 0
-
       - name: Set failure workflow status 🚨
-        if: steps.run-tests.outcome != 'success' && steps.extract.outputs.extracted != ''
-        run: >-
+        if: steps.run-tests.outcome != 'success' || steps.extract.outputs.extracted != ''
+        run: |
           echo '${{ steps.extract.outputs.extracted }}'
           exit 1
+
+      - name: Set successful workflow status ✅
+        if: steps.run-tests.outcome == 'success' || steps.extract.outputs.extracted == ''
+        run: exit 0
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
