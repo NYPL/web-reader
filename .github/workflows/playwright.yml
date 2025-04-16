@@ -26,8 +26,7 @@ jobs:
       - name: Build app and run tests
         id: run-tests
         run: |
-          npm run test:ci:integration > output.txt 2>&1
-          cat output.txt
+          npm run test:ci:integration 2>&1 | tee output.txt
         continue-on-error: true
 
       # - name: Save test results to output
