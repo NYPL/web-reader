@@ -40,8 +40,7 @@ jobs:
         id: extract
         run: |
           output=$(cat output.txt)
-            
-          # For multiline content, use a different delimiter
+
           extracted=$(echo "$output" | perl -n -e '/failed(.*?)flaky/ && print $1')
             
           echo "Extracted text: '$extracted'"
@@ -49,17 +48,13 @@ jobs:
           echo "$extracted" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-      # - name: Use extracted text
-      #   run: |
-      #     echo "The text between those words is: ${{ steps.extract.outputs.extracted }}"
-
       - name: Set successful workflow status ✅
         if: steps.run-tests.outcome == 'success'
         run: exit 0
 
       - name: Set failure workflow status 🚨
         if: steps.run-tests.outcome != 'success'
-        run: |
+        run: >-
           echo '${{ steps.extract.outputs.extracted }}'
           exit 1
 
