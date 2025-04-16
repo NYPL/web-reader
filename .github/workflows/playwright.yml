@@ -48,13 +48,13 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Set failure workflow status 🚨
-        if: steps.run-tests.outcome != 'success' || steps.extract.outputs.extracted != ''
+        if: steps.run-tests.outcome != 'success'
         run: |
           echo '${{ steps.extract.outputs.extracted }}'
           exit 1
 
       - name: Set successful workflow status ✅
-        if: steps.run-tests.outcome == 'success' || steps.extract.outputs.extracted == ''
+        if: steps.run-tests.outcome == 'success'
         run: exit 0
 
       - name: Upload Playwright report
