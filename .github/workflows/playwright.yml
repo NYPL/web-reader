@@ -26,7 +26,7 @@ jobs:
       - name: Build app and run tests
         id: run-tests
         run: |
-          npm run test:ci:integration 2>&1 | tee output.txt
+          npm run test:ci:integration | tee output.txt
           cat output.txt
         continue-on-error: true
 
