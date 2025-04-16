@@ -29,14 +29,8 @@ jobs:
           npm run test:ci:integration 2>&1 | tee output.txt
         continue-on-error: true
 
-      # - name: Save test results to output
-      #   id: test-results
-      #   run: |
-      #     echo "The test run had 5 failed tests and 2 flaky tests overall" > output.txt
-      #     cat output.txt
-
-      - name: Extract text between keywords (more robust)
-        id: extract
+      - name: Extract test results between "failed" and "flaky"
+        id: test-results
         run: |
           output=$(cat output.txt)
 
@@ -50,7 +44,7 @@ jobs:
       - name: Set failure workflow status 🚨
         if: steps.run-tests.outcome != 'success'
         run: |
-          echo '${{ steps.extract.outputs.extracted }}'
+          echo '${{ steps.test-results.outputs.extracted }}'
           exit 1
 
       - name: Set successful workflow status ✅
