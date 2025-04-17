@@ -1,0 +1,114 @@
+name: 'Playwright Tests for Web Reader via BrowserStack'
+on:
+  schedule:
+    - cron: '00 14 * * 1-5' # every day at 9-10 AM ET (2 PM wherever the server is) excluding weekends
+  push:
+    branches: [main]
+  pull_request: # remove when this GHA works
+    types: [opened]
+jobs:
+  test:
+    name: 'BrowserStack Test on Ubuntu'
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: 'BrowserStack Env Setup'
+      uses: 'browserstack/github-actions/setup-env@master'
+      with:
+        username:  ${{ secrets.BROWSERSTACK_USERNAME }} # clarissarichard_A7mus1
+        access-key:  ${{ secrets.BROWSERSTACK_ACCESS_KEY }} # Mj8NqLbtk74Y8yCShzPm
+        project-name: DRB Web Reader
+        build-name: Regression
+        buildIdentifier: '#${BUILD_NUMBER}' # https://www.browserstack.com/docs/automate/selenium/organize-tests
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup node
+      uses: actions/setup-node@v4
+      with:
+        node-version-file: '.nvmrc'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+
+    - name: Run tests on BrowserStack
+      id: run-tests
+      run: npm run playwright-browserstack
+      continue-on-error: true
+
+    # - name: Test results # extracts test results between "failed" and "passed"
+    #   id: test-results
+    #   run: |
+    #     output=$(cat output.txt)
+
+    #     if [ -z "$extracted" ]; then
+    #       extracted=$(perl -0777 -ne 'print $1 if /(\b\d{2,3}\sfailed.*?passed)/s' output.txt)
+    #     fi
+
+    #     echo "Test results: $extracted"
+    #     echo "extracted<<EOF" >> $GITHUB_OUTPUT
+    #     echo "$extracted" >> $GITHUB_OUTPUT
+    #     echo "EOF" >> $GITHUB_OUTPUT
+
+    - name: Set failure workflow status 🚨
+      if: steps.run-tests.outcome != 'success'
+      run: exit 1
+
+    - name: Set successful workflow status ✅
+      if: steps.run-tests.outcome == 'success'
+      run: exit 0
+
+    # - name: Upload Playwright report
+    #   uses: actions/upload-artifact@v4
+    #   if: ${{ !cancelled() }}
+    #   with:
+    #     name: playwright-report
+    #     path: playwright-report/
+    #     retention-days: 30
+
+    - platforms: # https://www.browserstack.com/list-of-browsers-and-platforms/automate
+      - os: OS X
+        osVersion: Big Sur # or Monterey
+        browserName: Chrome
+        browserVersion: latest
+      # - os: OS X
+      #   osVersion: Big Sur
+      #   browserName: playwright-webkit
+      #   browserVersion: latest
+      # - os: OS X
+      #   osVersion: Big Sur
+      #   browserName: playwright-chromium
+      #   browserVersion: latest
+      # - os: Windows
+      #   osVersion: 10
+      #   browserName: Edge
+      #   browserVersion: latest
+      # - os: Windows
+      #   osVersion: 10
+      #   browserName: Chrome
+      #   browserVersion: latest
+      # - os: Windows
+      #   osVersion: 10
+      #   browserName: playwright-firefox
+      #   browserVersion: latest
+      # - os: Windows
+      #   osVersion: 10
+      #   browserName: playwright-chromium
+      #   browserVersion: latest
+      # - deviceName: Samsung Galaxy S22 Ultra
+      #   osVersion: 12.0
+      #   browserName: Chrome # Try 'samsung' for Samsung browser
+    - parallelsPerPlatform: 1
+    - browserstackLocal: true # Set browserStackLocal to true if your website under test is not accessible publicly over the internet
+    # - browserStackLocalOptions: # https://www.browserstack.com/docs/automate/selenium/manage-incoming-connections
+    #   localIdentifier: # <string> (Default: null) Needed if you need to run multiple instances of local
+    #   forceLocal: true  # <boolean> (Default: false) Set to true if you need to resolve all your traffic via BrowserStack Local tunnel
+    - debug: false # Set to true if you need screenshots for every selenium command ran
+    - networkLogs: false # <boolean> Set to true to enable HAR logs capturing
+    - consoleLogs: errors # Available options are `disable`, `errors`, `warnings`, `info`, `verbose` (Default: errors)
+    # - CUSTOM_TAG_<INT>: # <string> (Default: parent folder name of the test file) Custom tag for your test suite
+    - testObservability: true
+    - browserstackAutomation: true

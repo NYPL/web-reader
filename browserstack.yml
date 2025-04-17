@@ -1,0 +1,50 @@
+userName: BROWSERSTACK_USERNAME
+accessKey: BROWSERSTACK_ACCESS_KEY
+
+project-name: DRB Web Reader
+build-name: Test
+buildIdentifier: '#${BUILD_NUMBER}' # https://www.browserstack.com/docs/automate/selenium/organize-tests
+
+platforms: # https://www.browserstack.com/list-of-browsers-and-platforms/automate
+  - os: OS X
+    osVersion: Big Sur # or Monterey
+    browserName: Chrome
+    browserVersion: latest
+  # - os: OS X
+  #   osVersion: Big Sur
+  #   browserName: playwright-webkit
+  #   browserVersion: latest
+  # - os: OS X
+  #   osVersion: Big Sur
+  #   browserName: playwright-chromium
+  #   browserVersion: latest
+  # - os: Windows
+  #   osVersion: 10
+  #   browserName: Edge
+  #   browserVersion: latest
+  # - os: Windows
+  #   osVersion: 10
+  #   browserName: Chrome
+  #   browserVersion: latest
+  # - os: Windows
+  #   osVersion: 10
+  #   browserName: playwright-firefox
+  #   browserVersion: latest
+  # - os: Windows
+  #   osVersion: 10
+  #   browserName: playwright-chromium
+  #   browserVersion: latest
+  # - deviceName: Samsung Galaxy S22 Ultra
+  #   osVersion: 12.0
+  #   browserName: Chrome # Try 'samsung' for Samsung browser
+parallelsPerPlatform: 1
+browserstackLocal: true # Set browserStackLocal to true if your website under test is not accessible publicly over the internet
+# browserStackLocalOptions: # https://www.browserstack.com/docs/automate/selenium/manage-incoming-connections
+#   localIdentifier: # <string> (Default: null) Needed if you need to run multiple instances of local
+#   forceLocal: true  # <boolean> (Default: false) Set to true if you need to resolve all your traffic via BrowserStack Local tunnel
+debug: false # Set to true if you need screenshots for every selenium command ran
+networkLogs: false # <boolean> Set to true to enable HAR logs capturing
+consoleLogs: errors # Available options are `disable`, `errors`, `warnings`, `info`, `verbose` (Default: errors)
+# CUSTOM_TAG_<INT>: # <string> (Default: parent folder name of the test file) Custom tag for your test suite
+testObservability: true
+browserstackAutomation: true
