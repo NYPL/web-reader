@@ -1,0 +1,70 @@
+name: Playwright Tests for Web Reader
+on:
+  schedule:
+    - cron: '00 14 * * 1-5' # every day at 9-10 AM ET (2 PM wherever the server is) excluding weekends
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      - name: Build app and run tests
+        id: run-tests
+        run: |
+          npm run test:ci:integration > >(tee output.txt)
+        continue-on-error: true
+
+      - name: Test results # extracts test results between "failed" and "passed"
+        id: test-results
+        run: |
+          output=$(cat output.txt)
+
+          if [ -z "$extracted" ]; then
+            extracted=$(perl -0777 -ne 'print $1 if /(\b\d{2,3}\sfailed.*?passed)/s' output.txt)
+          fi
+
+          echo "Test results: $extracted"
+          echo "extracted<<EOF" >> $GITHUB_OUTPUT
+          echo "$extracted" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Set failure workflow status 🚨
+        if: steps.run-tests.outcome != 'success'
+        run: exit 1
+
+      - name: Set successful workflow status ✅
+        if: steps.run-tests.outcome == 'success'
+        run: exit 0
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+
+      - name: Slack Notification
+        if: ${{ always() }}
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: test_reports
+          SLACK_MESSAGE: See "Test results" step in ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          SLACK_TITLE: Web Reader Playwright Test Results
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_USERNAME: nyplorgBot
