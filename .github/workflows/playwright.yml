@@ -39,7 +39,9 @@ jobs:
         run: |
           output=$(cat output.txt)
 
-          extracted=$(grep -A10 "failed" output.txt | grep -B10 "passed" | sed -n 's/.*failed\(.*\)passed.*/\1/p')
+          if [ -z "$extracted" ]; then
+            extracted=$(perl -0777 -ne 'print $1 if /failed(.*?)passed/s' output.txt)
+          fi
 
           echo "Test results: '$extracted'"
           echo "extracted<<EOF" >> $GITHUB_OUTPUT
