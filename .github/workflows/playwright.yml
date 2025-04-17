@@ -40,7 +40,7 @@ jobs:
           output=$(cat output.txt)
 
           if [ -z "$extracted" ]; then
-            extracted=$(perl -0777 -ne 'print $1 if /failed(.*?)passed/s' output.txt)
+            extracted=$(perl -0777 -ne 'print $1 if /(\b\d{2,3}\b.*?failed.*?passed)/s' output.txt)
           fi
 
           echo "Test results: '$extracted'"
