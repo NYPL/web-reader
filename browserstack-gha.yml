@@ -5,21 +5,22 @@ on:
   push:
     branches: [main]
   pull_request: # remove when this GHA works
-    types: [opened]
+    types: [opened, synchronize, reopened]
 jobs:
   test:
     name: 'BrowserStack Test on Ubuntu'
     runs-on: ubuntu-latest
-    steps:
 
+    steps:
     - name: 'BrowserStack Env Setup'
       uses: 'browserstack/github-actions/setup-env@master'
       with:
-        username:  ${{ secrets.BROWSERSTACK_USERNAME }} # clarissarichard_A7mus1
-        access-key:  ${{ secrets.BROWSERSTACK_ACCESS_KEY }} # Mj8NqLbtk74Y8yCShzPm
+        username: clarissarichard_A7mus1 # ${{ secrets.BROWSERSTACK_USERNAME }}
+        access-key: Mj8NqLbtk74Y8yCShzPm # ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
         project-name: DRB Web Reader
-        build-name: Regression
+        build-name: Test
         buildIdentifier: '#${BUILD_NUMBER}' # https://www.browserstack.com/docs/automate/selenium/organize-tests
+
     - name: Checkout
       uses: actions/checkout@v4
 
