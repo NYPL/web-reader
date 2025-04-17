@@ -2,8 +2,8 @@ name: 'Playwright Tests for Web Reader via BrowserStack'
 on:
   schedule:
     - cron: '00 14 * * 1-5' # every day at 9-10 AM ET (2 PM wherever the server is) excluding weekends
-  push:
-    branches: [main]
+  # push:
+  #   branches: [main]
   pull_request: # remove when this GHA works
     types: [opened, synchronize, reopened]
 jobs:
