@@ -20,13 +20,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # - name: Setup node
-      #   uses: actions/setup-node@v4
-      #   with:
-      #     node-version-file: '.nvmrc'
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
 
-      # - name: Install dependencies
-      #   run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
       # - name: Install Playwright Browsers
       #   run: npx playwright install --with-deps
