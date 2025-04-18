@@ -16,6 +16,8 @@ jobs:
         with:
           username: clarissarichard_A7mus1
           access-key: Mj8NqLbtk74Y8yCShzPm
+          project-name: DRB Web Reader
+          build-name: build name
 
       - name: 'BrowserStack Local Tunnel Setup' # set up tunnel connection between GitHub Actions runner environment and BrowserStack device cloud
         uses: browserstack/github-actions/setup-local@master
