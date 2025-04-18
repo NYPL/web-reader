@@ -2,8 +2,6 @@ name: 'Playwright Tests for Web Reader via BrowserStack'
 on:
   schedule:
     - cron: '00 14 * * 1-5' # every day at 9-10 AM ET (2 PM wherever the server is) excluding weekends
-  # push:
-  #   branches: [main]
   pull_request: # remove when this GHA works
     types: [opened, synchronize, reopened]
 jobs:
@@ -14,10 +12,10 @@ jobs:
       - name: 'BrowserStack Env Setup'
         uses: 'browserstack/github-actions/setup-env@master'
         with:
-          username: clarissarichard_A7mus1
-          access-key: Mj8NqLbtk74Y8yCShzPm
+          username: clarissarichard_A7mus1 # replace with ${{ secrets.BROWSERSTACK_USERNAME }}
+          access-key: Mj8NqLbtk74Y8yCShzPm # replace with ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
           project-name: DRB Web Reader
-          build-name: build name
+          build-name: DRB Web Reader Automated Tests
 
       - name: 'BrowserStack Local Tunnel Setup' # set up tunnel connection between GitHub Actions runner environment and BrowserStack device cloud
         uses: browserstack/github-actions/setup-local@master
@@ -41,8 +39,7 @@ jobs:
 
       - name: Run tests on BrowserStack
         id: run-tests
-        run: npx browserstack-node-sdk playwright test html-reader-settings.spec.ts
-        #continue-on-error: true
+        run: npx browserstack-node-sdk playwright test pdf-reader-settings.spec.ts
 
       - name: Set failure workflow status 🚨
         if: steps.run-tests.outcome != 'success'
