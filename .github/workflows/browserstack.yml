@@ -39,7 +39,7 @@ jobs:
 
       - name: Run tests on BrowserStack
         id: run-tests
-        run: npx browserstack-node-sdk playwright test pdf-reader-settings.spec.ts
+        run: npx browserstack-node-sdk playwright test
 
       - name: Set failure workflow status 🚨
         if: steps.run-tests.outcome != 'success'
