@@ -3,8 +3,8 @@
 # =============================
 # Add your BrowserStack userName and accessKey here or set BROWSERSTACK_USERNAME and
 # BROWSERSTACK_ACCESS_KEY as env variables
-userName: clarissarichard_A7mus1
-accessKey: Mj8NqLbtk74Y8yCShzPm
+userName: ${{ env.BROWSERSTACK_USERNAME }}
+accessKey: ${{ env.BROWSERSTACK_ACCESS_KEY }}
 
 # ======================
 # BrowserStack Reporting
@@ -13,7 +13,7 @@ accessKey: Mj8NqLbtk74Y8yCShzPm
 # Set 'projectName' to the name of your project. Example, Marketing Website
 projectName: DRB Web Reader
 # Set `buildName` as the name of the job / testsuite being run
-buildName: browserstack build
+buildName: DRB Web Reader Automated Tests
 # `buildIdentifier` is a unique id to differentiate every execution that gets appended to
 # buildName. Choose your buildIdentifier format from the available expressions:
 # ${BUILD_NUMBER} (Default): Generates an incremental counter with every execution
@@ -31,10 +31,10 @@ platforms:
     osVersion: Big Sur
     browserName: Chrome
     browserVersion: latest
-  # - os: Windows
-  #   osVersion: 10
-  #   browserName: Edge
-  #   browserVersion: latest
+  - os: Windows
+    osVersion: 10
+    browserName: Edge
+    browserVersion: latest
   # - deviceName: Samsung Galaxy S22 Ultra
   #   browserName: chrome # Try 'samsung' for Samsung browser
   #   osVersion: 12.0
