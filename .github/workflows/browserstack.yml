@@ -17,6 +17,12 @@ jobs:
           username: clarissarichard_A7mus1
           access-key: Mj8NqLbtk74Y8yCShzPm
 
+      - name: 'BrowserStack Local Tunnel Setup' # set up tunnel connection between GitHub Actions runner environment and BrowserStack device cloud
+        uses: browserstack/github-actions/setup-local@master
+        with:
+          local-testing: start
+          local-identifier: random
+
       - name: Checkout
         uses: actions/checkout@v4
 
