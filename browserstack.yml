@@ -31,10 +31,10 @@ platforms:
     osVersion: Big Sur
     browserName: playwright-webkit
     browserVersion: latest
-  - os: OS X
-    osVersion: Big Sur
-    browserName: playwright-chromium
-    browserVersion: latest
+  # - os: OS X
+  #   osVersion: Big Sur
+  #   browserName: playwright-chromium
+  #   browserVersion: latest
   - os: OS X
     osVersion: Big Sur
     browserName: Chrome
@@ -47,10 +47,10 @@ platforms:
     osVersion: 10
     browserName: Edge
     browserVersion: latest
-  - os: Windows
-    osVersion: 10
-    browserName: playwright-chromium
-    browserVersion: latest
+  # - os: Windows
+  #   osVersion: 10
+  #   browserName: playwright-chromium
+  #   browserVersion: latest
   - os: Windows
     osVersion: 10
     browserName: Chrome
@@ -59,12 +59,12 @@ platforms:
     osVersion: 10
     browserName: playwright-firefox
     browserVersion: latest
-  - deviceName: Samsung Galaxy S22 Ultra
-    browserName: Mobile Chrome # Try 'samsung' for Samsung browser
-    osVersion: 12.0
-  - deviceName: iPhone 15
-    browserName: Mobile Safari # Try 'samsung' for Samsung browser
-    osVersion: 18
+  # - deviceName: Samsung Galaxy S22 Ultra
+  #   browserName: Mobile Chrome # Try 'samsung' for Samsung browser
+  #   osVersion: 12.0
+  # - deviceName: iPhone 15
+  #   browserName: Mobile Safari
+  #   osVersion: 18
 
 # =======================
 # Parallels per Platform
