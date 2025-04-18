@@ -14,8 +14,8 @@ jobs:
       - name: 'BrowserStack Env Setup'
         uses: 'browserstack/github-actions/setup-env@master'
         with:
-          username: clarissarichard_A7mus1 # ${{ secrets.BROWSERSTACK_USERNAME }}
-          access-key: Mj8NqLbtk74Y8yCShzPm # ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+          username: clarissarichard_A7mus1
+          access-key: Mj8NqLbtk74Y8yCShzPm
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,8 +33,8 @@ jobs:
 
       - name: Run tests on BrowserStack
         id: run-tests
-        run: npm run playwright-browserstack
-        continue-on-error: true
+        run: npx browserstack-node-sdk playwright test html-reader-settings.spec.ts
+        #continue-on-error: true
 
       - name: Set failure workflow status 🚨
         if: steps.run-tests.outcome != 'success'
