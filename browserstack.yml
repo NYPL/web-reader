@@ -29,15 +29,42 @@ buildIdentifier: '#${BUILD_NUMBER}' # Supports strings along with either/both ${
 platforms:
   - os: OS X
     osVersion: Big Sur
+    browserName: playwright-webkit
+    browserVersion: latest
+  - os: OS X
+    osVersion: Big Sur
+    browserName: playwright-chromium
+    browserVersion: latest
+  - os: OS X
+    osVersion: Big Sur
     browserName: Chrome
+    browserVersion: latest
+  - os: OS X
+    osVersion: Big Sur
+    browserName: playwright-firefox
     browserVersion: latest
   - os: Windows
     osVersion: 10
     browserName: Edge
     browserVersion: latest
-  # - deviceName: Samsung Galaxy S22 Ultra
-  #   browserName: chrome # Try 'samsung' for Samsung browser
-  #   osVersion: 12.0
+  - os: Windows
+    osVersion: 10
+    browserName: playwright-chromium
+    browserVersion: latest
+  - os: Windows
+    osVersion: 10
+    browserName: Chrome
+    browserVersion: latest
+  - os: Windows
+    osVersion: 10
+    browserName: playwright-firefox
+    browserVersion: latest
+  - deviceName: Samsung Galaxy S22 Ultra
+    browserName: Mobile Chrome # Try 'samsung' for Samsung browser
+    osVersion: 12.0
+  - deviceName: iPhone 15
+    browserName: Mobile Safari # Try 'samsung' for Samsung browser
+    osVersion: 18
 
 # =======================
 # Parallels per Platform
