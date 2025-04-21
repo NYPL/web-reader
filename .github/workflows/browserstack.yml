@@ -2,7 +2,7 @@ name: 'Playwright Tests for Web Reader via BrowserStack'
 on:
   schedule:
     - cron: '00 12 * * 1-5' # every day at 7-9 AM ET (12 PM wherever the server is) excluding weekends
-  pull_request: # remove when this GHA works
+  pull_request: # remove when this GHA and secrets work
     types: [opened, synchronize, reopened]
 jobs:
   test:
@@ -12,8 +12,8 @@ jobs:
       - name: 'BrowserStack Env Setup'
         uses: 'browserstack/github-actions/setup-env@master'
         with:
-          username: clarissarichard_A7mus1 # replace with ${{ secrets.BROWSERSTACK_USERNAME }}
-          access-key: Mj8NqLbtk74Y8yCShzPm # replace with ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+          username: ${{ secrets.BROWSERSTACK_USERNAME }}
+          access-key: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
           project-name: DRB Web Reader
           build-name: DRB Web Reader Automated Tests
 
