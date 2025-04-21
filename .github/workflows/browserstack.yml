@@ -40,6 +40,7 @@ jobs:
       - name: Run tests on BrowserStack
         id: run-tests
         run: npx browserstack-node-sdk playwright test
+        continue-on-error: true
 
       - name: Set failure workflow status 🚨
         if: steps.run-tests.outcome != 'success'
