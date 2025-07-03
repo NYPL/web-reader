@@ -14,7 +14,7 @@ This project features an example application under `/example`, which is deployed
 - [TypeScript](https://www.npmjs.com/package/typescript) - JavaScript with syntax for types
 - [React](https://www.npmjs.com/package/react) - For creating user interface components
 - [Jest](https://jestjs.io/) & [React Testing Library](https://testing-library.com/) - For writing unit tests
-- The Example App is packaged with [Parcel](https://parceljs.org/) & deployed with [Vercel](https://vercel.com/). Integration tests are run with [Cypress](https://www.cypress.io/).
+- The Example App is packaged with [Parcel](https://parceljs.org/) & deployed with [Vercel](https://vercel.com/).
 
 ## Features
 
@@ -230,7 +230,6 @@ C4 Models have been created to demonstrate how the WebReader and other web readi
 This is the folder structure:
 
 ```txt
-/cypress            # cypress integration tests
 /example            # example app packaged by Parcel
   index.html
   index.tsx         # entrypoint for the demo app
@@ -320,24 +319,6 @@ To run all the tests as they run in CI:
 npm run test:ci
 ```
 
-### Integration Tests with Cypress
-
-The tests we have are located in the `cypress/integration` folder.
-
-To properly run the tests, make sure the example app is running (Instruction above on how to set up the example page), cypress will test against that page by default. Or if the app is hosted elsewhere, update the `baseUrl` value in the `cypress.json` file to match your host URL.
-
-To run and open an interactive testing envioment:
-
-```bash
-npm run cypress:open
-```
-
-To run tests on your terminal without a browser:
-
-```bash
-npm run cypress:cli
-```
-
 ## Code Quality & Bundle Size Checks
 
 - `npm run lint` to lint the code yourself. Code quality enforcement is set up in pre-commit hooks with `prettier`, `husky`, and `lint-staged`.
@@ -350,7 +331,6 @@ There are three Github Actions Workflows:
 
 - `main` - installs deps w/ cache, lints, tests, and builds on all pushes against a Node and OS matrix
 - `size` - comments cost comparison of your library on every pull request using [size-limit](https://github.com/ai/size-limit)
-- `cypress` - runs the Cypress integration tests on Vercel deployments, which means it runs whenever a pull request is opened or updated
 
 ## Versioning
 
