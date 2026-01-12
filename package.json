@@ -128,7 +128,7 @@
     "node-fetch": "2.7.0",
     "react-icons": "4.12.0",
     "react-intersection-observer": "8.34.0",
-    "react-pdf": "7.7.1",
+    "react-pdf": "10.3.0",
     "react-resize-observer": "1.1.1"
   },
   "optionalDependencies": {
