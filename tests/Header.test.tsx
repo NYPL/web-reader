@@ -7,7 +7,10 @@ import { axe } from 'jest-axe';
 
 describe('Header Accessibility checker', () => {
   test('header component should have no violation', async () => {
-    const { container } = render(<Header {...MockHtmlReaderProps} />);
+    const containerRef = React.createRef<HTMLDivElement>();
+    const { container } = render(
+      <Header {...MockHtmlReaderProps} containerRef={containerRef} />
+    );
 
     expect(await axe(container)).toHaveNoViolations();
   }, 15000);
@@ -15,7 +18,8 @@ describe('Header Accessibility checker', () => {
 
 describe('Header rendering', () => {
   test('render header bar', () => {
-    render(<Header {...MockHtmlReaderProps} />);
+    const containerRef = React.createRef<HTMLDivElement>();
+    render(<Header {...MockHtmlReaderProps} containerRef={containerRef} />);
 
     expect(
       screen.getByRole('link', { name: 'Return to Homepage' })
@@ -52,7 +56,14 @@ describe('Header rendering', () => {
       );
     };
 
-    render(<Header headerLeft={<HeaderLeft />} {...MockHtmlReaderProps} />);
+    const containerRef = React.createRef<HTMLDivElement>();
+    render(
+      <Header
+        headerLeft={<HeaderLeft />}
+        {...MockHtmlReaderProps}
+        containerRef={containerRef}
+      />
+    );
 
     expect(screen.getByText('My Custom Header Text')).toBeInTheDocument();
     expect(screen.getByTestId('custom-icon')).toBeInTheDocument();

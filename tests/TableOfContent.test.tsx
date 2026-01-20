@@ -8,7 +8,7 @@ import { axe } from 'jest-axe';
 const TestTOC: React.FC<
   Omit<React.ComponentProps<typeof TableOfContent>, 'containerRef'>
 > = (props) => {
-  const ref = React.useRef();
+  const ref = React.useRef<HTMLDivElement | null>(null);
   return (
     <div ref={ref}>
       <TableOfContent containerRef={ref} {...props} />

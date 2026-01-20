@@ -2,9 +2,8 @@ import type { Config } from '@jest/types';
 
 const config: Config.InitialOptions = {
   transform: {
-    // '.(ts|tsx)$': require.resolve('ts-jest/dist'),
-    '^.+\\.tsx?$': 'esbuild-jest',
-    '^.+\\.jsx?$': 'esbuild-jest',
+    '^.+\\.tsx?$': 'ts-jest',
+    '^.+\\.jsx?$': require.resolve('babel-jest'),
     '.(js|jsx)$': require.resolve('babel-jest'), // jest's default
   },
   transformIgnorePatterns: ['[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$'],
