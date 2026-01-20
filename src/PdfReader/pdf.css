@@ -1,4 +1,0 @@
-/* CSS from react-pdf in order to make links clickable */
-@import url('../../node_modules/react-pdf/dist/esm/Page/AnnotationLayer.css');
-/* CSS from react-pdf for text layer */
-@import url('../../node_modules/react-pdf/dist/esm/Page/TextLayer.css');

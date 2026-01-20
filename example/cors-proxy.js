@@ -1,5 +1,5 @@
 const express = require('express');
-const request = require('request');
+const fetch = require('node-fetch');
 const app = express();
 const port = process.env.PORT | 3001;
 
@@ -8,7 +8,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
   // read query parameters
   const requestUrl = req.query['requestUrl'];
 
@@ -17,18 +17,13 @@ app.get('/', (req, res) => {
   // make request to IEX API and forward response
   try {
     // allow a 30s timeout
-    request(requestUrl, { timeout: 300000 })
-      .on('error', (e) => {
-        const msg = `Request error at ${requestUrl}: ${e.message}`;
-        console.error(e);
-        res.status(500);
-        res.send(msg);
-      })
-      .pipe(res);
+    const response = await fetch(requestUrl, { timeout: 300000 });
+    res.status(response.status);
+    response.body.pipe(res);
   } catch (e) {
+    const msg = `Request error at ${requestUrl}: ${e.message}`;
     console.error(e);
-    res.status(500);
-    res.send(e.message);
+    res.status(500).send(msg);
   }
 });
 
