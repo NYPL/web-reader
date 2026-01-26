@@ -1,5 +1,4 @@
 import 'react-app-polyfill/ie11';
-import 'regenerator-runtime/runtime';
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
 import {
@@ -37,7 +36,7 @@ import UsePdfReader from './use-pdf-reader';
 const origin = window.location.origin;
 
 const pdfProxyUrl = process.env.CORS_PROXY_URL as string | undefined;
-const pdfWorkerSrc = `${origin}/pdf-worker/pdf.worker.min.js`;
+const pdfWorkerSrc = `${origin}/pdf-worker/pdf.worker.min.mjs`;
 
 const cssInjectables: Injectable[] = [
   {
@@ -112,21 +111,21 @@ const PdfReaders = () => {
           webpubManifestUrl="/samples/pdf/single-resource-short.json"
           manifest={pdfSingleResourceManifest as WebpubManifest}
           proxyUrl={pdfProxyUrl}
-          pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.js`}
+          pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.mjs`}
         />
       </Route>
       <Route path={`/pdf/large`}>
         <WebReader
           webpubManifestUrl="/samples/pdf/single-resource-long.json"
           proxyUrl={pdfProxyUrl}
-          pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.js`}
+          pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.mjs`}
         />
       </Route>
       <Route path={`/pdf/collection`}>
         <WebReader
           webpubManifestUrl="/samples/pdf/multi-resource.json"
           proxyUrl={pdfProxyUrl}
-          pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.js`}
+          pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.mjs`}
         />
       </Route>
       <Route path={`/pdf/fixed-height-embedded-collection`}>
@@ -140,7 +139,7 @@ const PdfReaders = () => {
           <WebReader
             webpubManifestUrl={`${origin}/samples/pdf/multi-resource.json`}
             proxyUrl={pdfProxyUrl}
-            pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.js`}
+            pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.mjs`}
             growWhenScrolling={false}
           />
           <Heading>The page continues...</Heading>
@@ -159,7 +158,7 @@ const PdfReaders = () => {
           <WebReader
             webpubManifestUrl={`${origin}/samples/pdf/multi-resource.json`}
             proxyUrl={pdfProxyUrl}
-            pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.js`}
+            pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.mjs`}
           />
           <Heading>The page continues...</Heading>
           <Text as="p">Here is some more content below the reader</Text>
@@ -223,7 +222,7 @@ const SingleResourcePdf = () => {
     <WebReader
       webpubManifestUrl={modifiedManifestUrl}
       proxyUrl={pdfProxyUrl}
-      pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.js`}
+      pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.mjs`}
     />
   );
 };

@@ -6,7 +6,8 @@ import useMeasure from './useMeasure';
 import ChakraPage from './ChakraPage';
 import ScrollPage from './ScrollPage';
 // Required CSS in order for links to be clickable in PDFs
-import './pdf.css';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
 import { HEADER_HEIGHT, FOOTER_HEIGHT, MAIN_CONTENT_ID } from '../constants';
 import {
   DEFAULT_HEIGHT,

@@ -34,6 +34,7 @@ const UsePdfReader: React.FC<PDFReaderProps> = ({
     return null;
   }
 
+  const { content, ...readerProps } = reader;
   return (
     <div>
       <Header
@@ -41,8 +42,8 @@ const UsePdfReader: React.FC<PDFReaderProps> = ({
         headerLeft={<a href="/">Back</a>}
         containerRef={containerRef}
       />
-      {reader.content}
-      <Footer {...reader} />
+      {content}
+      <Footer {...readerProps} />
     </div>
   );
 };

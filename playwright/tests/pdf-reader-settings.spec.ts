@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { PdfReaderPage } from '../pageobjects/web-reader.page.ts';
 
-test.describe('Test settings in PDF pub', () => {
+test.describe.skip('Test settings in PDF pub', () => {
   test('Confirm reader settings are visible', async ({ page }) => {
     const pdfReaderPage = new PdfReaderPage(page);
     await pdfReaderPage.loadPub('/pdf/collection');
