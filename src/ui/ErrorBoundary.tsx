@@ -8,7 +8,7 @@ import {
 } from '@chakra-ui/react';
 import * as React from 'react';
 import { WebReaderProps } from '..';
-import { DefaultHeaderLeft, HeaderWrapper } from './Header';
+import { HeaderWrapper } from './Header';
 import { getTheme } from './theme';
 
 type ErrorState = { error?: Error; info?: React.ErrorInfo };
@@ -38,9 +38,7 @@ class ErrorBoundary extends React.Component<WebReaderProps, ErrorState> {
     if (error && info) {
       return (
         <ThemeProvider theme={getTheme('day')}>
-          <HeaderWrapper>
-            {this.props.headerLeft ?? <DefaultHeaderLeft />}
-          </HeaderWrapper>
+          <HeaderWrapper />
           <Flex m={3} justifyContent="center" mt="20%">
             <Alert
               status="error"

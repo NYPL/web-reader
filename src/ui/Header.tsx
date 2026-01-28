@@ -1,93 +1,157 @@
 import React, { ComponentProps } from 'react';
-import { Flex, Link, HStack, Text, Icon } from '@chakra-ui/react';
-import { ActiveReader, ReaderManagerArguments } from '../types';
+import { Flex, HStack, Text, Icon, Input } from '@chakra-ui/react';
+import { ActiveReader } from '../types';
 import Button from './Button';
-import { HEADER_HEIGHT } from '../constants';
-import { Previous, ToggleFullScreen, ToggleFullScreenExit } from './icons';
+import {
+  PageDown,
+  PageUp,
+  Reset,
+  Search,
+  ToggleFullScreen,
+  ToggleFullScreenExit,
+} from './icons';
 import SettingsCard from './SettingsButton';
 import TableOfContent from './TableOfContent';
 import useColorModeValue from '../ui/hooks/useColorModeValue';
 import useFullscreen from './hooks/useFullScreen';
 import SkipNavigation from './SkipNavigation';
-
-export const DefaultHeaderLeft = (): React.ReactElement => {
-  const linkColor = useColorModeValue('gray.700', 'gray.100', 'gray.700');
-  const iconFill = useColorModeValue(
-    'ui.gray.icon',
-    'ui.white',
-    'ui.gray.icon'
-  );
-  const bgColorFocus = useColorModeValue(
-    'ui.gray.active',
-    'ui.gray.x-dark',
-    'ui.gray.active'
-  );
-
-  return (
-    <Link
-      href="/"
-      aria-label="Return to Homepage"
-      tabIndex={0}
-      fontSize={0}
-      px={3}
-      py={1}
-      display="flex"
-      color={linkColor}
-      height="100%"
-      alignItems="center"
-      _hover={{
-        bgColor: bgColorFocus,
-        textDecoration: 'none',
-      }}
-      _focus={{
-        bgColor: bgColorFocus,
-      }}
-    >
-      <Icon as={Previous} fill={iconFill} w={6} h={6} />
-      <Text variant="headerNav">Back</Text>
-    </Link>
-  );
-};
+import FitHeightWidth from './icons/FitHeightWidth';
+import PdfZoomControls from './PdfZoomControls';
+import HtmlFontSizeControls from './HtmlFontSizeControls';
 
 export default function Header(
-  props: ActiveReader &
-    ReaderManagerArguments & {
-      containerRef: React.MutableRefObject<null | HTMLDivElement>;
-    }
+  props: ActiveReader & {
+    containerRef: React.MutableRefObject<null | HTMLDivElement>;
+    totalPages: number;
+    currentPage: number;
+  }
 ): React.ReactElement {
   const [isFullscreen, toggleFullScreen] = useFullscreen();
-  const { headerLeft, navigator, manifest, containerRef } = props;
+  const {
+    navigator,
+    manifest,
+    type,
+    containerRef,
+    currentPage,
+    totalPages,
+  } = props;
   const iconFill = useColorModeValue(
     'ui.gray.icon',
     'ui.white',
     'ui.gray.icon'
   );
   const mainBgColor = useColorModeValue(
-    'ui.gray.light-warm',
+    'ui.gray.xx-dark',
     'ui.black',
     'ui.sepia'
   );
 
+  const [inputValue, setInputValue] = React.useState<number>(currentPage);
+  React.useEffect(() => {
+    setInputValue(currentPage);
+  }, [currentPage]);
+
+  const goToPage = (page: number) => {
+    if (navigator) {
+      navigator.goToPageNumber(page);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.replace(/[^0-9]/g, '');
+    setInputValue(val ? parseInt(val, 10) : 0);
+  };
+
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (
+      e.key === 'Enter' &&
+      inputValue &&
+      inputValue >= 1 &&
+      inputValue <= totalPages
+    ) {
+      goToPage(Number(inputValue));
+    }
+  };
+
+  const handlePageUp = () => {
+    if (currentPage > 1) {
+      navigator.goBackward();
+    }
+  };
+
+  const handlePageDown = () => {
+    if (currentPage < totalPages) {
+      navigator.goForward();
+    }
+  };
+
   return (
-    <HeaderWrapper bg={mainBgColor}>
+    <HeaderWrapper bg={mainBgColor} px={4} py={2}>
       <SkipNavigation />
-      {headerLeft ?? <DefaultHeaderLeft />}
-      <HStack ml="auto" spacing={0}>
+      <HStack mr="auto" spacing={2}>
+        {type === 'PDF' && <PdfZoomControls navigator={navigator} />}
+        {type === 'HTML' && (
+          <HtmlFontSizeControls
+            navigator={navigator}
+            iconFill={iconFill}
+            readerState={props.state}
+          />
+        )}
+        <Button>
+          <Icon as={FitHeightWidth} fill={iconFill} w={6} h={6} />
+        </Button>
+        <Button>
+          <Icon as={Reset} fill={iconFill} w={6} h={6} />
+        </Button>
+      </HStack>
+      <HStack mx="auto" spacing={2}>
+        <Button
+          onClick={handlePageUp}
+          aria-label="Previous Page"
+          isDisabled={currentPage <= 1}
+        >
+          <Icon as={PageUp} fill={iconFill} w={6} h={6} />
+        </Button>
+        <HStack color="ui.white">
+          <Input
+            aria-label="Current page number"
+            width="2rem"
+            height="2rem"
+            padding="2px 8px"
+            bg="ui.gray.x-dark"
+            border="none"
+            textAlign="center"
+            borderRadius="4px"
+            _focus={{ outline: 'none', boxShadow: 'none' }}
+            value={inputValue}
+            onChange={handleInputChange}
+            onKeyDown={handleInputKeyDown}
+          />
+          <Text>/ {totalPages}</Text>
+        </HStack>
+        <Button
+          onClick={handlePageDown}
+          aria-label="Next Page"
+          isDisabled={currentPage >= totalPages}
+        >
+          <Icon as={PageDown} fill={iconFill} w={6} h={6} />
+        </Button>
+      </HStack>
+      <HStack ml="auto" spacing={2}>
+        <Button>
+          <Icon as={Search} fill={iconFill} w={6} h={6} />
+        </Button>
         <TableOfContent
           containerRef={containerRef}
           navigator={navigator}
           manifest={manifest}
         />
-        <SettingsCard {...props} />
         <Button
           aria-expanded={isFullscreen}
           aria-label="Toggle full screen"
           border="none"
           bgColor={mainBgColor}
-          gap={[0, 0, 2]}
           onClick={toggleFullScreen}
-          _active={{ bgColor: mainBgColor }}
-          _focus={{ bgColor: mainBgColor, ring: '2px', ringInset: 'inset' }}
         >
           <Icon
             as={isFullscreen ? ToggleFullScreenExit : ToggleFullScreen}
@@ -95,10 +159,8 @@ export default function Header(
             w={6}
             h={6}
           />
-          <Text variant="headerNav">
-            {isFullscreen ? 'Full screen exit' : 'Full screen'}
-          </Text>
         </Button>
+        <SettingsCard {...props} />
       </HStack>
     </HeaderWrapper>
   );
@@ -116,11 +178,9 @@ export const HeaderWrapper = React.forwardRef<
       top={0}
       left={0}
       right={0}
-      height={`${HEADER_HEIGHT}px`}
       zIndex="sticky"
       alignContent="space-between"
       alignItems="center"
-      px={[0, 0, 8]}
       borderBottom="1px solid"
       borderColor="gray.100"
       {...rest}

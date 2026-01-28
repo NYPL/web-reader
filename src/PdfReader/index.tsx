@@ -238,6 +238,10 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
     dispatch({ type: 'GO_TO_HREF', href });
   }, []);
 
+  const goToPageNumber = React.useCallback((page: number) => {
+    dispatch({ type: 'GO_TO_PAGE', page: page });
+  }, []);
+
   // this format is inactive, return null
   if (!webpubManifestUrl || !manifest) return null;
 
@@ -392,6 +396,9 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
       zoomIn,
       zoomOut,
       goToPage,
+      goToPageNumber,
     },
+    currentPage: state.pageNumber,
+    totalPages: state.numPages ?? 0,
   };
 }

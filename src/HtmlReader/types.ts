@@ -97,6 +97,7 @@ export type HtmlAction =
   | { type: 'NAV_PREVIOUS_RESOURCE' }
   | { type: 'NAV_NEXT_RESOURCE' }
   | { type: 'GO_TO_HREF'; href: string }
+  | { type: 'GO_TO_PAGE'; page: number }
   | { type: 'GO_TO_LOCATION'; location: Locator }
   | { type: 'GO_FORWARD' }
   | { type: 'GO_BACKWARD' }

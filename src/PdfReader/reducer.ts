@@ -152,6 +152,12 @@ export function makePdfReducer(
         return goToLocation(resourceIndex, page);
       }
 
+      case 'GO_TO_PAGE': {
+        const numPages = state.numPages || 1;
+        const page = Math.max(1, Math.min(action.page, numPages));
+        return goToLocation(state.resourceIndex, page);
+      }
+
       case 'RESOURCE_FETCH_SUCCESS':
         return {
           ...state,

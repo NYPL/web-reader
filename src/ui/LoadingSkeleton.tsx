@@ -8,7 +8,6 @@ import {
 import React from 'react';
 import { HtmlState } from '../HtmlReader/types';
 import { ReaderState } from '../types';
-import Footer from './Footer';
 import { HeaderWrapper } from './Header';
 import useColorModeValue from './hooks/useColorModeValue';
 import { getTheme } from './theme';
@@ -37,7 +36,6 @@ const LoadingSkeletonContent = ({
         <SkeletonText mb="7" noOfLines={10} spacing="4" />
         <SkeletonText mb="7" noOfLines={5} spacing="4" />
       </Box>
-      <Footer state={null} navigator={null} zIndex="tooltip" />
     </>
   );
 };

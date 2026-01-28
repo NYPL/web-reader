@@ -41,12 +41,7 @@ Basic usage within a React app, using the default UI:
 import WebReader from '@nypl/web-reader';
 
 const ReaderPage = ({ manifestUrl }) => {
-  return (
-    <WebReader
-      webpubManifest={manifestUrl}
-      headerLeft={<button>Back to app</button>}
-    />
-  );
+  return <WebReader webpubManifest={manifestUrl} />;
 };
 ```
 

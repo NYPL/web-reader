@@ -164,6 +164,9 @@ export default function useHtmlReader(args: HtmlReaderArguments): ReaderReturn {
     goToPage(href) {
       dispatch({ type: 'GO_TO_HREF', href });
     },
+    goToPageNumber(page) {
+      dispatch({ type: 'GO_TO_PAGE', page });
+    },
     async goForward() {
       dispatch({ type: 'GO_FORWARD' });
     },
@@ -241,6 +244,13 @@ export default function useHtmlReader(args: HtmlReaderArguments): ReaderReturn {
   const atStart = isFirstResource && isStartOfResource;
   const atEnd = isLastResource && isEndOfResource;
 
+  const totalPages =
+    state.iframe && state.settings
+      ? calcPosition(state.iframe, state.settings.isScrolling).totalPages
+      : 0;
+
+  const currentPage = state.location?.locations?.position ?? 1;
+
   // the reader is active
   return {
     type: 'HTML',
@@ -280,5 +290,7 @@ export default function useHtmlReader(args: HtmlReaderArguments): ReaderReturn {
     },
     manifest,
     navigator,
+    currentPage,
+    totalPages,
   };
 }

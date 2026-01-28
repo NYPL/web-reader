@@ -2,7 +2,6 @@ import React from 'react';
 import { useHtmlReader } from '../src';
 import { Injectable } from '../src/Readium/Injectable';
 import { WebpubManifest } from '../src/types';
-import Footer from '../src/ui/Footer';
 import Header from '../src/ui/Header';
 
 type HTMLReaderProps = {
@@ -34,13 +33,8 @@ const UseHtmlReader: React.FC<HTMLReaderProps> = ({
 
   return (
     <div>
-      <Header
-        {...reader}
-        headerLeft={<a href="/">Back</a>}
-        containerRef={containerRef}
-      />
+      <Header {...reader} containerRef={containerRef} />
       {reader.content}
-      <Footer {...reader} />
     </div>
   );
 };

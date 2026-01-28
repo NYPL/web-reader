@@ -18,6 +18,7 @@ export type Navigator = {
   goBackward: () => void;
   setScroll: (val: 'scrolling' | 'paginated') => Promise<void>;
   goToPage: (href: string) => void;
+  goToPageNumber: (pageNumber: number) => void;
 };
 
 export type PdfNavigator = Navigator & {
@@ -68,6 +69,8 @@ type CommonReader = {
   isLoading: false;
   content: JSX.Element;
   manifest: WebpubManifest;
+  currentPage: number;
+  totalPages: number;
 };
 
 export type PDFActiveReader = CommonReader & {
@@ -91,10 +94,6 @@ export type GetContent<T extends string | Uint8Array> = (
   href: string,
   proxyUrl?: string
 ) => Promise<T>;
-
-export type ReaderManagerArguments = {
-  headerLeft?: JSX.Element; // Top-left header section
-};
 
 export type UseWebReaderArguments<T extends string | Uint8Array> = {
   webpubManifestUrl: string;

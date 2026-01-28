@@ -251,6 +251,33 @@ export default function makeHtmlReducer(
         return newState;
       }
 
+      case 'GO_TO_PAGE': {
+        if (state.state !== 'READY') {
+          return handleInvalidTransition(state, action);
+        }
+        const { totalPages } = calcPosition(
+          state.iframe,
+          state.settings.isScrolling
+        );
+        const page = Math.max(1, Math.min(action.page, totalPages));
+        const progression = (page - 1) / totalPages;
+
+        const newState: NavigatingState = {
+          ...state,
+          state: 'NAVIGATING',
+          location: {
+            ...state.location,
+            locations: {
+              ...state.location.locations,
+              progression,
+              position: page,
+              remainingPositions: totalPages - page,
+            },
+          },
+        };
+        return newState;
+      }
+
       case 'GO_TO_LOCATION': {
         if (state.state !== 'READY') {
           return handleInvalidTransition(state, action);

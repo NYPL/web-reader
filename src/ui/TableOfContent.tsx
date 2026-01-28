@@ -1,5 +1,5 @@
 import React from 'react';
-import { Portal, Text, Icon, Box } from '@chakra-ui/react';
+import { Portal, Icon, Box } from '@chakra-ui/react';
 import { Navigator, WebpubManifest } from '../types';
 import Button from './Button';
 import useColorModeValue from './hooks/useColorModeValue';
@@ -36,9 +36,10 @@ export default function TableOfContent({
             as={Button}
             border="none"
             aria-label="Table of Contents"
-            leftIcon={<Icon as={TableOfContents} w={6} h={6} fill={iconFill} />}
+            bg="ui.gray.xx-dark"
+            me={0}
           >
-            <Text variant="headerNav">Table of Contents</Text>
+            <Icon as={TableOfContents} w={6} h={6} fill={iconFill} />
           </MenuButton>
           <Portal containerRef={containerRef}>
             <MenuList

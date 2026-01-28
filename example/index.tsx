@@ -137,7 +137,7 @@ const PdfReaders = () => {
             means it will not grow to fit content in scrolling mode.
           </Text>
           <WebReader
-            webpubManifestUrl={`${origin}/samples/pdf/multi-resource.json`}
+            webpubManifestUrl={`${origin}/samples/pdf/single-resource-short.json`}
             proxyUrl={pdfProxyUrl}
             pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.mjs`}
             growWhenScrolling={false}

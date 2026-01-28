@@ -4,28 +4,14 @@ import { Icon } from '@chakra-ui/react';
 const ToggleFullScreenExit = (
   props: React.ComponentProps<typeof Icon>
 ): ReactElement => (
-  <Icon
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 51 51"
-    {...props}
-  >
-    <mask
-      id="toggleFullScreenExit"
-      width="51"
-      height="51"
-      x="0"
-      y="0"
-      maskUnits="userSpaceOnUse"
-    >
-      <path fill="#D9D9D9" d="M0 0h51v51H0z" />
-    </mask>
-    <g mask="url(#toggleFullScreenExit)">
-      <path
-        fill={props.fill as string}
-        d="M19.125 38.69v-8.768h-8.5V27.73H21.25v10.96h-2.125Zm10.625 0V27.73h10.625v2.192h-8.5v8.769H29.75ZM10.625 18.96V16.77h8.5V8h2.125v10.96H10.625Zm19.125 0V8h2.125v8.769h8.5v2.192H29.75Z"
-      />
-    </g>
+  <Icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
+    <path
+      d="M3 10.5H7.5M7.5 10.5V15M7.5 10.5L2.25 15.75M15 7.5H10.5M10.5 7.5V3M10.5 7.5L15.75 2.25"
+      stroke="white"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
   </Icon>
 );
 

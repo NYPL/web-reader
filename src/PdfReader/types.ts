@@ -48,6 +48,7 @@ export type PdfReaderAction =
   | { type: 'GO_FORWARD' }
   | { type: 'GO_BACKWARD' }
   | { type: 'GO_TO_HREF'; href: string }
+  | { type: 'GO_TO_PAGE'; page: number }
   | { type: 'RESOURCE_FETCH_SUCCESS'; resource: { data: Uint8Array } }
   | { type: 'PDF_PARSED'; numPages: number }
   | { type: 'PDF_LOAD_ERROR'; error: Error }

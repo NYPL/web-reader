@@ -64,11 +64,11 @@ export default function SettingsCard(
             onMouseDown={(e: React.MouseEvent<HTMLButtonElement>) =>
               e.preventDefault()
             }
+            bg="ui.gray.xx-dark"
             border="none"
             gap={[0, 0, 2]}
           >
             <Icon as={ReaderSettings} fill={iconFill} w={6} h={6} />
-            <Text variant="headerNav">Settings</Text>
           </Button>
         </PopoverTrigger>
         <PopoverContent
