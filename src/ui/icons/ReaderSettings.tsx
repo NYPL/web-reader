@@ -1,10 +1,15 @@
-import React, { ReactElement } from 'react';
 import { Icon } from '@chakra-ui/react';
+import React, { ReactElement } from 'react';
 
 const ReaderSettings = (
   props: React.ComponentProps<typeof Icon>
 ): ReactElement => (
-  <Icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" {...props}>
+  <Icon
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 18 18"
+    fill="none"
+    {...props}
+  >
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="18"

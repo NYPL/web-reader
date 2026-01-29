@@ -1,4 +1,4 @@
-import { ThemeProvider, Flex } from '@chakra-ui/react';
+import { Flex, ThemeProvider } from '@chakra-ui/react';
 import * as React from 'react';
 import { ReaderReturn } from '../types';
 import Header from './Header';

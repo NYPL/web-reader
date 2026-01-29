@@ -1,11 +1,11 @@
-import * as React from 'react';
 import { ButtonGroup, Icon } from '@chakra-ui/react';
+import * as React from 'react';
+import { MdOutlineZoomIn, MdOutlineZoomOut } from 'react-icons/md';
 import { PdfNavigator, ReaderState } from '../types';
 import Button from './Button';
 import { Continuous, Paginated } from './icons';
 import ToggleButton from './ToggleButton';
 import ToggleGroup from './ToggleGroup';
-import { MdOutlineZoomIn, MdOutlineZoomOut } from 'react-icons/md';
 
 export type PdfSettingsProps = {
   navigator: PdfNavigator;

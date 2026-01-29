@@ -1,10 +1,10 @@
 import {
   Alert,
+  AlertDescription,
   AlertIcon,
   AlertTitle,
-  AlertDescription,
-  ThemeProvider,
   Flex,
+  ThemeProvider,
 } from '@chakra-ui/react';
 import * as React from 'react';
 import { WebReaderProps } from '..';

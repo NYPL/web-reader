@@ -40,11 +40,29 @@ const colors: Colors = {
       'xx-dark': '#2E2E2E',
       'x-dark': '#424242',
       'semi-dark': '#8D8D8D',
-      'light-cool': '#E0E0E0',
+      'light-cool': '#E9E9E9',
       'light-warm': '#EFEDEB',
       'x-light-cool': '#F5F5F5',
       'x-light-warm': '#F8F8F7',
       'xx-light-cool': '#FAFAFA',
+    },
+    typography: {
+      heading: '#000',
+    },
+  },
+  dark: {
+    ui: {
+      typography: {
+        heading: '#E9E9E9',
+      },
+      border: {
+        default: '#8D8D8D',
+      },
+      bg: {
+        hover: '#2E2E2E',
+        active: '#616161',
+        page: '#191919',
+      },
     },
   },
 

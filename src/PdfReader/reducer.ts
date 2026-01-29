@@ -1,10 +1,10 @@
 import { DEFAULT_SETTINGS } from '../constants';
 import {
   getIndexFromHref,
-  getStartPageFromHref,
   getPageNumberFromHref,
+  getStartPageFromHref,
 } from './lib';
-import { PdfState, PdfReaderAction, PdfReaderArguments } from './types';
+import { PdfReaderAction, PdfReaderArguments, PdfState } from './types';
 
 export function makePdfReducer(
   args: PdfReaderArguments
@@ -200,6 +200,17 @@ export function makePdfReducer(
         return {
           ...state,
           scale: action.scale,
+        };
+
+      case 'RESET_SETTINGS':
+        if (state.state === 'INACTIVE') {
+          return handleInvalidTransition(state, action);
+        }
+
+        return {
+          ...state,
+          settings: DEFAULT_SETTINGS,
+          scale: 1,
         };
 
       case 'PAGE_LOAD_SUCCESS':

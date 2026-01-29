@@ -1,17 +1,15 @@
-import * as React from 'react';
 import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverBody,
-  Text,
   Icon,
+  Popover,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
 } from '@chakra-ui/react';
-import { PDFActiveReader, HTMLActiveReader } from '../types';
+import * as React from 'react';
+import { HTMLActiveReader, PDFActiveReader } from '../types';
 
 import Button from './Button';
 import useColorModeValue from './hooks/useColorModeValue';
-import PdfSettings from './PdfSettings';
 import HtmlSettings from './HtmlSettings';
 import { ReaderSettings } from './icons';
 
@@ -35,6 +33,12 @@ export default function SettingsCard(
   const paginationValue = props.state?.settings?.isScrolling
     ? 'scrolling'
     : 'paginated';
+
+  const mainBgColor = useColorModeValue(
+    'ui.gray.xx-dark',
+    'ui.black',
+    'ui.sepia'
+  );
 
   return (
     <>
@@ -64,11 +68,12 @@ export default function SettingsCard(
             onMouseDown={(e: React.MouseEvent<HTMLButtonElement>) =>
               e.preventDefault()
             }
-            bg="ui.gray.xx-dark"
+            bg={mainBgColor}
             border="none"
             gap={[0, 0, 2]}
+            isIcon
           >
-            <Icon as={ReaderSettings} fill={iconFill} w={6} h={6} />
+            <Icon as={ReaderSettings} w={6} h={6} />
           </Button>
         </PopoverTrigger>
         <PopoverContent
@@ -80,16 +85,9 @@ export default function SettingsCard(
           width={['90vw', '90vw', 'inherit']}
           marginRight={[4, 4, 4, 0]}
           maxWidth="100vw"
+          padding={1}
         >
           <PopoverBody p={0}>
-            {props.type === 'PDF' && (
-              <PdfSettings
-                // Destructuring props before type check causes Typescript warning.
-                navigator={props.navigator}
-                readerState={props.state}
-                paginationValue={paginationValue}
-              />
-            )}
             {props.type === 'HTML' && (
               <HtmlSettings
                 navigator={props.navigator}

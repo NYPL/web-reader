@@ -14,7 +14,7 @@ export const DEFAULT_SHOULD_GROW_WHEN_SCROLLING = true;
 
 export const DEFAULT_SETTINGS: ReaderSettings = {
   colorMode: 'day',
-  isScrolling: false,
+  isScrolling: true,
   fontSize: 100,
   fontFamily: 'publisher',
 };

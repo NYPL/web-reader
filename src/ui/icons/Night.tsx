@@ -1,29 +1,29 @@
-import React, { ReactElement } from 'react';
 import { Icon } from '@chakra-ui/react';
+import React, { ReactElement } from 'react';
 
 const Night = (props: React.ComponentProps<typeof Icon>): ReactElement => (
   <Icon
     xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 45 45"
+    width="18"
+    height="18"
+    viewBox="0 0 18 18"
     fill="none"
     {...props}
   >
-    <mask
-      id="night"
-      width="45"
-      height="45"
-      x="0"
-      y="0"
-      maskUnits="userSpaceOnUse"
-    >
-      <path fill="#D9D9D9" d="M0 0h45v45H0z" />
-    </mask>
-    <g mask="url(#night)">
+    <g clipPath="url(#clip0_12320_2180)">
       <path
-        fill="#FFF"
-        d="M22.594 37.5c-4.157 0-7.696-1.46-10.617-4.383-2.922-2.922-4.383-6.46-4.383-10.617 0-3.813 1.242-7.11 3.726-9.89 2.485-2.782 5.555-4.422 9.211-4.922h.282c-.563.906-1 1.906-1.313 3a12.224 12.224 0 0 0-.469 3.374c0 3.344 1.172 6.18 3.516 8.508 2.344 2.328 5.172 3.492 8.484 3.492 1.157 0 2.282-.14 3.375-.421a11.62 11.62 0 0 0 3-1.22c-.031.095-.039.15-.023.165l.023.023c-.5 3.657-2.14 6.72-4.922 9.188-2.78 2.469-6.078 3.703-9.89 3.703Z"
+        d="M16.4661 9.71746C15.4335 11.5289 13.4844 12.7502 11.25 12.7502C7.93629 12.7502 5.25 10.064 5.25 6.75025C5.25 4.51572 6.4715 2.56649 8.2832 1.53387C4.47731 1.89473 1.5 5.09971 1.5 9.00007C1.5 13.1422 4.85786 16.5001 9 16.5001C12.9002 16.5001 16.105 13.5231 16.4661 9.71746Z"
+        stroke="#BDBDBD"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </g>
+    <defs>
+      <clipPath id="clip0_12320_2180">
+        <rect width="18" height="18" fill="white" />
+      </clipPath>
+    </defs>
   </Icon>
 );
 

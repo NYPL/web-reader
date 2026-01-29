@@ -53,6 +53,7 @@ export type PdfReaderAction =
   | { type: 'PDF_PARSED'; numPages: number }
   | { type: 'PDF_LOAD_ERROR'; error: Error }
   | { type: 'SET_SCALE'; scale: number }
+  | { type: 'RESET_SETTINGS'; settings: ReaderSettings; scale: number }
   | { type: 'SET_SCROLL'; isScrolling: boolean }
   | { type: 'PAGE_LOAD_SUCCESS'; height: number; width: number }
   | {

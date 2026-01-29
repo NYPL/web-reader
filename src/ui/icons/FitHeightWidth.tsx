@@ -1,5 +1,5 @@
-import React, { ReactElement } from 'react';
 import { Icon } from '@chakra-ui/react';
+import React, { ReactElement } from 'react';
 
 type FitHeightWidthProps = React.ComponentPropsWithoutRef<typeof Icon> & {
   fitWidth?: boolean;
@@ -12,6 +12,7 @@ const FitHeightWidth = ({
   <Icon
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 18 18"
+    fill="none"
     style={fitWidth ? { transform: 'rotate(90deg)' } : undefined}
     {...props}
   >

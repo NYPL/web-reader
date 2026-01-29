@@ -11,7 +11,7 @@ type Typography = {
 const typography: Typography = {
   fonts: {
     body: '-apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-    heading: '-apple-system, BlinkMacSystemFont, system-ui, sans-seri',
+    heading: '-apple-system, BlinkMacSystemFont, system-ui, sans-serif',
     mono: `Courier,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace`,
   },
   fontSizes: {

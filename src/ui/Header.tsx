@@ -1,7 +1,10 @@
+import { Flex, HStack, Icon, Input, Text } from '@chakra-ui/react';
 import React, { ComponentProps } from 'react';
-import { Flex, HStack, Text, Icon, Input } from '@chakra-ui/react';
 import { ActiveReader } from '../types';
+import useColorModeValue from '../ui/hooks/useColorModeValue';
 import Button from './Button';
+import useFullscreen from './hooks/useFullScreen';
+import HtmlFontSizeControls from './HtmlFontSizeControls';
 import {
   PageDown,
   PageUp,
@@ -10,14 +13,11 @@ import {
   ToggleFullScreen,
   ToggleFullScreenExit,
 } from './icons';
-import SettingsCard from './SettingsButton';
-import TableOfContent from './TableOfContent';
-import useColorModeValue from '../ui/hooks/useColorModeValue';
-import useFullscreen from './hooks/useFullScreen';
-import SkipNavigation from './SkipNavigation';
 import FitHeightWidth from './icons/FitHeightWidth';
 import PdfZoomControls from './PdfZoomControls';
-import HtmlFontSizeControls from './HtmlFontSizeControls';
+import SettingsCard from './SettingsButton';
+import SkipNavigation from './SkipNavigation';
+import TableOfContent from './TableOfContent';
 
 export default function Header(
   props: ActiveReader & {
@@ -97,11 +97,14 @@ export default function Header(
             readerState={props.state}
           />
         )}
-        <Button>
-          <Icon as={FitHeightWidth} fill={iconFill} w={6} h={6} />
+        <Button isIcon>
+          <Icon as={FitHeightWidth} w={6} h={6} />
         </Button>
-        <Button>
-          <Icon as={Reset} fill={iconFill} w={6} h={6} />
+        <Button
+          isIcon
+          onClick={type === 'HTML' ? navigator.resetSettings : undefined}
+        >
+          <Icon as={Reset} w={6} h={6} />
         </Button>
       </HStack>
       <HStack mx="auto" spacing={2}>
@@ -109,8 +112,9 @@ export default function Header(
           onClick={handlePageUp}
           aria-label="Previous Page"
           isDisabled={currentPage <= 1}
+          isIcon
         >
-          <Icon as={PageUp} fill={iconFill} w={6} h={6} />
+          <Icon as={PageUp} w={6} h={6} />
         </Button>
         <HStack color="ui.white">
           <Input
@@ -133,13 +137,14 @@ export default function Header(
           onClick={handlePageDown}
           aria-label="Next Page"
           isDisabled={currentPage >= totalPages}
+          isIcon
         >
-          <Icon as={PageDown} fill={iconFill} w={6} h={6} />
+          <Icon as={PageDown} w={6} h={6} />
         </Button>
       </HStack>
       <HStack ml="auto" spacing={2}>
-        <Button>
-          <Icon as={Search} fill={iconFill} w={6} h={6} />
+        <Button isIcon>
+          <Icon as={Search} w={6} h={6} />
         </Button>
         <TableOfContent
           containerRef={containerRef}
@@ -152,15 +157,15 @@ export default function Header(
           border="none"
           bgColor={mainBgColor}
           onClick={toggleFullScreen}
+          isIcon
         >
           <Icon
             as={isFullscreen ? ToggleFullScreenExit : ToggleFullScreen}
-            fill={iconFill}
             w={6}
             h={6}
           />
         </Button>
-        <SettingsCard {...props} />
+        {type === 'HTML' && <SettingsCard {...props} />}
       </HStack>
     </HeaderWrapper>
   );

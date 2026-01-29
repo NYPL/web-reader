@@ -1,29 +1,29 @@
+import { DEFAULT_SETTINGS } from '../constants';
 import {
   getLocalStorageLocation,
   getLocalStorageSettings,
 } from '../utils/localstorage';
 import {
-  getCurrentIndex,
-  linkToLocator,
   calcPosition,
-  getFromReadingOrder,
   FONT_SIZE_STEP,
+  getCurrentIndex,
+  getFromReadingOrder,
   isSameResource,
+  linkToLocator,
 } from './lib';
 import {
   FetchingResourceState,
   HtmlAction,
+  HtmlReaderArguments,
   HtmlState,
+  InactiveState,
   LoadingIframeState,
-  ReadyState,
   NavigatingState,
+  ReadyState,
   RenderingIframeState,
   ResourceFetchErrorState,
-  InactiveState,
-  HtmlReaderArguments,
 } from './types';
 import { getLocationQuery } from './useLocationQuery';
-import { DEFAULT_SETTINGS } from '../constants';
 
 /**
  * A higher order function that makes it easy to access arguments in the reducer
