@@ -83,15 +83,6 @@ export function makePdfReducer(
 
       case 'GO_FORWARD': {
         /**
-         * In scrolling mode, we simply move forward one whole resource
-         */
-        if (state.settings?.isScrolling) {
-          const atEndOfBook =
-            state.resourceIndex === args.manifest.readingOrder.length - 1;
-          if (atEndOfBook) return state;
-          return goToLocation(state.resourceIndex + 1);
-        }
-        /**
          * Navigate forward one page or one resource if at the end of the current
          * resource. Do nothing at the end of the last resource.
          */
@@ -111,14 +102,6 @@ export function makePdfReducer(
       }
 
       case 'GO_BACKWARD': {
-        /**
-         * In scrolling mode, we simply move forward one whole resource
-         */
-        if (state.settings?.isScrolling) {
-          const atStartOfBook = state.resourceIndex === 0;
-          if (atStartOfBook) return state;
-          return goToLocation(state.resourceIndex - 1);
-        }
         /**
          * Navigate backward one page or to the end of the previous resource
          * if at the beginning of the current resource. Do nothing at the
@@ -156,6 +139,14 @@ export function makePdfReducer(
         const numPages = state.numPages || 1;
         const page = Math.max(1, Math.min(action.page, numPages));
         return goToLocation(state.resourceIndex, page);
+      }
+
+      case 'PAGE_IN_VIEW': {
+        if (state.pageNumber === action.page) return state;
+        return {
+          ...state,
+          pageNumber: action.page,
+        };
       }
 
       case 'RESOURCE_FETCH_SUCCESS':

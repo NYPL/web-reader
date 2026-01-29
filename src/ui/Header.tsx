@@ -46,7 +46,9 @@ export default function Header(
     'ui.sepia'
   );
 
-  const [inputValue, setInputValue] = React.useState<number>(currentPage);
+  const [inputValue, setInputValue] = React.useState<string | number>(
+    currentPage
+  );
   React.useEffect(() => {
     setInputValue(currentPage);
   }, [currentPage]);
@@ -59,15 +61,15 @@ export default function Header(
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value.replace(/[^0-9]/g, '');
-    setInputValue(val ? parseInt(val, 10) : 0);
+    setInputValue(val ? parseInt(val, 10) : '');
   };
 
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (
       e.key === 'Enter' &&
       inputValue &&
-      inputValue >= 1 &&
-      inputValue <= totalPages
+      Number(inputValue) >= 1 &&
+      Number(inputValue) <= totalPages
     ) {
       goToPage(Number(inputValue));
     }
@@ -100,10 +102,7 @@ export default function Header(
         <Button isIcon>
           <Icon as={FitHeightWidth} w={6} h={6} />
         </Button>
-        <Button
-          isIcon
-          onClick={type === 'HTML' ? navigator.resetSettings : undefined}
-        >
+        <Button isIcon onClick={navigator.resetSettings}>
           <Icon as={Reset} w={6} h={6} />
         </Button>
       </HStack>
@@ -116,22 +115,27 @@ export default function Header(
         >
           <Icon as={PageUp} w={6} h={6} />
         </Button>
-        <HStack color="ui.white">
+        <HStack color="ui.white" spacing={2} fontSize="sm" alignItems="center">
           <Input
             aria-label="Current page number"
             width="2rem"
             height="2rem"
-            padding="2px 8px"
+            padding={0}
             bg="ui.gray.x-dark"
             border="none"
             textAlign="center"
             borderRadius="4px"
             _focus={{ outline: 'none', boxShadow: 'none' }}
+            min="1"
+            max={totalPages}
+            type="number"
             value={inputValue}
             onChange={handleInputChange}
             onKeyDown={handleInputKeyDown}
+            name="current-page"
           />
-          <Text>/ {totalPages}</Text>
+          <Text>/</Text>
+          <Text>{totalPages}</Text>
         </HStack>
         <Button
           onClick={handlePageDown}

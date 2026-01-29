@@ -1,17 +1,19 @@
-import { Document, PageProps, pdfjs } from 'react-pdf';
-import * as React from 'react';
-import { ReaderReturn } from '../types';
 import { Flex } from '@chakra-ui/react';
-import useMeasure from './useMeasure';
+import * as React from 'react';
+import { Document, PageProps, pdfjs } from 'react-pdf';
+import { ReaderReturn } from '../types';
 import ChakraPage from './ChakraPage';
 import ScrollPage from './ScrollPage';
+import useMeasure from './useMeasure';
 // Required CSS in order for links to be clickable in PDFs
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
-import { HEADER_HEIGHT, FOOTER_HEIGHT, MAIN_CONTENT_ID } from '../constants';
 import {
   DEFAULT_HEIGHT,
   DEFAULT_SHOULD_GROW_WHEN_SCROLLING,
+  FOOTER_HEIGHT,
+  HEADER_HEIGHT,
+  MAIN_CONTENT_ID,
 } from '../constants';
 import LoadingSkeleton from '../ui/LoadingSkeleton';
 import { fetchAsUint8Array, getResourceUrl, SCALE_STEP } from './lib';
@@ -242,6 +244,43 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
     dispatch({ type: 'GO_TO_PAGE', page: page });
   }, []);
 
+  const resetSettings = React.useCallback(async () => {
+    dispatch({ type: 'RESET_SETTINGS' });
+  }, []);
+
+  const intersectionRatios = React.useRef<{ [page: number]: number }>({});
+  const lastMostVisiblePage = React.useRef<number>(state.pageNumber);
+
+  const handlePageInView = React.useCallback(
+    (pageNum: number, ratio: number) => {
+      if (!state.settings?.isScrolling) return;
+      intersectionRatios.current[pageNum] = ratio;
+
+      Object.keys(intersectionRatios.current).forEach((key) => {
+        if (intersectionRatios.current[Number(key)] === 0) {
+          delete intersectionRatios.current[Number(key)];
+        }
+      });
+
+      let maxRatio = -1;
+      let mostVisiblePage = state.pageNumber;
+      for (const [page, r] of Object.entries(intersectionRatios.current)) {
+        if (r > maxRatio) {
+          maxRatio = r;
+          mostVisiblePage = Number(page);
+        }
+      }
+
+      if (mostVisiblePage !== lastMostVisiblePage.current) {
+        lastMostVisiblePage.current = mostVisiblePage;
+        if (state.pageNumber !== mostVisiblePage) {
+          dispatch({ type: 'PAGE_IN_VIEW', page: mostVisiblePage });
+        }
+      }
+    },
+    [state.settings?.isScrolling, state.pageNumber]
+  );
+
   // this format is inactive, return null
   if (!webpubManifestUrl || !manifest) return null;
 
@@ -363,13 +402,13 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
                 Array.from(new Array(state.numPages), (_, index) => (
                   <ScrollPage
                     key={`page_${index + 1}`}
-                    // width is necessary to pass to react-pdf Page component on initial render
                     width={containerSize.width}
                     placeholderHeight={state.pdfHeight}
                     placeholderWidth={state.pdfWidth}
                     scale={state.scale}
                     pageNumber={index + 1}
                     onLoadSuccess={onRenderSuccess}
+                    onInView={handlePageInView}
                   />
                 ))}
               {!state.settings.isScrolling && (
@@ -397,6 +436,7 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
       zoomOut,
       goToPage,
       goToPageNumber,
+      resetSettings,
     },
     currentPage: state.pageNumber,
     totalPages: state.numPages ?? 0,

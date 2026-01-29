@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
-import ChakraPage from './ChakraPage';
 import { useInView } from 'react-intersection-observer';
 import { PageProps } from 'react-pdf';
+import ChakraPage from './ChakraPage';
 
 type ScrollPageProps = {
   pageNumber: number;
@@ -10,6 +10,7 @@ type ScrollPageProps = {
   onLoadSuccess: (page: PageProps) => void;
   placeholderHeight: number;
   placeholderWidth: number;
+  onInView?: (pageNumber: number, ratio: number) => void;
 };
 
 type PlaceholderProps = {
@@ -35,11 +36,18 @@ const ScrollPage: FC<ScrollPageProps> = ({
   onLoadSuccess,
   placeholderHeight,
   placeholderWidth,
+  onInView,
 }) => {
-  const { ref, inView } = useInView({
-    threshold: 0,
-    triggerOnce: true,
+  const { ref, inView, entry } = useInView({
+    threshold: Array.from({ length: 11 }, (_, i) => i * 0.1),
+    triggerOnce: false,
   });
+
+  React.useEffect(() => {
+    if (onInView && entry) {
+      onInView(pageNumber, entry.intersectionRatio || 0);
+    }
+  }, [entry, onInView, pageNumber]);
 
   return (
     <div ref={ref}>

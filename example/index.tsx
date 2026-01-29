@@ -1,36 +1,36 @@
-import 'react-app-polyfill/ie11';
+import {
+  Box,
+  Button,
+  ChakraProvider,
+  Heading,
+  Input,
+  ListItem,
+  Stack,
+  Text,
+  UnorderedList,
+} from '@chakra-ui/react';
 import * as React from 'react';
+import 'react-app-polyfill/ie11';
 import { createRoot } from 'react-dom/client';
 import {
   BrowserRouter,
-  Switch,
-  Route,
   Link,
+  Route,
+  Switch,
   useParams,
 } from 'react-router-dom';
-import WebReader, { addTocToManifest } from '../src';
-import {
-  ChakraProvider,
-  Heading,
-  UnorderedList,
-  ListItem,
-  Box,
-  Text,
-  Input,
-  Button,
-  Stack,
-} from '@chakra-ui/react';
-import { getTheme } from '../src/ui/theme';
+import useSWR, { Fetcher } from 'swr';
+import readiumAfter from 'url:../src/HtmlReader/ReadiumCss/ReadiumCSS-after.css';
 import readiumBefore from 'url:../src/HtmlReader/ReadiumCss/ReadiumCSS-before.css';
 import readiumDefault from 'url:../src/HtmlReader/ReadiumCss/ReadiumCSS-default.css';
-import readiumAfter from 'url:../src/HtmlReader/ReadiumCss/ReadiumCSS-after.css';
-import Tests from './Tests';
+import WebReader, { addTocToManifest } from '../src';
 import { Injectable } from '../src/Readium/Injectable';
-import useSWR, { Fetcher } from 'swr';
-import UseHtmlReader from './use-html-reader';
+import { WebpubManifest } from '../src/types';
+import { getTheme } from '../src/ui/theme';
 import mobyEpub2Manifest from './static/samples/moby-epub2-exploded/manifest.json';
 import pdfSingleResourceManifest from './static/samples/pdf/single-resource-short.json';
-import { WebpubManifest } from '../src/types';
+import Tests from './Tests';
+import UseHtmlReader from './use-html-reader';
 import UsePdfReader from './use-pdf-reader';
 
 const origin = window.location.origin;
@@ -137,7 +137,7 @@ const PdfReaders = () => {
             means it will not grow to fit content in scrolling mode.
           </Text>
           <WebReader
-            webpubManifestUrl={`${origin}/samples/pdf/single-resource-short.json`}
+            webpubManifestUrl={`${origin}/samples/pdf/single-resource-long.json`}
             proxyUrl={pdfProxyUrl}
             pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.mjs`}
             growWhenScrolling={false}

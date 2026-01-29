@@ -1,12 +1,12 @@
 import React from 'react';
 import {
   ActiveReader,
-  Navigator,
+  ColorMode,
+  FontFamily,
   HtmlNavigator,
+  Navigator,
   PdfNavigator,
   WebpubManifest,
-  FontFamily,
-  ColorMode,
 } from '../../src/types';
 import { HtmlSettingsProps } from '../../src/ui/HtmlSettings';
 import { PdfSettingsProps } from '../../src/ui/PdfSettings';
@@ -22,6 +22,7 @@ const zoomInFn = jest.fn();
 const zoomOutFn = jest.fn();
 const setFontFamilyFn = jest.fn();
 const goToPageFn = jest.fn();
+const goToPageNumberFn = jest.fn();
 
 export const MockNavigator = {
   goForward: goForwardFn,
@@ -32,6 +33,8 @@ export const MockNavigator = {
   decreaseFontSize: decreaseFontSizeFn,
   setFontFamily: setFontFamilyFn,
   goToPage: goToPageFn,
+  goToPageNumber: goToPageNumberFn,
+  resetSettings: resetSettingsFn,
 } as Navigator;
 
 export const MockHtmlNavigator = {
@@ -44,6 +47,7 @@ export const MockHtmlNavigator = {
   resetSettings: resetSettingsFn,
   setFontFamily: setFontFamilyFn,
   goToPage: goToPageFn,
+  goToPageNumber: goToPageNumberFn,
 } as HtmlNavigator;
 
 export const MockPdfNavigator = {
@@ -55,6 +59,8 @@ export const MockPdfNavigator = {
   zoomOut: zoomOutFn,
   setFontFamily: setFontFamilyFn,
   goToPage: goToPageFn,
+  goToPageNumber: goToPageNumberFn,
+  resetSettings: resetSettingsFn,
 } as PdfNavigator;
 
 export const MockWebpubManifest = {

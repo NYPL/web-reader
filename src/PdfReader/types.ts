@@ -49,11 +49,12 @@ export type PdfReaderAction =
   | { type: 'GO_BACKWARD' }
   | { type: 'GO_TO_HREF'; href: string }
   | { type: 'GO_TO_PAGE'; page: number }
+  | { type: 'PAGE_IN_VIEW'; page: number }
   | { type: 'RESOURCE_FETCH_SUCCESS'; resource: { data: Uint8Array } }
   | { type: 'PDF_PARSED'; numPages: number }
   | { type: 'PDF_LOAD_ERROR'; error: Error }
   | { type: 'SET_SCALE'; scale: number }
-  | { type: 'RESET_SETTINGS'; settings: ReaderSettings; scale: number }
+  | { type: 'RESET_SETTINGS' }
   | { type: 'SET_SCROLL'; isScrolling: boolean }
   | { type: 'PAGE_LOAD_SUCCESS'; height: number; width: number }
   | {
