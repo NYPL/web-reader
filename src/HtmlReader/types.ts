@@ -2,6 +2,7 @@ import { Locator } from '../Readium/Locator';
 import {
   ActiveReaderArguments,
   ColorMode,
+  FitMode,
   FontFamily,
   InactiveReaderArguments,
   ReaderSettings,
@@ -110,6 +111,7 @@ export type HtmlAction =
   | { type: 'DECREASE_FONT_SIZE' }
   | { type: 'RESET_SETTINGS' }
   | { type: 'SET_FONT_FAMILY'; family: FontFamily }
+  | { type: 'SET_FIT_MODE'; fitMode: FitMode }
   | { type: 'USER_SCROLLED' }
   | { type: 'SET_IFRAME'; iframe: HTMLIFrameElement | null }
   | { type: 'RESOURCE_FETCH_SUCCESS'; resource: string }

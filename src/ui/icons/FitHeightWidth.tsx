@@ -1,19 +1,20 @@
 import { Icon } from '@chakra-ui/react';
 import React, { ReactElement } from 'react';
+import { FitMode } from '../../types';
 
 type FitHeightWidthProps = React.ComponentPropsWithoutRef<typeof Icon> & {
-  fitWidth?: boolean;
+  fitMode?: FitMode;
 };
 
 const FitHeightWidth = ({
-  fitWidth = false,
+  fitMode = 'width',
   ...props
 }: FitHeightWidthProps): ReactElement => (
   <Icon
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 18 18"
     fill="none"
-    style={fitWidth ? { transform: 'rotate(90deg)' } : undefined}
+    style={fitMode === 'height' ? { transform: 'rotate(90deg)' } : undefined}
     {...props}
   >
     <path

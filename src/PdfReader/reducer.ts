@@ -56,6 +56,7 @@ export function makePdfReducer(
           pageWidth: undefined,
           pdfHeight: 0,
           pdfWidth: 0,
+          fitMode: 'width',
         };
       }
       return newState;
@@ -78,6 +79,7 @@ export function makePdfReducer(
           atStart: true,
           atEnd: false,
           rendered: false,
+          fitMode: 'width',
         };
       }
 
@@ -220,6 +222,9 @@ export function makePdfReducer(
           pageWidth: action.width,
           pageHeight: action.height,
         };
+
+      case 'SET_FIT_MODE':
+        return { ...state, fitMode: action.fitMode };
 
       case 'BOOK_BOUNDARY_CHANGED':
         return {

@@ -1,7 +1,7 @@
 import { Flex } from '@chakra-ui/react';
 import * as React from 'react';
 import { Document, PageProps, pdfjs } from 'react-pdf';
-import { ReaderReturn } from '../types';
+import { FitMode, ReaderReturn } from '../types';
 import ChakraPage from './ChakraPage';
 import ScrollPage from './ScrollPage';
 import useMeasure from './useMeasure';
@@ -17,6 +17,7 @@ import {
 } from '../constants';
 import LoadingSkeleton from '../ui/LoadingSkeleton';
 import { fetchAsUint8Array, getResourceUrl, SCALE_STEP } from './lib';
+import './pdfReader.css';
 import { makePdfReducer } from './reducer';
 import { PdfReaderArguments } from './types';
 
@@ -61,6 +62,7 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
     atEnd: false,
     settings: undefined,
     rendered: false,
+    fitMode: 'width',
   });
 
   // state we can derive from the state above
@@ -134,28 +136,23 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
    *    the page to the width of the container
    */
   const resizePage = React.useCallback(
-    (
-      pdfWidth: number,
-      pdfHeight: number,
-      containerSize: { width: number; height: number }
-    ) => {
-      const wRatio = pdfWidth / containerSize.width;
-      const hRatio = pdfHeight / containerSize.height;
-
-      const fitHorizontal = wRatio > hRatio;
-      const width = fitHorizontal ? Math.round(containerSize.width) : undefined;
-      const height = !fitHorizontal
-        ? Math.round(containerSize.height)
-        : undefined;
-
+    (containerSize: { width: number; height: number }, fitMode: FitMode) => {
+      let width, height;
+      if (fitMode === 'width') {
+        width = Math.round(containerSize.width);
+        height = undefined;
+      } else {
+        width = undefined;
+        height = Math.round(containerSize.height);
+      }
       dispatch({ type: 'RESIZE_PAGE', width, height });
     },
     []
   );
 
   React.useEffect(() => {
-    resizePage(state.pdfWidth, state.pdfHeight, containerSize);
-  }, [containerSize, state.pdfWidth, state.pdfHeight, resizePage]);
+    resizePage(containerSize, state.fitMode);
+  }, [containerSize, resizePage, state.fitMode]);
 
   /**
    * Update the atStart/atEnd state to tell the UI whether to show the prev/next buttons
@@ -246,6 +243,10 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
 
   const resetSettings = React.useCallback(async () => {
     dispatch({ type: 'RESET_SETTINGS' });
+  }, []);
+
+  const setFitMode = React.useCallback((mode: FitMode) => {
+    dispatch({ type: 'SET_FIT_MODE', fitMode: mode });
   }, []);
 
   const intersectionRatios = React.useRef<{ [page: number]: number }>({});
@@ -358,7 +359,7 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
         width: Math.round(page.width),
       });
 
-      resizePage(page.width, page.height, containerSize);
+      resizePage(containerSize, state.fitMode);
     }
   }
 
@@ -403,12 +404,14 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
                   <ScrollPage
                     key={`page_${index + 1}`}
                     width={containerSize.width}
+                    height={state.pageHeight}
                     placeholderHeight={state.pdfHeight}
                     placeholderWidth={state.pdfWidth}
                     scale={state.scale}
                     pageNumber={index + 1}
                     onLoadSuccess={onRenderSuccess}
                     onInView={handlePageInView}
+                    fitMode={state.fitMode}
                   />
                 ))}
               {!state.settings.isScrolling && (
@@ -419,6 +422,7 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
                   height={state.pageHeight}
                   scale={state.scale}
                   loading={<></>}
+                  fitMode={state.fitMode}
                 />
               )}
             </>
@@ -437,6 +441,7 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
       goToPage,
       goToPageNumber,
       resetSettings,
+      setFitMode,
     },
     currentPage: state.pageNumber,
     totalPages: state.numPages ?? 0,

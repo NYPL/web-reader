@@ -13,6 +13,8 @@ export type ColorMode = 'night' | 'sepia' | 'day';
 
 export type FontFamily = 'publisher' | 'serif' | 'sans-serif' | 'open-dyslexic';
 
+export type FitMode = 'width' | 'height';
+
 export type Navigator = {
   goForward: () => void;
   goBackward: () => void;
@@ -20,6 +22,7 @@ export type Navigator = {
   goToPage: (href: string) => void;
   goToPageNumber: (pageNumber: number) => void;
   resetSettings: () => Promise<void>;
+  setFitMode: (mode: FitMode) => void;
 };
 
 export type PdfNavigator = Navigator & {
@@ -52,6 +55,7 @@ export type ReaderState = {
   atEnd: boolean;
   location?: Locator;
   settings: ReaderSettings | undefined;
+  fitMode: FitMode;
 };
 
 export type InactiveReader = null;

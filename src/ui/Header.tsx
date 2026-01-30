@@ -46,6 +46,12 @@ export default function Header(
     'ui.sepia'
   );
 
+  const fitMode = props.state?.fitMode ?? 'width';
+
+  const toggleFitMode = () => {
+    navigator.setFitMode(fitMode === 'width' ? 'height' : 'width');
+  };
+
   const [inputValue, setInputValue] = React.useState<string | number>(
     currentPage
   );
@@ -59,12 +65,12 @@ export default function Header(
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const inputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value.replace(/[^0-9]/g, '');
     setInputValue(val ? parseInt(val, 10) : '');
   };
 
-  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const inputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (
       e.key === 'Enter' &&
       inputValue &&
@@ -75,13 +81,13 @@ export default function Header(
     }
   };
 
-  const handlePageUp = () => {
+  const pageUp = () => {
     if (currentPage > 1) {
       navigator.goBackward();
     }
   };
 
-  const handlePageDown = () => {
+  const pageDown = () => {
     if (currentPage < totalPages) {
       navigator.goForward();
     }
@@ -99,8 +105,17 @@ export default function Header(
             readerState={props.state}
           />
         )}
-        <Button isIcon>
-          <Icon as={FitHeightWidth} w={6} h={6} />
+        <Button
+          isIcon
+          onClick={toggleFitMode}
+          aria-label={fitMode === 'width' ? 'Fit to width' : 'Fit to height'}
+        >
+          <Icon
+            as={FitHeightWidth}
+            fitMode={fitMode === 'width' ? 'width' : 'height'}
+            w={6}
+            h={6}
+          />
         </Button>
         <Button isIcon onClick={navigator.resetSettings}>
           <Icon as={Reset} w={6} h={6} />
@@ -108,7 +123,7 @@ export default function Header(
       </HStack>
       <HStack mx="auto" spacing={2}>
         <Button
-          onClick={handlePageUp}
+          onClick={pageUp}
           aria-label="Previous Page"
           isDisabled={currentPage <= 1}
           isIcon
@@ -130,15 +145,15 @@ export default function Header(
             max={totalPages}
             type="number"
             value={inputValue}
-            onChange={handleInputChange}
-            onKeyDown={handleInputKeyDown}
-            name="current-page"
+            onChange={inputChange}
+            onKeyDown={inputKeyDown}
+            id="currentPageInput"
           />
           <Text>/</Text>
           <Text>{totalPages}</Text>
         </HStack>
         <Button
-          onClick={handlePageDown}
+          onClick={pageDown}
           aria-label="Next Page"
           isDisabled={currentPage >= totalPages}
           isIcon

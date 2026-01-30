@@ -572,6 +572,15 @@ export default function makeHtmlReducer(
         };
         return newState;
       }
+
+      case 'SET_FIT_MODE':
+        if (state.state === 'INACTIVE') {
+          return handleInvalidTransition(state, action);
+        }
+        return {
+          ...state,
+          fitMode: action.fitMode,
+        };
     }
   };
 }
@@ -592,4 +601,5 @@ export const inactiveState: InactiveState = {
   state: 'INACTIVE',
   location: undefined,
   settings: undefined,
+  fitMode: 'width',
 };

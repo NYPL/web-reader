@@ -1,28 +1,34 @@
 import React from 'react';
-import { ColorMode, ReaderReturn, FontFamily, HtmlNavigator } from '../types';
-import LoadingSkeleton from '../ui/LoadingSkeleton';
 import {
   DEFAULT_HEIGHT,
   DEFAULT_SHOULD_GROW_WHEN_SCROLLING,
   MAIN_CONTENT_ID,
 } from '../constants';
 import {
-  fetchAsTxt,
+  ColorMode,
+  FitMode,
+  FontFamily,
+  HtmlNavigator,
+  ReaderReturn,
+} from '../types';
+import LoadingSkeleton from '../ui/LoadingSkeleton';
+import useUpdateLocalStorage from '../utils/localstorage';
+import { navigateToHash, navigateToProgression } from './effects';
+import {
   calcPosition,
   defaultInjectables,
   defaultInjectablesFixed,
+  fetchAsTxt,
   isSameResource,
 } from './lib';
 import makeHtmlReducer, { inactiveState } from './reducer';
-import { navigateToHash, navigateToProgression } from './effects';
-import useResource from './useResource';
-import useLocationQuery from './useLocationQuery';
-import useWindowResize from './useWindowResize';
-import { useUpdateScroll } from './useUpdateScroll';
-import useUpdateCSS from './useUpdateCSS';
-import useIframeLinkClick from './useIframeLinkClick';
-import useUpdateLocalStorage from '../utils/localstorage';
 import { HtmlReaderArguments } from './types';
+import useIframeLinkClick from './useIframeLinkClick';
+import useLocationQuery from './useLocationQuery';
+import useResource from './useResource';
+import useUpdateCSS from './useUpdateCSS';
+import { useUpdateScroll } from './useUpdateScroll';
+import useWindowResize from './useWindowResize';
 
 export default function useHtmlReader(args: HtmlReaderArguments): ReaderReturn {
   const {
@@ -191,6 +197,9 @@ export default function useHtmlReader(args: HtmlReaderArguments): ReaderReturn {
     },
     async setFontFamily(family: FontFamily) {
       dispatch({ type: 'SET_FONT_FAMILY', family });
+    },
+    async setFitMode(mode: FitMode) {
+      dispatch({ type: 'SET_FIT_MODE', fitMode: mode });
     },
   }).current;
 

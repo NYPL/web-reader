@@ -1,5 +1,6 @@
 import {
   ActiveReaderArguments,
+  FitMode,
   InactiveReaderArguments,
   ReaderSettings,
   ReaderState,
@@ -62,4 +63,5 @@ export type PdfReaderAction =
       height: number | undefined;
       width: number | undefined;
     }
+  | { type: 'SET_FIT_MODE'; fitMode: FitMode }
   | { type: 'BOOK_BOUNDARY_CHANGED'; atStart: boolean; atEnd: boolean };
