@@ -6,6 +6,7 @@ import Button from './Button';
 import useColorModeValue from './hooks/useColorModeValue';
 import { TableOfContents } from './icons';
 import { Menu, MenuButton, MenuItem, MenuList } from './menu';
+import Tooltip from './Tooltip';
 
 export default function TableOfContent({
   navigator,
@@ -36,16 +37,18 @@ export default function TableOfContent({
     <Menu>
       {({ isOpen }) => (
         <>
-          <MenuButton
-            as={Button}
-            border="none"
-            aria-label="Table of Contents"
-            bg={mainBgColor}
-            me={0}
-            isIcon
-          >
-            <Icon as={TableOfContents} w={6} h={6} />
-          </MenuButton>
+          <Tooltip content="Table of contents">
+            <MenuButton
+              as={Button}
+              border="none"
+              aria-label="Table of contents"
+              bg={mainBgColor}
+              me={0}
+              isIcon
+            >
+              <Icon as={TableOfContents} w={6} h={6} />
+            </MenuButton>
+          </Tooltip>
           <Portal containerRef={containerRef}>
             <MenuList
               overflowY="auto"

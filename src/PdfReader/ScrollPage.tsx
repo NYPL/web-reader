@@ -12,6 +12,7 @@ type ScrollPageProps = {
   onLoadSuccess: (page: PageProps) => void;
   placeholderHeight: number;
   placeholderWidth: number;
+  allowInView?: boolean;
   onInView?: (pageNumber: number, ratio: number) => void;
   fitMode: FitMode;
 };
@@ -40,6 +41,7 @@ const ScrollPage: FC<ScrollPageProps> = ({
   onLoadSuccess,
   placeholderHeight,
   placeholderWidth,
+  allowInView,
   onInView,
   fitMode,
 }) => {
@@ -47,21 +49,19 @@ const ScrollPage: FC<ScrollPageProps> = ({
     threshold: Array.from({ length: 11 }, (_, i) => i * 0.1),
     triggerOnce: false,
   });
-  const [hasLoaded, setHasLoaded] = React.useState(false);
 
   const handleLoadSuccess = React.useCallback(
     (page: PageProps) => {
-      setHasLoaded(true);
       onLoadSuccess(page);
     },
     [onLoadSuccess]
   );
 
   React.useEffect(() => {
-    if (onInView && entry && hasLoaded) {
+    if (onInView && entry && allowInView) {
       onInView(pageNumber, entry.intersectionRatio || 0);
     }
-  }, [entry, onInView, pageNumber, hasLoaded]);
+  }, [allowInView, entry, onInView, pageNumber]);
 
   return (
     <div ref={ref}>

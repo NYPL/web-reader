@@ -7,6 +7,7 @@ import getButtonStyle from './components/button';
 import SkipNavigation from './components/skipNavigation';
 import getTabsStyle from './components/tabs';
 import Text from './components/text';
+import Tooltip from './components/tooltip';
 import colors from './foundations/colors';
 import { Dict } from './types';
 
@@ -33,6 +34,7 @@ export function getTheme(colorMode: ColorMode = 'day'): Dict<unknown> {
         Alert,
         SkipNavigation,
         Tabs: getTabsStyle(getColor(colorMode)),
+        Tooltip,
       },
       currentColorMode: colorMode,
     },

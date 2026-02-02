@@ -18,6 +18,7 @@ import PdfZoomControls from './PdfZoomControls';
 import SettingsCard from './SettingsButton';
 import SkipNavigation from './SkipNavigation';
 import TableOfContent from './TableOfContent';
+import Tooltip from './Tooltip';
 
 export default function Header(
   props: ActiveReader & {
@@ -111,31 +112,39 @@ export default function Header(
             readerState={props.state}
           />
         )}
-        <Button
-          isIcon
-          onClick={toggleFitMode}
-          aria-label={fitMode === 'width' ? 'Fit to width' : 'Fit to height'}
+        <Tooltip
+          content={fitMode === 'width' ? 'Fit to height' : 'Fit to width'}
         >
-          <Icon
-            as={FitHeightWidth}
-            fitMode={fitMode === 'width' ? 'width' : 'height'}
-            w={6}
-            h={6}
-          />
-        </Button>
-        <Button isIcon onClick={navigator.resetSettings}>
-          <Icon as={Reset} w={6} h={6} />
-        </Button>
+          <Button
+            isIcon
+            onClick={toggleFitMode}
+            aria-label={fitMode === 'width' ? 'Fit to height' : 'Fit to width'}
+          >
+            <Icon
+              as={FitHeightWidth}
+              fitMode={fitMode === 'width' ? 'width' : 'height'}
+              w={6}
+              h={6}
+            />
+          </Button>
+        </Tooltip>
+        <Tooltip content="Reset settings">
+          <Button isIcon onClick={navigator.resetSettings}>
+            <Icon as={Reset} w={6} h={6} />
+          </Button>
+        </Tooltip>
       </HStack>
       <HStack mx="auto" spacing={2}>
-        <Button
-          onClick={pageUp}
-          aria-label="Previous Page"
-          isDisabled={currentPage <= 1}
-          isIcon
-        >
-          <Icon as={PageUp} w={6} h={6} />
-        </Button>
+        <Tooltip content="Previous page">
+          <Button
+            onClick={pageUp}
+            aria-label="Previous page"
+            isDisabled={currentPage <= 1}
+            isIcon
+          >
+            <Icon as={PageUp} w={6} h={6} />
+          </Button>
+        </Tooltip>
         <HStack color="ui.white" spacing={2} fontSize="sm" alignItems="center">
           <Input
             aria-label="Current page number"
@@ -158,38 +167,50 @@ export default function Header(
           <Text>/</Text>
           <Text>{totalPages}</Text>
         </HStack>
-        <Button
-          onClick={pageDown}
-          aria-label="Next Page"
-          isDisabled={currentPage >= totalPages}
-          isIcon
-        >
-          <Icon as={PageDown} w={6} h={6} />
-        </Button>
+        <Tooltip content="Next page">
+          <Button
+            onClick={pageDown}
+            aria-label="Next page"
+            isDisabled={currentPage >= totalPages}
+            isIcon
+          >
+            <Icon as={PageDown} w={6} h={6} />
+          </Button>
+        </Tooltip>
       </HStack>
       <HStack ml="auto" spacing={2}>
-        <Button isIcon>
-          <Icon as={Search} w={6} h={6} />
-        </Button>
+        <Tooltip content="Search inside">
+          <Button isIcon>
+            <Icon as={Search} w={6} h={6} />
+          </Button>
+        </Tooltip>
         <TableOfContent
           containerRef={containerRef}
           navigator={navigator}
           manifest={manifest}
         />
-        <Button
-          aria-expanded={isFullscreen}
-          aria-label="Toggle full screen"
-          border="none"
-          bgColor={mainBgColor}
-          onClick={toggleFullScreen}
-          isIcon
+        <Tooltip
+          content={
+            isFullscreen ? 'Exit full screen mode' : 'Enter full screen mode'
+          }
         >
-          <Icon
-            as={isFullscreen ? ToggleFullScreenExit : ToggleFullScreen}
-            w={6}
-            h={6}
-          />
-        </Button>
+          <Button
+            aria-expanded={isFullscreen}
+            aria-label={
+              isFullscreen ? 'Exit full screen mode' : 'Enter full screen mode'
+            }
+            border="none"
+            bgColor={mainBgColor}
+            onClick={toggleFullScreen}
+            isIcon
+          >
+            <Icon
+              as={isFullscreen ? ToggleFullScreenExit : ToggleFullScreen}
+              w={6}
+              h={6}
+            />
+          </Button>
+        </Tooltip>
         {type === 'HTML' && <SettingsCard {...props} />}
       </HStack>
     </HeaderWrapper>

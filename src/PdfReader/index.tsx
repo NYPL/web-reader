@@ -11,8 +11,6 @@ import 'react-pdf/dist/Page/TextLayer.css';
 import {
   DEFAULT_HEIGHT,
   DEFAULT_SHOULD_GROW_WHEN_SCROLLING,
-  FOOTER_HEIGHT,
-  HEADER_HEIGHT,
   MAIN_CONTENT_ID,
 } from '../constants';
 import LoadingSkeleton from '../ui/LoadingSkeleton';
@@ -69,6 +67,7 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
   const isFetching = !state.resource;
   const isParsed = typeof state.numPages === 'number';
   const [containerRef, containerSize] = useMeasure<HTMLDivElement>();
+  const [pageHeight, setPageHeight] = React.useState<number>(0);
 
   // dispatch action when arguments change
   React.useEffect(() => {
@@ -153,6 +152,24 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
   React.useEffect(() => {
     resizePage(containerSize, state.fitMode);
   }, [containerSize, resizePage, state.fitMode]);
+
+  const setInitialPageHeight = React.useCallback(() => {
+    if (
+      pageHeight === 0 &&
+      state.pdfWidth &&
+      state.pdfHeight &&
+      containerSize.width
+    ) {
+      const margin = 16;
+      const aspectRatio = state.pdfHeight / state.pdfWidth;
+      const initialPageHeight = (containerSize.width - margin) * aspectRatio;
+      setPageHeight(initialPageHeight);
+    }
+  }, [pageHeight, state.pdfWidth, state.pdfHeight, containerSize.width]);
+
+  React.useEffect(() => {
+    setInitialPageHeight();
+  }, [setInitialPageHeight]);
 
   /**
    * Update the atStart/atEnd state to tell the UI whether to show the prev/next buttons
@@ -252,7 +269,7 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
   const intersectionRatios = React.useRef<{ [page: number]: number }>({});
   const lastMostVisiblePage = React.useRef<number>(state.pageNumber);
 
-  const handlePageInView = React.useCallback(
+  const onInView = React.useCallback(
     (pageNum: number, ratio: number) => {
       if (!state.settings?.isScrolling) return;
       intersectionRatios.current[pageNum] = ratio;
@@ -363,9 +380,6 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
     }
   }
 
-  const shouldGrow = state.settings?.isScrolling && growWhenScrolling;
-  const finalHeight = shouldGrow ? 'initial' : height;
-
   // the reader is active but loading a page
   return {
     type: 'PDF',
@@ -380,18 +394,15 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
         tabIndex={-1}
         id={MAIN_CONTENT_ID}
         ref={containerRef}
-        height={finalHeight}
+        height={pageHeight}
+        sx={{
+          '.react-pdf__Document': {
+            height: `${pageHeight}px`,
+            overflowX: 'hidden',
+            overflowY: 'auto',
+          },
+        }}
       >
-        {/* FIXME: POC, update this with more a react proach. chakra.factory throws memory leak error.*/}
-        <style>
-          {`
-            .react-pdf__Document {
-              height: calc(100vh - ${HEADER_HEIGHT + FOOTER_HEIGHT}px);
-              overflow-x: hidden;
-              overflow-y: auto;
-            }
-          `}
-        </style>
         <Document
           file={state.resource}
           onLoadSuccess={onDocumentLoadSuccess}
@@ -403,14 +414,15 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
                 Array.from(new Array(state.numPages), (_, index) => (
                   <ScrollPage
                     key={`page_${index + 1}`}
-                    width={containerSize.width}
+                    width={containerSize.width - 16}
                     height={state.pageHeight}
                     placeholderHeight={state.pdfHeight}
                     placeholderWidth={state.pdfWidth}
                     scale={state.scale}
                     pageNumber={index + 1}
                     onLoadSuccess={onRenderSuccess}
-                    onInView={handlePageInView}
+                    allowInView={!isFetching}
+                    onInView={onInView}
                     fitMode={state.fitMode}
                   />
                 ))}

@@ -48,6 +48,9 @@ const colors: Colors = {
     },
     typography: {
       heading: '#000',
+      inverse: {
+        heading: '#E9E9E9',
+      },
     },
   },
   dark: {

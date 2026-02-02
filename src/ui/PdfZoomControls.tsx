@@ -4,6 +4,7 @@ import { PdfNavigator } from '../types';
 import Button from './Button';
 import ZoomIn from './icons/ZoomIn';
 import ZoomOut from './icons/ZoomOut';
+import Tooltip from './Tooltip';
 
 export type PdfZoomControlsProps = {
   navigator: PdfNavigator;
@@ -17,12 +18,16 @@ export default function PdfZoomControls(
 
   return (
     <ButtonGroup display="flex" spacing={2}>
-      <Button aria-label="Zoom In" onClick={zoomIn} isIcon>
-        <Icon as={ZoomIn} w={6} h={6} />
-      </Button>
-      <Button aria-label="Zoom Out" onClick={zoomOut} isIcon>
-        <Icon as={ZoomOut} w={6} h={6} />
-      </Button>
+      <Tooltip content="Zoom in">
+        <Button aria-label="Zoom in" onClick={zoomIn} isIcon>
+          <Icon as={ZoomIn} w={6} h={6} />
+        </Button>
+      </Tooltip>
+      <Tooltip content="Zoom out">
+        <Button aria-label="Zoom out" onClick={zoomOut} isIcon>
+          <Icon as={ZoomOut} w={6} h={6} />
+        </Button>
+      </Tooltip>
     </ButtonGroup>
   );
 }

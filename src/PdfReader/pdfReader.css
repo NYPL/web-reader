@@ -1,4 +1,10 @@
 .react-pdf__Document {
+  scrollbar-color: #8d8d8d #424242;
+  display: flex;
+  flex-direction: column;
+  background: #252525;
+  gap: 8px;
+
   > div {
     background: #252525;
   }
