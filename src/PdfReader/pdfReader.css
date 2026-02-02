@@ -1,9 +1,15 @@
+.react-pdf__Document {
+  > div {
+    background: #252525;
+  }
+}
+
 .react-pdf__Page {
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
-  background: #424242 !important;
+  background: #252525 !important;
 }
 
 .react-pdf__Page__canvas {
