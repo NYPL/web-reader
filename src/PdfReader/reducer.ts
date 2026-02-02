@@ -1,4 +1,4 @@
-import { DEFAULT_SETTINGS } from '../constants';
+import { DEFAULT_FIT_MODE, DEFAULT_SETTINGS } from '../constants';
 import {
   getIndexFromHref,
   getPageNumberFromHref,
@@ -56,7 +56,7 @@ export function makePdfReducer(
           pageWidth: undefined,
           pdfHeight: 0,
           pdfWidth: 0,
-          fitMode: 'width',
+          fitMode: DEFAULT_FIT_MODE,
         };
       }
       return newState;
@@ -79,7 +79,7 @@ export function makePdfReducer(
           atStart: true,
           atEnd: false,
           rendered: false,
-          fitMode: 'width',
+          fitMode: DEFAULT_FIT_MODE,
         };
       }
 

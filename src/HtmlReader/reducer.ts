@@ -1,4 +1,9 @@
-import { DEFAULT_SETTINGS } from '../constants';
+import {
+  DEFAULT_FIT_MODE,
+  DEFAULT_FONT_HEIGHT,
+  DEFAULT_FONT_WIDTH,
+  DEFAULT_SETTINGS,
+} from '../constants';
 import {
   getLocalStorageLocation,
   getLocalStorageSettings,
@@ -516,6 +521,7 @@ export default function makeHtmlReducer(
         return {
           ...state,
           settings: DEFAULT_SETTINGS,
+          fitMode: DEFAULT_FIT_MODE,
         };
 
       case 'SET_FONT_FAMILY':
@@ -580,6 +586,13 @@ export default function makeHtmlReducer(
         return {
           ...state,
           fitMode: action.fitMode,
+          settings: {
+            ...state.settings,
+            fontSize:
+              action.fitMode === 'height'
+                ? DEFAULT_FONT_HEIGHT
+                : DEFAULT_FONT_WIDTH,
+          },
         };
     }
   };
@@ -601,5 +614,5 @@ export const inactiveState: InactiveState = {
   state: 'INACTIVE',
   location: undefined,
   settings: undefined,
-  fitMode: 'width',
+  fitMode: DEFAULT_FIT_MODE,
 };

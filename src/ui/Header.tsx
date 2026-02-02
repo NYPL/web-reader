@@ -94,7 +94,13 @@ export default function Header(
   };
 
   return (
-    <HeaderWrapper bg={mainBgColor} px={4} py={2}>
+    <HeaderWrapper
+      bg={mainBgColor}
+      borderBottom="1px solid"
+      borderColor="ui.gray.x-dark"
+      px={4}
+      py={2}
+    >
       <SkipNavigation />
       <HStack mr="auto" spacing={2}>
         {type === 'PDF' && <PdfZoomControls navigator={navigator} />}

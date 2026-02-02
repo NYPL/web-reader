@@ -19,6 +19,11 @@ export const DEFAULT_SETTINGS: ReaderSettings = {
   fontFamily: 'publisher',
 };
 
+export const DEFAULT_FIT_MODE = 'height';
+
+export const DEFAULT_FONT_HEIGHT = 100;
+export const DEFAULT_FONT_WIDTH = 250;
+
 export const FONT_DETAILS = {
   publisher: {
     heading: "Publisher's default font",
