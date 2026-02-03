@@ -136,12 +136,14 @@ const PdfReaders = () => {
             instead of taking over the full page. It is fixed height, which
             means it will not grow to fit content in scrolling mode.
           </Text>
-          <WebReader
-            webpubManifestUrl={`${origin}/samples/pdf/single-resource-long.json`}
-            proxyUrl={pdfProxyUrl}
-            pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.mjs`}
-            growWhenScrolling={false}
-          />
+          <Box margin="0 auto" width="50%">
+            <WebReader
+              webpubManifestUrl={`${origin}/samples/pdf/single-resource-short.json`}
+              proxyUrl={pdfProxyUrl}
+              pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.mjs`}
+              growWhenScrolling={false}
+            />
+          </Box>
           <Heading>The page continues...</Heading>
           <Text as="p">Here is some more content below the reader</Text>
         </Box>

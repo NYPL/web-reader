@@ -13,7 +13,7 @@ export type ColorMode = 'night' | 'sepia' | 'day';
 
 export type FontFamily = 'publisher' | 'serif' | 'sans-serif' | 'open-dyslexic';
 
-export type FitMode = 'width' | 'height';
+export type FitMode = 'width' | 'height' | undefined;
 
 export type Navigator = {
   goForward: () => void;

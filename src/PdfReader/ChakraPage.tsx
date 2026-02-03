@@ -1,8 +1,7 @@
 import { chakra, shouldForwardProp } from '@chakra-ui/react';
 import React from 'react';
 import { Page, PageProps } from 'react-pdf';
-
-type FitMode = 'width' | 'height';
+import { FitMode } from '../types';
 
 interface ChakraPageProps extends Omit<PageProps, 'width' | 'height'> {
   width?: number;

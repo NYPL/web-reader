@@ -12,6 +12,7 @@ import {
   DEFAULT_HEIGHT,
   DEFAULT_SHOULD_GROW_WHEN_SCROLLING,
   MAIN_CONTENT_ID,
+  READER_MARGIN,
 } from '../constants';
 import LoadingSkeleton from '../ui/LoadingSkeleton';
 import { fetchAsUint8Array, getResourceUrl, SCALE_STEP } from './lib';
@@ -128,48 +129,49 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
   }, [state.resourceIndex, manifest, proxyUrl, getContent]);
 
   /**
-   * calculate the height or width of the pdf page in paginated mode.
+   * calculate the height or width of the pdf page to fit to dimensions.
    *  - if the page's aspect ratio is taller than the container's, we will constrain
    *    the page to the height of the container.
    *  - if the page's aspect ratio is wider than the container's, we will constrain
    *    the page to the width of the container
    */
   const resizePage = React.useCallback(
-    (containerSize: { width: number; height: number }, fitMode: FitMode) => {
+    (
+      containerSize: { width: number; height: number },
+      fitMode: FitMode,
+      scale: number
+    ) => {
       let width, height;
       if (fitMode === 'width') {
-        width = Math.round(containerSize.width);
+        width = Math.round((containerSize.width - READER_MARGIN) * scale);
         height = undefined;
+      } else if (fitMode === 'height' && state.pdfWidth && state.pdfHeight) {
+        const aspectRatio = state.pdfHeight / state.pdfWidth;
+        width = Math.round(
+          ((containerSize.height - READER_MARGIN) / aspectRatio) * scale
+        );
+        height = Math.round((containerSize.height - READER_MARGIN) * scale);
       } else {
         width = undefined;
-        height = Math.round(containerSize.height);
+        height = undefined;
       }
       dispatch({ type: 'RESIZE_PAGE', width, height });
     },
-    []
+    [state.pdfWidth, state.pdfHeight]
   );
 
   React.useEffect(() => {
-    resizePage(containerSize, state.fitMode);
-  }, [containerSize, resizePage, state.fitMode]);
-
-  const setInitialPageHeight = React.useCallback(() => {
-    if (
-      pageHeight === 0 &&
-      state.pdfWidth &&
-      state.pdfHeight &&
-      containerSize.width
-    ) {
-      const margin = 16;
-      const aspectRatio = state.pdfHeight / state.pdfWidth;
-      const initialPageHeight = (containerSize.width - margin) * aspectRatio;
-      setPageHeight(initialPageHeight);
-    }
-  }, [pageHeight, state.pdfWidth, state.pdfHeight, containerSize.width]);
+    resizePage(containerSize, state.fitMode, state.scale);
+  }, [containerSize, resizePage, state.fitMode, state.scale]);
 
   React.useEffect(() => {
-    setInitialPageHeight();
-  }, [setInitialPageHeight]);
+    if (state.pdfWidth && state.pdfHeight && pageHeight === 0) {
+      const aspectRatio = state.pdfHeight / state.pdfWidth;
+      const initialPageHeight =
+        (containerSize.width - READER_MARGIN) * aspectRatio;
+      setPageHeight(Math.round(initialPageHeight));
+    }
+  }, [state.pdfWidth, state.pdfHeight, containerSize.width, pageHeight]);
 
   /**
    * Update the atStart/atEnd state to tell the UI whether to show the prev/next buttons
@@ -376,7 +378,7 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
         width: Math.round(page.width),
       });
 
-      resizePage(containerSize, state.fitMode);
+      resizePage(containerSize, state.fitMode, state.scale);
     }
   }
 
@@ -401,6 +403,11 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
             overflowX: 'hidden',
             overflowY: 'auto',
           },
+          '.react-pdf__Page': {
+            width: `${
+              containerSize.width ? containerSize.width - READER_MARGIN : 0
+            }px`,
+          },
         }}
       >
         <Document
@@ -414,7 +421,7 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
                 Array.from(new Array(state.numPages), (_, index) => (
                   <ScrollPage
                     key={`page_${index + 1}`}
-                    width={containerSize.width - 16}
+                    width={state.pageWidth}
                     height={state.pageHeight}
                     placeholderHeight={state.pdfHeight}
                     placeholderWidth={state.pdfWidth}

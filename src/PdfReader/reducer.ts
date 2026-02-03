@@ -193,6 +193,7 @@ export function makePdfReducer(
         return {
           ...state,
           scale: action.scale,
+          fitMode: undefined,
         };
 
       case 'RESET_SETTINGS':
@@ -224,7 +225,7 @@ export function makePdfReducer(
         };
 
       case 'SET_FIT_MODE':
-        return { ...state, fitMode: action.fitMode };
+        return { ...state, fitMode: action.fitMode, scale: 1 };
 
       case 'BOOK_BOUNDARY_CHANGED':
         return {
