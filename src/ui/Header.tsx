@@ -128,11 +128,13 @@ export default function Header(
             />
           </Button>
         </Tooltip>
-        <Tooltip content="Reset settings">
-          <Button isIcon onClick={navigator.resetSettings}>
-            <Icon as={Reset} w={6} h={6} />
-          </Button>
-        </Tooltip>
+        {type === 'PDF' && (
+          <Tooltip content="Rotate left">
+            <Button isIcon onClick={navigator.rotateLeft}>
+              <Icon as={Reset} w={6} h={6} />
+            </Button>
+          </Tooltip>
+        )}
       </HStack>
       <HStack mx="auto" spacing={2}>
         <Tooltip content="Previous page">

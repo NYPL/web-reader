@@ -57,6 +57,7 @@ export function makePdfReducer(
           pdfHeight: 0,
           pdfWidth: 0,
           fitMode: DEFAULT_FIT_MODE,
+          rotation: 0,
         };
       }
       return newState;
@@ -80,6 +81,7 @@ export function makePdfReducer(
           atEnd: false,
           rendered: false,
           fitMode: DEFAULT_FIT_MODE,
+          rotation: 0,
         };
       }
 
@@ -196,16 +198,16 @@ export function makePdfReducer(
           fitMode: undefined,
         };
 
-      case 'RESET_SETTINGS':
-        if (state.state === 'INACTIVE') {
-          return handleInvalidTransition(state, action);
-        }
+      // case 'RESET_SETTINGS':
+      //   if (state.state === 'INACTIVE') {
+      //     return handleInvalidTransition(state, action);
+      //   }
 
-        return {
-          ...state,
-          settings: DEFAULT_SETTINGS,
-          scale: 1,
-        };
+      //   return {
+      //     ...state,
+      //     settings: DEFAULT_SETTINGS,
+      //     scale: 1,
+      //   };
 
       case 'PAGE_LOAD_SUCCESS':
         return {
@@ -226,6 +228,18 @@ export function makePdfReducer(
 
       case 'SET_FIT_MODE':
         return { ...state, fitMode: action.fitMode, scale: 1 };
+
+      case 'ROTATE_LEFT':
+        return {
+          ...state,
+          rotation: ((state.rotation ?? 0) - 90 + 360) % 360,
+          fitMode:
+            state.fitMode === 'width'
+              ? 'height'
+              : state.fitMode === 'height'
+              ? 'width'
+              : undefined,
+        };
 
       case 'BOOK_BOUNDARY_CHANGED':
         return {

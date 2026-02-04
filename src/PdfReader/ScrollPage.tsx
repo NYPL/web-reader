@@ -15,6 +15,7 @@ type ScrollPageProps = {
   allowInView?: boolean;
   onInView?: (pageNumber: number, ratio: number) => void;
   fitMode: FitMode;
+  rotate: number;
 };
 
 type PlaceholderProps = {
@@ -44,6 +45,7 @@ const ScrollPage: FC<ScrollPageProps> = ({
   allowInView,
   onInView,
   fitMode,
+  rotate,
 }) => {
   const { ref, inView, entry } = useInView({
     threshold: Array.from({ length: 11 }, (_, i) => i * 0.1),
@@ -75,6 +77,7 @@ const ScrollPage: FC<ScrollPageProps> = ({
           height={height}
           onLoadSuccess={handleLoadSuccess}
           fitMode={fitMode}
+          rotate={rotate}
         />
       ) : (
         <Placeholder

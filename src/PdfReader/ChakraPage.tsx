@@ -28,6 +28,7 @@ const ChakraPage = chakra(
           'scale',
           'fitMode',
           'pageNumber',
+          'rotate',
           'onLoadSuccess',
           'renderAnnotationLayer',
           'renderTextLayer',

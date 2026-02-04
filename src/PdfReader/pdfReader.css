@@ -15,8 +15,11 @@
   background: #252525 !important;
 }
 
-.react-pdf__Page canvas,
-.react-pdf__Page .textLayer {
-  display: block;
-  margin: 0 auto;
+.react-pdf__Page {
+  canvas,
+  .textLayer,
+  .annotationLayer {
+    display: block;
+    margin: 0 auto;
+  }
 }

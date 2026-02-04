@@ -55,7 +55,7 @@ export type PdfReaderAction =
   | { type: 'PDF_PARSED'; numPages: number }
   | { type: 'PDF_LOAD_ERROR'; error: Error }
   | { type: 'SET_SCALE'; scale: number }
-  | { type: 'RESET_SETTINGS' }
+  // | { type: 'RESET_SETTINGS' } may be needed in future
   | { type: 'SET_SCROLL'; isScrolling: boolean }
   | { type: 'PAGE_LOAD_SUCCESS'; height: number; width: number }
   | {
@@ -64,4 +64,5 @@ export type PdfReaderAction =
       width: number | undefined;
     }
   | { type: 'SET_FIT_MODE'; fitMode: FitMode }
+  | { type: 'ROTATE_LEFT' }
   | { type: 'BOOK_BOUNDARY_CHANGED'; atStart: boolean; atEnd: boolean };

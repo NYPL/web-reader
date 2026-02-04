@@ -139,33 +139,47 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
     (
       containerSize: { width: number; height: number },
       fitMode: FitMode,
-      scale: number
+      rotation: number
     ) => {
-      let width, height;
-      if (fitMode === 'width') {
-        width = Math.round((containerSize.width - READER_MARGIN) * scale);
-        height = undefined;
-      } else if (fitMode === 'height' && state.pdfWidth && state.pdfHeight) {
-        const aspectRatio = state.pdfHeight / state.pdfWidth;
-        width = Math.round(
-          ((containerSize.height - READER_MARGIN) / aspectRatio) * scale
-        );
-        height = Math.round((containerSize.height - READER_MARGIN) * scale);
-      } else {
-        width = undefined;
-        height = undefined;
+      if (!fitMode) return;
+
+      let width, height, aspectRatio;
+      const isRotated = rotation % 180 !== 0;
+      const pdfWidth = isRotated ? state.pdfHeight : state.pdfWidth;
+      const pdfHeight = isRotated ? state.pdfWidth : state.pdfHeight;
+
+      if (fitMode === 'width' && containerSize.width) {
+        width = Math.round(containerSize.width - READER_MARGIN);
+        aspectRatio = pdfHeight / pdfWidth;
+        height = Math.round(width * aspectRatio);
+      } else if (
+        fitMode === 'height' &&
+        pdfWidth &&
+        pdfHeight &&
+        containerSize.height
+      ) {
+        aspectRatio = pdfHeight / pdfWidth;
+        height = Math.round(containerSize.height - READER_MARGIN);
+        width = Math.round(height / aspectRatio);
       }
-      dispatch({ type: 'RESIZE_PAGE', width, height });
+      if (width || height) {
+        dispatch({ type: 'RESIZE_PAGE', width, height });
+      }
     },
     [state.pdfWidth, state.pdfHeight]
   );
 
   React.useEffect(() => {
-    resizePage(containerSize, state.fitMode, state.scale);
-  }, [containerSize, resizePage, state.fitMode, state.scale]);
+    resizePage(containerSize, state.fitMode, state.rotation ?? 0);
+  }, [containerSize, resizePage, state.fitMode, state.rotation]);
 
+  /**
+   * Sets the initial page height for the PDF viewer based on the loaded PDF's aspect ratio
+   * and the current container width. This effect runs only once when the PDF's dimensions
+   * are first available and the page height has not yet been set.
+   */
   React.useEffect(() => {
-    if (state.pdfWidth && state.pdfHeight && pageHeight === 0) {
+    if (pageHeight === 0 && state.pdfWidth && state.pdfHeight) {
       const aspectRatio = state.pdfHeight / state.pdfWidth;
       const initialPageHeight =
         (containerSize.width - READER_MARGIN) * aspectRatio;
@@ -252,6 +266,10 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
     });
   }, [state.scale]);
 
+  const rotateLeft = React.useCallback(async () => {
+    dispatch({ type: 'ROTATE_LEFT' });
+  }, []);
+
   const goToPage = React.useCallback(async (href: string) => {
     dispatch({ type: 'GO_TO_HREF', href });
   }, []);
@@ -260,9 +278,9 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
     dispatch({ type: 'GO_TO_PAGE', page: page });
   }, []);
 
-  const resetSettings = React.useCallback(async () => {
-    dispatch({ type: 'RESET_SETTINGS' });
-  }, []);
+  // const resetSettings = React.useCallback(async () => {
+  //   dispatch({ type: 'RESET_SETTINGS' });
+  // }, []);
 
   const setFitMode = React.useCallback((mode: FitMode) => {
     dispatch({ type: 'SET_FIT_MODE', fitMode: mode });
@@ -378,7 +396,7 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
         width: Math.round(page.width),
       });
 
-      resizePage(containerSize, state.fitMode, state.scale);
+      resizePage(containerSize, state.fitMode, state.rotation ?? 0);
     }
   }
 
@@ -431,6 +449,7 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
                     allowInView={!isFetching}
                     onInView={onInView}
                     fitMode={state.fitMode}
+                    rotate={state.rotation ?? 0}
                   />
                 ))}
               {!state.settings.isScrolling && (
@@ -457,9 +476,10 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
       setScroll,
       zoomIn,
       zoomOut,
+      rotateLeft,
       goToPage,
       goToPageNumber,
-      resetSettings,
+      // resetSettings,
       setFitMode,
     },
     currentPage: state.pageNumber,
