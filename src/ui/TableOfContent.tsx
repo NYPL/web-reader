@@ -46,7 +46,7 @@ export default function TableOfContent({
               me={0}
               isIcon
             >
-              <Icon as={TableOfContents} w={6} h={6} />
+              <Icon as={TableOfContents} w={18} h={18} />
             </MenuButton>
           </Tooltip>
           <Portal containerRef={containerRef}>

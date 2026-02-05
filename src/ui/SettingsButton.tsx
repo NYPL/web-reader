@@ -1,4 +1,5 @@
 import {
+  Box,
   Icon,
   Popover,
   PopoverBody,
@@ -12,6 +13,7 @@ import Button from './Button';
 import useColorModeValue from './hooks/useColorModeValue';
 import HtmlSettings from './HtmlSettings';
 import { ReaderSettings } from './icons';
+import Tooltip from './Tooltip';
 
 type SettingsCardProps =
   | Pick<PDFActiveReader, 'navigator' | 'state' | 'type'>
@@ -53,29 +55,33 @@ export default function SettingsCard(
         preventOverflow
         strategy="fixed"
       >
-        <PopoverTrigger>
-          <Button
-            aria-label="Settings"
-            onClick={open}
-            /**
-             * preventDefault fixes a Chakra bug where in Safari,
-             * the PopoverTrigger will not close the Popover.
-             * The issue is described in
-             * https://github.com/chakra-ui/chakra-ui/issues/3461
-             * and the workaround can be found in
-             * https://github.com/chakra-ui/chakra-ui/issues/587.
-             * */
-            onMouseDown={(e: React.MouseEvent<HTMLButtonElement>) =>
-              e.preventDefault()
-            }
-            bg={mainBgColor}
-            border="none"
-            gap={[0, 0, 2]}
-            isIcon
-          >
-            <Icon as={ReaderSettings} w={6} h={6} />
-          </Button>
-        </PopoverTrigger>
+        <Tooltip content="Settings">
+          <Box display="inline-block">
+            <PopoverTrigger>
+              <Button
+                aria-label="Settings"
+                onClick={open}
+                /**
+                 * preventDefault fixes a Chakra bug where in Safari,
+                 * the PopoverTrigger will not close the Popover.
+                 * The issue is described in
+                 * https://github.com/chakra-ui/chakra-ui/issues/3461
+                 * and the workaround can be found in
+                 * https://github.com/chakra-ui/chakra-ui/issues/587.
+                 * */
+                onMouseDown={(e: React.MouseEvent<HTMLButtonElement>) =>
+                  e.preventDefault()
+                }
+                bg={mainBgColor}
+                border="none"
+                gap={[0, 0, 2]}
+                isIcon
+              >
+                <Icon as={ReaderSettings} w={18} h={18} />
+              </Button>
+            </PopoverTrigger>
+          </Box>
+        </Tooltip>
         <PopoverContent
           overflow="hidden"
           bgColor={contentBgColor}

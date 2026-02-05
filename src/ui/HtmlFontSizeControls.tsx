@@ -28,7 +28,7 @@ export default function HtmlFontSizeControls(
           onClick={increaseFontSize}
           isIcon
         >
-          <Icon as={ZoomIn} w={6} h={6} />
+          <Icon as={ZoomIn} w={18} h={18} />
         </Button>
       </Tooltip>
       <Tooltip content="Decrease font size">
@@ -37,7 +37,7 @@ export default function HtmlFontSizeControls(
           onClick={decreaseFontSize}
           isIcon
         >
-          <Icon as={ZoomOut} w={6} h={6} />
+          <Icon as={ZoomOut} w={18} h={18} />
         </Button>
       </Tooltip>
     </ButtonGroup>

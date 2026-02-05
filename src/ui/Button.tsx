@@ -29,7 +29,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           height: '2rem',
           width: '2rem',
         }
-      : {};
+      : {
+          border: '1px solid',
+          borderColor: 'ui.typography.body',
+        };
 
     return <ChakraButton ref={ref} variant="solid" {...iconProps} {...props} />;
   }

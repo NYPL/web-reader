@@ -20,12 +20,12 @@ export default function PdfZoomControls(
     <ButtonGroup display="flex" spacing={2}>
       <Tooltip content="Zoom in">
         <Button aria-label="Zoom in" onClick={zoomIn} isIcon>
-          <Icon as={ZoomIn} w={6} h={6} />
+          <Icon as={ZoomIn} w={18} h={18} />
         </Button>
       </Tooltip>
       <Tooltip content="Zoom out">
         <Button aria-label="Zoom out" onClick={zoomOut} isIcon>
-          <Icon as={ZoomOut} w={6} h={6} />
+          <Icon as={ZoomOut} w={18} h={18} />
         </Button>
       </Tooltip>
     </ButtonGroup>

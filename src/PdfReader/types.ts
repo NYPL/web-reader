@@ -64,5 +64,5 @@ export type PdfReaderAction =
       width: number | undefined;
     }
   | { type: 'SET_FIT_MODE'; fitMode: FitMode }
-  | { type: 'ROTATE_LEFT' }
+  | { type: 'ROTATE_COUNTER_CLOCKWISE' }
   | { type: 'BOOK_BOUNDARY_CHANGED'; atStart: boolean; atEnd: boolean };

@@ -47,6 +47,7 @@ const colors: Colors = {
       'xx-light-cool': '#FAFAFA',
     },
     typography: {
+      body: '#2E2E2E',
       heading: '#000',
       inverse: {
         heading: '#E9E9E9',
@@ -74,6 +75,12 @@ const colors: Colors = {
     primary: '#C60917',
     secondary: '#760000',
     'nypl-red': '#D0343A',
+  },
+
+  section: {
+    research: {
+      secondary: '#006166',
+    },
   },
 
   /**

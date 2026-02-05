@@ -8,13 +8,20 @@ const Reset = (props: React.ComponentProps<typeof Icon>): ReactElement => (
     fill="none"
     {...props}
   >
-    <path
-      d="M1.5 7.5C1.5 7.5 3.00374 5.45116 4.22538 4.22868C5.44702 3.0062 7.1352 2.25 9 2.25C12.7279 2.25 15.75 5.27208 15.75 9C15.75 12.7279 12.7279 15.75 9 15.75C5.92268 15.75 3.32633 13.6907 2.51382 10.875M1.5 7.5V3M1.5 7.5H6"
-      stroke="white"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
+    <g clipPath="url(#clip0_12529_2809)">
+      <path
+        d="M1.5 7.5C1.5 7.5 1.59099 6.86307 4.22703 4.22703C6.86307 1.59099 11.1369 1.59099 13.773 4.22703C14.7069 5.16099 15.31 6.30054 15.5821 7.5M1.5 7.5V3M1.5 7.5H6M16.5 10.5C16.5 10.5 16.409 11.1369 13.773 13.773C11.1369 16.409 6.86307 16.409 4.22703 13.773C3.29307 12.839 2.69002 11.6995 2.41787 10.5M16.5 10.5V15M16.5 10.5H12"
+        stroke="#2E2E2E"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </g>
+    <defs>
+      <clipPath id="clip0_12529_2809">
+        <rect width="18" height="18" fill="white" />
+      </clipPath>
+    </defs>
   </Icon>
 );
 

@@ -1,9 +1,10 @@
-import { Box, Heading, Text } from '@chakra-ui/react';
+import { Box, ButtonGroup, Heading, Icon, Text } from '@chakra-ui/react';
 import * as React from 'react';
-import { FONT_DETAILS } from '../constants';
-import { HtmlNavigator, ReaderState } from '../types';
+import { DEFAULT_SETTINGS, FONT_DETAILS } from '../constants';
+import { HtmlNavigator, ReaderSettings, ReaderState } from '../types';
+import Button from './Button';
 import useColorModeValue from './hooks/useColorModeValue';
-import { Day, Night, Sepia } from './icons';
+import { Day, Night, Reset, Sepia, ZoomIn, ZoomOut } from './icons';
 import Tabs from './Tabs';
 import { ColorModeToggleButton } from './ToggleButton';
 import ToggleGroup from './ToggleGroup';
@@ -30,7 +31,13 @@ export default function HtmlSettings(
   if (!readerState.settings) return null;
   const { colorMode, fontFamily } = readerState.settings;
 
-  const { setFontFamily, setColorMode } = navigator;
+  const {
+    decreaseFontSize,
+    increaseFontSize,
+    resetSettings,
+    setFontFamily,
+    setColorMode,
+  } = navigator;
 
   return (
     <>
@@ -66,6 +73,7 @@ export default function HtmlSettings(
         display="flex"
         flexDirection="column"
         p={4}
+        gap={4}
       >
         <Heading
           as="h3"
@@ -116,7 +124,86 @@ export default function HtmlSettings(
             textColor="ui.black"
           />
         </ToggleGroup>
+        <ButtonGroup display="flex" spacing={4}>
+          <Button
+            onClick={resetSettings}
+            aria-label="Reset settings"
+            bgColor="ui.white"
+            width="150px"
+          >
+            <Icon
+              as={Reset}
+              w={18}
+              h={18}
+              mr={1.5}
+              sx={{
+                path: { stroke: 'ui.typography.body' },
+              }}
+            />
+            Reset all
+          </Button>
+          <Button
+            onClick={decreaseFontSize}
+            aria-label="Increase text"
+            bgColor="ui.white"
+            width="150px"
+            sx={{
+              _active: {
+                bgColor: checkedButtonBgColor,
+              },
+            }}
+          >
+            <Icon
+              as={ZoomIn}
+              w={18}
+              h={18}
+              mr={1.5}
+              sx={{
+                path: { stroke: 'ui.typography.body' },
+              }}
+            />
+            Increase text
+          </Button>
+          <Button
+            onClick={increaseFontSize}
+            aria-label="decrease text"
+            bgColor="ui.white"
+            width="150px"
+            sx={{
+              _active: {
+                bgColor: checkedButtonBgColor,
+              },
+            }}
+          >
+            <Icon
+              as={ZoomOut}
+              w={18}
+              h={18}
+              mr={1.5}
+              sx={{
+                path: { stroke: 'ui.typography.body' },
+              }}
+            />
+            Decrease text
+          </Button>
+        </ButtonGroup>
       </Box>
     </>
   );
 }
+
+// Returns true if the reader's settings match the default settings
+const areSettingsDefault = (readerSettings: ReaderSettings) => {
+  if (!readerSettings) {
+    return false;
+  }
+
+  let setting: keyof ReaderSettings;
+
+  for (setting in DEFAULT_SETTINGS) {
+    if (readerSettings[setting] !== DEFAULT_SETTINGS[setting]) {
+      return false;
+    }
+  }
+  return true;
+};

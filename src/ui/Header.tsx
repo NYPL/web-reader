@@ -8,8 +8,7 @@ import HtmlFontSizeControls from './HtmlFontSizeControls';
 import {
   PageDown,
   PageUp,
-  Reset,
-  Search,
+  Rotate,
   ToggleFullScreen,
   ToggleFullScreenExit,
 } from './icons';
@@ -123,15 +122,15 @@ export default function Header(
             <Icon
               as={FitHeightWidth}
               fitMode={fitMode === 'width' ? 'width' : 'height'}
-              w={6}
-              h={6}
+              w={18}
+              h={18}
             />
           </Button>
         </Tooltip>
         {type === 'PDF' && (
           <Tooltip content="Rotate left">
             <Button isIcon onClick={navigator.rotateLeft}>
-              <Icon as={Reset} w={6} h={6} />
+              <Icon as={Rotate} w={18} h={18} />
             </Button>
           </Tooltip>
         )}
@@ -144,7 +143,7 @@ export default function Header(
             isDisabled={currentPage <= 1}
             isIcon
           >
-            <Icon as={PageUp} w={6} h={6} />
+            <Icon as={PageUp} w={18} h={18} />
           </Button>
         </Tooltip>
         <HStack color="ui.white" spacing={2} fontSize="sm" alignItems="center">
@@ -176,16 +175,11 @@ export default function Header(
             isDisabled={currentPage >= totalPages}
             isIcon
           >
-            <Icon as={PageDown} w={6} h={6} />
+            <Icon as={PageDown} w={18} h={18} />
           </Button>
         </Tooltip>
       </HStack>
       <HStack ml="auto" spacing={2}>
-        <Tooltip content="Search inside">
-          <Button isIcon>
-            <Icon as={Search} w={6} h={6} />
-          </Button>
-        </Tooltip>
         <TableOfContent
           containerRef={containerRef}
           navigator={navigator}
@@ -208,8 +202,8 @@ export default function Header(
           >
             <Icon
               as={isFullscreen ? ToggleFullScreenExit : ToggleFullScreen}
-              w={6}
-              h={6}
+              w={18}
+              h={18}
             />
           </Button>
         </Tooltip>

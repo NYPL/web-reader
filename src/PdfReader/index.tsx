@@ -267,7 +267,7 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
   }, [state.scale]);
 
   const rotateLeft = React.useCallback(async () => {
-    dispatch({ type: 'ROTATE_LEFT' });
+    dispatch({ type: 'ROTATE_COUNTER_CLOCKWISE' });
   }, []);
 
   const goToPage = React.useCallback(async (href: string) => {

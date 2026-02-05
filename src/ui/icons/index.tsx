@@ -10,6 +10,7 @@ import Previous from './Previous';
 import ReaderSettings from './ReaderSettings';
 import ReduceFont from './ReduceFont';
 import Reset from './Reset';
+import Rotate from './Rotate';
 import Search from './Search';
 import Sepia from './Sepia';
 import TableOfContents from './TableOfContents';
@@ -31,6 +32,7 @@ export {
   ReaderSettings,
   ReduceFont,
   Reset,
+  Rotate,
   Search,
   Sepia,
   TableOfContents,

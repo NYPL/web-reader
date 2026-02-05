@@ -229,7 +229,7 @@ export function makePdfReducer(
       case 'SET_FIT_MODE':
         return { ...state, fitMode: action.fitMode, scale: 1 };
 
-      case 'ROTATE_LEFT':
+      case 'ROTATE_COUNTER_CLOCKWISE':
         return {
           ...state,
           rotation: ((state.rotation ?? 0) - 90 + 360) % 360,

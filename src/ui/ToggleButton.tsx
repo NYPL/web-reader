@@ -61,8 +61,8 @@ function ToggleButton(
               as={icon}
               verticalAlign="middle"
               mr={1.5}
-              w={6}
-              h={6}
+              w={18}
+              h={18}
               fill={iconFill && iconFill}
             />
           )}
@@ -82,10 +82,8 @@ export const ColorModeToggleButton: typeof ToggleButton = ({
       sx={{
         _checked: {
           bgColor,
-          p: {
-            textDecoration: 'underline',
-            textUnderlinePosition: 'under',
-          },
+          border: '2px solid',
+          borderColor: 'section.research.secondary',
         },
       }}
       {...rest}
