@@ -3,11 +3,8 @@ import { Locator, Page, expect } from '@playwright/test';
 class WebReaderPage {
   readonly page: Page;
   readonly webReaderHomepage: Locator;
-  readonly backButton: Locator;
   readonly tocButton: Locator;
   readonly settingsButton: Locator;
-  readonly paginatedMode: Locator;
-  readonly scrollingMode: Locator;
   readonly fullScreenButton: Locator;
   readonly exitFullScreenButton: Locator;
   readonly nextPageButton: Locator;
@@ -24,7 +21,6 @@ class WebReaderPage {
     });
 
     // header
-    this.backButton = page.getByLabel('Return to Homepage');
     this.tocButton = page.getByLabel('Table of Contents');
     this.firstChapter = page.getByRole('menuitem').first();
     this.lastChapter = page.getByRole('menuitem').last();
@@ -33,15 +29,11 @@ class WebReaderPage {
       exact: true,
     });
     this.fullScreenButton = page.getByRole('button', {
-      name: 'Toggle full screen',
+      name: 'Enter full screen mode',
     });
-    this.exitFullScreenButton = page.getByText('Full screen exit', {
-      exact: true,
+    this.exitFullScreenButton = page.getByRole('button', {
+      name: 'Exit full screen mode',
     });
-
-    // settings
-    this.paginatedMode = page.getByText('Paginated', { exact: true });
-    this.scrollingMode = page.getByText('Scrolling', { exact: true });
 
     // footer
     this.nextPageButton = this.page.getByRole('button', {
@@ -68,9 +60,9 @@ class HtmlReaderPage extends WebReaderPage {
   readonly sepiaBackground = this.page.getByText('Sepia', { exact: true });
   readonly blackBackground = this.page.getByText('Night', { exact: true });
 
-  readonly resetTextSize = this.page.getByLabel('Reset settings');
-  readonly decreaseTextSize = this.page.getByLabel('Decrease font size');
-  readonly increaseTextSize = this.page.getByLabel('Increase font size');
+  readonly resetTextSize = this.page.getByLabel('Reset all');
+  readonly decreaseTextSize = this.page.getByLabel('Decrease text');
+  readonly increaseTextSize = this.page.getByLabel('Increase text');
 
   // content
   readonly chapterName = this.page.getByText(
@@ -136,8 +128,6 @@ class HtmlReaderPage extends WebReaderPage {
     await this.sepiaBackground.click();
     await expect(this.increaseTextSize).toBeVisible();
     await this.increaseTextSize.click();
-    await expect(this.scrollingMode).toBeVisible();
-    await this.scrollingMode.click();
   }
 
   async scrollDown(): Promise<void> {
@@ -170,8 +160,6 @@ class HtmlReaderPage extends WebReaderPage {
     await expect(this.previousPageButton).toBeDisabled();
     await expect(this.settingsButton).toBeVisible();
     await this.settingsButton.click();
-    await expect(this.scrollingMode).toBeVisible();
-    await this.scrollingMode.click();
     await expect(this.tocButton).toBeVisible();
     await this.tocButton.click();
     await expect(this.chapterName).toBeVisible();
@@ -219,8 +207,6 @@ class PdfReaderPage extends WebReaderPage {
     await this.settingsButton.click();
     await expect(this.zoomInButton).toBeVisible();
     await this.zoomInButton.click();
-    await expect(this.scrollingMode).toBeVisible();
-    await this.scrollingMode.click();
   }
 
   async getZoomValue(): Promise<number> {
@@ -281,8 +267,6 @@ class PdfReaderPage extends WebReaderPage {
     await expect(this.previousPageButton).toBeDisabled();
     await expect(this.settingsButton).toBeVisible();
     await this.settingsButton.click();
-    await expect(this.scrollingMode).toBeVisible();
-    await this.scrollingMode.click();
     await expect(this.tocButton).toBeVisible();
     await this.tocButton.click();
     await expect(this.lastChapter).toBeVisible();

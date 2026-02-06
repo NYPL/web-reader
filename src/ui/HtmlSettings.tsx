@@ -127,7 +127,7 @@ export default function HtmlSettings(
         <ButtonGroup display="flex" spacing={4}>
           <Button
             onClick={resetSettings}
-            aria-label="Reset settings"
+            aria-label="Reset all"
             bgColor="ui.white"
             width="150px"
           >
@@ -143,7 +143,7 @@ export default function HtmlSettings(
             Reset all
           </Button>
           <Button
-            onClick={decreaseFontSize}
+            onClick={increaseFontSize}
             aria-label="Increase text"
             bgColor="ui.white"
             width="150px"
@@ -165,7 +165,7 @@ export default function HtmlSettings(
             Increase text
           </Button>
           <Button
-            onClick={increaseFontSize}
+            onClick={decreaseFontSize}
             aria-label="Decrease text"
             bgColor="ui.white"
             width="150px"

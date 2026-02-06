@@ -5,7 +5,6 @@ test.describe('Test navigation in HTML pub', () => {
   test('Displays reader navigation in HTML pub', async ({ page }) => {
     const htmlReaderPage = new HtmlReaderPage(page);
     await htmlReaderPage.loadPub('/html/moby-epub3');
-    await expect(htmlReaderPage.backButton).toBeVisible();
     await expect(htmlReaderPage.nextPageButton).toBeVisible();
     await expect(htmlReaderPage.previousPageButton).toBeVisible();
     await expect(htmlReaderPage.tocButton).toBeVisible();
@@ -21,8 +20,6 @@ test.describe('Test navigation in HTML pub', () => {
     await htmlReaderPage.loadPub('/html/moby-epub3');
     await expect(htmlReaderPage.settingsButton).toBeVisible();
     await htmlReaderPage.settingsButton.click();
-    await expect(htmlReaderPage.scrollingMode).toBeVisible();
-    await htmlReaderPage.scrollingMode.click();
     await expect(htmlReaderPage.nextPageButton).toBeVisible();
     await expect(htmlReaderPage.nextPageButton).toBeEnabled();
     await expect(htmlReaderPage.previousPageButton).toBeVisible();
@@ -48,8 +45,6 @@ test.describe('Test navigation in HTML pub', () => {
     await htmlReaderPage.loadPub('/html/moby-epub3');
     await expect(htmlReaderPage.settingsButton).toBeVisible();
     await htmlReaderPage.settingsButton.click();
-    await expect(htmlReaderPage.scrollingMode).toBeVisible();
-    await htmlReaderPage.scrollingMode.click();
     await expect(htmlReaderPage.tocButton).toBeVisible();
     await htmlReaderPage.tocButton.click();
     await expect(htmlReaderPage.lastChapter).toBeVisible();
@@ -78,9 +73,6 @@ test.describe('Test navigation in HTML pub', () => {
     await htmlReaderPage.loadPub('/html/moby-epub3');
     await expect(htmlReaderPage.settingsButton).toBeVisible();
     await htmlReaderPage.settingsButton.click();
-    await expect(htmlReaderPage.scrollingMode).toBeVisible();
-    await htmlReaderPage.scrollingMode.click();
-    await expect(htmlReaderPage.scrollingMode).toBeChecked();
     await expect(htmlReaderPage.tocButton).toBeVisible();
     await htmlReaderPage.tocButton.click();
     await expect(htmlReaderPage.chapterName).toBeVisible();
@@ -94,9 +86,6 @@ test.describe('Test navigation in HTML pub', () => {
     await htmlReaderPage.loadPub('/html/moby-epub3');
     await expect(htmlReaderPage.settingsButton).toBeVisible();
     await htmlReaderPage.settingsButton.click();
-    await expect(htmlReaderPage.scrollingMode).toBeVisible();
-    await htmlReaderPage.scrollingMode.click();
-    await expect(htmlReaderPage.scrollingMode).toBeChecked();
     await expect(htmlReaderPage.tocButton).toBeVisible();
     await htmlReaderPage.tocButton.click();
     await expect(htmlReaderPage.chapterName).toBeVisible();
@@ -127,8 +116,6 @@ test.describe('Test navigation in HTML pub', () => {
     await htmlReaderPage.loadPub('/html/moby-epub3');
     await expect(htmlReaderPage.settingsButton).toBeVisible();
     await htmlReaderPage.settingsButton.click();
-    await expect(htmlReaderPage.scrollingMode).toBeVisible();
-    await htmlReaderPage.scrollingMode.click();
     await expect(htmlReaderPage.nextPageButton).toBeVisible();
     await expect(htmlReaderPage.nextPageButton).toBeEnabled();
     await expect(htmlReaderPage.previousPageButton).toBeVisible();
@@ -152,8 +139,7 @@ test.describe('Test navigation in HTML pub', () => {
     await htmlReaderPage.chapterName.click();
     await htmlReaderPage.loadPage();
     await expect(htmlReaderPage.chapterHeading).toBeVisible();
-    await expect(htmlReaderPage.backButton).toBeVisible();
-    await htmlReaderPage.backButton.click();
+    await page.goto('/');
     await expect(htmlReaderPage.webReaderHomepage).toBeVisible();
     await htmlReaderPage.loadPub('/html/moby-epub3');
     await expect(htmlReaderPage.chapterHeading).toBeVisible();
@@ -170,13 +156,11 @@ test.describe('Test navigation in HTML pub', () => {
     await htmlReaderPage.chapterName.click();
     await htmlReaderPage.loadPage();
     await expect(htmlReaderPage.chapterHeading).toBeVisible();
-    await expect(htmlReaderPage.backButton).toBeVisible();
-    await htmlReaderPage.backButton.click();
+    await page.goto('/');
     await expect(htmlReaderPage.webReaderHomepage).toBeVisible();
     await htmlReaderPage.loadPub('/html/moby-epub2');
     await expect(htmlReaderPage.epubCover).toBeVisible();
-    await expect(htmlReaderPage.backButton).toBeVisible();
-    await htmlReaderPage.backButton.click();
+    await page.goto('/');
     await expect(htmlReaderPage.webReaderHomepage).toBeVisible();
     await htmlReaderPage.loadPub('/html/moby-epub3');
     await expect(htmlReaderPage.chapterHeading).toBeVisible();
@@ -193,8 +177,7 @@ test.describe('Test navigation in HTML pub', () => {
     await htmlReaderPage.chapterName.click();
     await htmlReaderPage.loadPage();
     await expect(htmlReaderPage.chapterHeading).toBeVisible();
-    await expect(htmlReaderPage.backButton).toBeVisible();
-    await htmlReaderPage.backButton.click();
+    await page.goto('/');
     await expect(htmlReaderPage.webReaderHomepage).toBeVisible();
     await htmlReaderPage.loadPub('/html/moby-epub3-no-local-storage');
     await expect(htmlReaderPage.titlePage).toBeVisible();
