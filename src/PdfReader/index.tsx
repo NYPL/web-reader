@@ -140,7 +140,8 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
     (
       containerSize: { width: number; height: number },
       fitMode: FitMode,
-      rotation: number
+      rotation: number,
+      scale: number
     ) => {
       if (!fitMode) return;
 
@@ -160,8 +161,9 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
         containerSize.height
       ) {
         aspectRatio = pdfHeight / pdfWidth;
-        height = Math.round(containerSize.height - READER_MARGIN);
-        width = Math.round(height / aspectRatio);
+        height = Math.round((containerSize.height - READER_MARGIN) * scale);
+        console.log(height);
+        width = Math.round((height / aspectRatio) * scale);
       }
       if (width || height) {
         dispatch({ type: 'RESIZE_PAGE', width, height });
@@ -171,8 +173,8 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
   );
 
   React.useEffect(() => {
-    resizePage(containerSize, state.fitMode, state.rotation ?? 0);
-  }, [containerSize, resizePage, state.fitMode, state.rotation]);
+    resizePage(containerSize, state.fitMode, state.rotation ?? 0, state.scale);
+  }, [containerSize, resizePage, state.fitMode, state.rotation, state.scale]);
 
   /**
    * Sets the initial page height for the PDF viewer based on the loaded PDF's aspect ratio
@@ -393,7 +395,12 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
         width: Math.round(page.width),
       });
 
-      resizePage(containerSize, state.fitMode, state.rotation ?? 0);
+      resizePage(
+        containerSize,
+        state.fitMode,
+        state.rotation ?? 0,
+        state.scale
+      );
     }
   }
 
@@ -423,6 +430,7 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
             width: `${
               containerSize.width ? containerSize.width - READER_MARGIN : 0
             }px`,
+            height: (state.pageHeight ?? 1) * state.scale,
           },
         }}
       >

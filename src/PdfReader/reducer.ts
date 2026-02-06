@@ -195,7 +195,6 @@ export function makePdfReducer(
         return {
           ...state,
           scale: action.scale,
-          fitMode: undefined,
         };
 
       // case 'RESET_SETTINGS':
@@ -229,17 +228,16 @@ export function makePdfReducer(
       case 'SET_FIT_MODE':
         return { ...state, fitMode: action.fitMode, scale: 1 };
 
-      case 'ROTATE_COUNTER_CLOCKWISE':
+      case 'ROTATE_COUNTER_CLOCKWISE': {
+        const newRotation = ((state.rotation ?? 0) - 90 + 360) % 360;
+
         return {
           ...state,
-          rotation: ((state.rotation ?? 0) - 90 + 360) % 360,
+          rotation: newRotation,
           fitMode:
-            state.fitMode === 'width'
-              ? 'height'
-              : state.fitMode === 'height'
-              ? 'width'
-              : undefined,
+            newRotation === 0 || newRotation === 180 ? 'height' : 'width',
         };
+      }
 
       case 'BOOK_BOUNDARY_CHANGED':
         return {

@@ -1,7 +1,7 @@
 import { Box, ButtonGroup, Heading, Icon, Text } from '@chakra-ui/react';
 import * as React from 'react';
-import { DEFAULT_SETTINGS, FONT_DETAILS } from '../constants';
-import { HtmlNavigator, ReaderSettings, ReaderState } from '../types';
+import { FONT_DETAILS } from '../constants';
+import { HtmlNavigator, ReaderState } from '../types';
 import Button from './Button';
 import useColorModeValue from './hooks/useColorModeValue';
 import { Day, Night, Reset, Sepia, ZoomIn, ZoomOut } from './icons';
