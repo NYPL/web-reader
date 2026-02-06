@@ -35,6 +35,10 @@ export default function Header(
     currentPage,
     totalPages,
   } = props;
+
+  const isAtStart = props.state?.atStart;
+  const isAtEnd = props.state?.atEnd;
+
   const iconFill = useColorModeValue(
     'ui.gray.icon',
     'ui.white',
@@ -78,18 +82,6 @@ export default function Header(
       Number(inputValue) <= totalPages
     ) {
       goToPage(Number(inputValue));
-    }
-  };
-
-  const pageUp = () => {
-    if (currentPage > 1) {
-      navigator.goBackward();
-    }
-  };
-
-  const pageDown = () => {
-    if (currentPage < totalPages) {
-      navigator.goForward();
     }
   };
 
@@ -138,9 +130,9 @@ export default function Header(
       <HStack mx="auto" spacing={2}>
         <Tooltip content="Previous page">
           <Button
-            onClick={pageUp}
+            onClick={navigator.goBackward}
             aria-label="Previous page"
-            isDisabled={currentPage <= 1}
+            isDisabled={isAtStart}
             isIcon
           >
             <Icon as={PageUp} w={18} h={18} />
@@ -170,9 +162,9 @@ export default function Header(
         </HStack>
         <Tooltip content="Next page">
           <Button
-            onClick={pageDown}
+            onClick={navigator.goForward}
             aria-label="Next page"
-            isDisabled={currentPage >= totalPages}
+            isDisabled={isAtEnd}
             isIcon
           >
             <Icon as={PageDown} w={18} h={18} />
