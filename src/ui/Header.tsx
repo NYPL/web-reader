@@ -1,5 +1,5 @@
-import { Flex, HStack, Icon, Input, Text } from '@chakra-ui/react';
-import React, { ComponentProps } from 'react';
+import { Flex, HStack, Icon, Input, Spacer, Text } from '@chakra-ui/react';
+import React, { ComponentProps, useState } from 'react';
 import { ActiveReader } from '../types';
 import useColorModeValue from '../ui/hooks/useColorModeValue';
 import Button from './Button';
@@ -24,9 +24,11 @@ export default function Header(
     containerRef: React.MutableRefObject<null | HTMLDivElement>;
     totalPages: number;
     currentPage: number;
+    toggleFullScreen?: () => void;
   }
 ): React.ReactElement {
-  const [isFullscreen, toggleFullScreen] = useFullscreen();
+  const [, toggleFullscreenHook] = useFullscreen();
+  const [isFullscreen, setIsFullScreen] = useState(false);
   const {
     navigator,
     manifest,
@@ -85,6 +87,16 @@ export default function Header(
     }
   };
 
+  const handleFullscreen = () => {
+    if (props.toggleFullScreen) {
+      props.toggleFullScreen();
+      setIsFullScreen((prev) => !prev);
+    } else {
+      toggleFullscreenHook();
+      setIsFullScreen((prev) => !prev);
+    }
+  };
+
   return (
     <HeaderWrapper
       bg={mainBgColor}
@@ -94,113 +106,131 @@ export default function Header(
       py={2}
     >
       <SkipNavigation />
-      <HStack mr="auto" spacing={2}>
-        {type === 'PDF' && <PdfZoomControls navigator={navigator} />}
-        {type === 'HTML' && (
-          <HtmlFontSizeControls
-            navigator={navigator}
-            iconFill={iconFill}
-            readerState={props.state}
-          />
-        )}
-        <Tooltip
-          content={fitMode === 'width' ? 'Fit to height' : 'Fit to width'}
-        >
-          <Button
-            isIcon
-            onClick={toggleFitMode}
-            aria-label={fitMode === 'width' ? 'Fit to height' : 'Fit to width'}
-          >
-            <Icon
-              as={FitHeightWidth}
-              fitMode={fitMode === 'width' ? 'width' : 'height'}
-              w={18}
-              h={18}
+      <Flex width="100%" alignItems="center" position="relative">
+        <HStack spacing={2}>
+          {type === 'PDF' && <PdfZoomControls navigator={navigator} />}
+          {type === 'HTML' && (
+            <HtmlFontSizeControls
+              navigator={navigator}
+              iconFill={iconFill}
+              readerState={props.state}
             />
-          </Button>
-        </Tooltip>
-        {type === 'PDF' && (
-          <Tooltip content="Rotate left">
-            <Button isIcon onClick={navigator.rotateLeft}>
-              <Icon as={Rotate} w={18} h={18} />
+          )}
+          <Tooltip
+            content={fitMode === 'width' ? 'Fit to height' : 'Fit to width'}
+          >
+            <Button
+              isIcon
+              onClick={toggleFitMode}
+              aria-label={
+                fitMode === 'width' ? 'Fit to height' : 'Fit to width'
+              }
+            >
+              <Icon
+                as={FitHeightWidth}
+                fitMode={fitMode === 'width' ? 'width' : 'height'}
+                w={18}
+                h={18}
+              />
             </Button>
           </Tooltip>
-        )}
-      </HStack>
-      <HStack mx="auto" spacing={2}>
-        <Tooltip content="Previous page">
-          <Button
-            onClick={navigator.goBackward}
-            aria-label="Previous page"
-            isDisabled={isAtStart}
-            isIcon
-          >
-            <Icon as={PageUp} w={18} h={18} />
-          </Button>
-        </Tooltip>
-        <HStack color="ui.white" spacing={2} fontSize="sm" alignItems="center">
-          <Input
-            aria-label="Current page number"
-            width="2rem"
-            height="2rem"
-            padding={0}
-            bg="ui.gray.x-dark"
-            border="none"
-            textAlign="center"
-            borderRadius="4px"
-            _focus={{ outline: 'none', boxShadow: 'none' }}
-            min="1"
-            max={totalPages}
-            type="number"
-            value={inputValue}
-            onChange={inputChange}
-            onKeyDown={inputKeyDown}
-            id="currentPageInput"
-          />
-          <Text>/</Text>
-          <Text>{totalPages}</Text>
+          {type === 'PDF' && (
+            <Tooltip content="Rotate left">
+              <Button isIcon onClick={navigator.rotateLeft}>
+                <Icon as={Rotate} w={18} h={18} />
+              </Button>
+            </Tooltip>
+          )}
         </HStack>
-        <Tooltip content="Next page">
-          <Button
-            onClick={navigator.goForward}
-            aria-label="Next page"
-            isDisabled={isAtEnd}
-            isIcon
-          >
-            <Icon as={PageDown} w={18} h={18} />
-          </Button>
-        </Tooltip>
-      </HStack>
-      <HStack ml="auto" spacing={2}>
-        <TableOfContent
-          containerRef={containerRef}
-          navigator={navigator}
-          manifest={manifest}
-        />
-        <Tooltip
-          content={
-            isFullscreen ? 'Exit full screen mode' : 'Enter full screen mode'
-          }
+        <Spacer />
+        <HStack
+          spacing={2}
+          position="absolute"
+          left="50%"
+          transform="translateX(-50%)"
         >
-          <Button
-            aria-expanded={isFullscreen}
-            aria-label={
+          <Tooltip content="Previous page">
+            <Button
+              onClick={navigator.goBackward}
+              aria-label="Previous page"
+              isDisabled={isAtStart}
+              isIcon
+            >
+              <Icon as={PageUp} w={18} h={18} />
+            </Button>
+          </Tooltip>
+          <HStack
+            color="ui.white"
+            spacing={2}
+            fontSize="sm"
+            alignItems="center"
+          >
+            <Input
+              aria-label="Current page number"
+              width="2rem"
+              height="2rem"
+              padding={0}
+              bg="ui.gray.x-dark"
+              border="none"
+              textAlign="center"
+              borderRadius="4px"
+              _focus={{ outline: 'none', boxShadow: 'none' }}
+              min="1"
+              max={totalPages}
+              type="number"
+              value={inputValue}
+              onChange={inputChange}
+              onKeyDown={inputKeyDown}
+              id="currentPageInput"
+            />
+            <Text>/</Text>
+            <Text>{totalPages}</Text>
+          </HStack>
+          <Tooltip content="Next page">
+            <Button
+              onClick={navigator.goForward}
+              aria-label="Next page"
+              isDisabled={isAtEnd}
+              isIcon
+            >
+              <Icon as={PageDown} w={18} h={18} />
+            </Button>
+          </Tooltip>
+        </HStack>
+        <Spacer />
+        <HStack spacing={2}>
+          <TableOfContent
+            containerRef={containerRef}
+            navigator={navigator}
+            manifest={manifest}
+          />
+          <Tooltip
+            content={
               isFullscreen ? 'Exit full screen mode' : 'Enter full screen mode'
             }
-            border="none"
-            bgColor={mainBgColor}
-            onClick={toggleFullScreen}
-            isIcon
           >
-            <Icon
-              as={isFullscreen ? ToggleFullScreenExit : ToggleFullScreen}
-              w={18}
-              h={18}
-            />
-          </Button>
-        </Tooltip>
-        {type === 'HTML' && <SettingsCard {...props} />}
-      </HStack>
+            <Button
+              aria-expanded={isFullscreen}
+              aria-label={
+                isFullscreen
+                  ? 'Exit full screen mode'
+                  : 'Enter full screen mode'
+              }
+              border="none"
+              bgColor={mainBgColor}
+              onClick={handleFullscreen}
+              isIcon
+            >
+              <Icon
+                as={isFullscreen ? ToggleFullScreenExit : ToggleFullScreen}
+                w={18}
+                h={18}
+              />
+            </Button>
+          </Tooltip>
+          {type === 'HTML' && <SettingsCard {...props} />}
+        </HStack>
+      </Flex>
     </HeaderWrapper>
   );
 }

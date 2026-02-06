@@ -1,25 +1,25 @@
 import React from 'react';
-import { fetchJson } from './utils/fetch';
-import usePdfReader from './PdfReader';
-import useHtmlReader from './HtmlReader';
-import {
-  UseWebReaderArguments,
-  HTMLActiveReader,
-  LoadingReader,
-  PDFActiveReader,
-  WebpubManifest,
-  GetContent,
-} from './types';
-import {
-  EpubConformsTo,
-  WebpubPdfConformsTo,
-  ConformsTo,
-} from './WebpubManifestTypes/ConformsTo';
 import {
   DEFAULT_HEIGHT,
   DEFAULT_SHOULD_GROW_WHEN_SCROLLING,
 } from './constants';
+import useHtmlReader from './HtmlReader';
+import usePdfReader from './PdfReader';
+import {
+  GetContent,
+  HTMLActiveReader,
+  LoadingReader,
+  PDFActiveReader,
+  UseWebReaderArguments,
+  WebpubManifest,
+} from './types';
 import LoadingSkeleton from './ui/LoadingSkeleton';
+import { fetchJson } from './utils/fetch';
+import {
+  ConformsTo,
+  EpubConformsTo,
+  WebpubPdfConformsTo,
+} from './WebpubManifestTypes/ConformsTo';
 
 function getReaderType(conformsTo: ConformsTo | null | undefined) {
   switch (conformsTo) {
@@ -56,6 +56,7 @@ export default function useWebReader(
     growWhenScrolling = DEFAULT_SHOULD_GROW_WHEN_SCROLLING,
     persistLastLocation = true,
     persistSettings = true,
+    toggleFullScreen,
   } = args;
   const [manifest, setManifest] = React.useState<WebpubManifest | null>(null);
   const [error, setError] = React.useState<Error | null>(null);
@@ -88,6 +89,7 @@ export default function useWebReader(
           growWhenScrolling,
           persistLastLocation,
           persistSettings,
+          toggleFullScreen,
         }
       : undefined
   );
@@ -104,6 +106,7 @@ export default function useWebReader(
           growWhenScrolling,
           persistLastLocation,
           persistSettings,
+          toggleFullScreen,
         }
       : undefined
   );

@@ -77,6 +77,7 @@ type CommonReader = {
   manifest: WebpubManifest;
   currentPage: number;
   totalPages: number;
+  toggleFullScreen?: () => void;
 };
 
 export type PDFActiveReader = CommonReader & {
@@ -143,6 +144,10 @@ export type UseWebReaderArguments<T extends string | Uint8Array> = {
    * Default: `true`
    */
   persistSettings?: boolean;
+  /**
+   * Optional callback to expand the reader to full viewport.
+   */
+  toggleFullScreen?: () => void;
 };
 
 export type ActiveReaderArguments<

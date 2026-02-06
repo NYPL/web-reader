@@ -41,6 +41,7 @@ export default function useHtmlReader(args: HtmlReaderArguments): ReaderReturn {
     growWhenScrolling = DEFAULT_SHOULD_GROW_WHEN_SCROLLING,
     persistLastLocation = true,
     persistSettings = true,
+    toggleFullScreen,
   } = args ?? {};
 
   const [state, dispatch] = React.useReducer(
@@ -301,5 +302,6 @@ export default function useHtmlReader(args: HtmlReaderArguments): ReaderReturn {
     navigator,
     currentPage,
     totalPages,
+    toggleFullScreen,
   };
 }

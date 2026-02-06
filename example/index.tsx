@@ -101,6 +101,10 @@ const App = () => {
 };
 
 const PdfReaders = () => {
+  const [isFullViewport, setIsFullViewport] = React.useState(false);
+
+  const toggleFullScreen = () => setIsFullViewport((v) => !v);
+
   return (
     <>
       <Route path={`/pdf/single-resource-short`}>
@@ -136,12 +140,21 @@ const PdfReaders = () => {
             instead of taking over the full page. It is fixed height, which
             means it will not grow to fit content in scrolling mode.
           </Text>
-          <Box margin="0 auto" width="50%">
+          <Box
+            margin="0 auto"
+            width={isFullViewport ? '100vw' : '50%'}
+            height={isFullViewport ? '100vh' : 'auto'}
+            position={isFullViewport ? 'fixed' : 'relative'}
+            top={isFullViewport ? 0 : undefined}
+            left={isFullViewport ? 0 : undefined}
+            zIndex={isFullViewport ? 9999 : undefined}
+          >
             <WebReader
               webpubManifestUrl={`${origin}/samples/pdf/single-resource-short.json`}
               proxyUrl={pdfProxyUrl}
               pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.mjs`}
               growWhenScrolling={false}
+              toggleFullScreen={toggleFullScreen}
             />
           </Box>
           <Heading>The page continues...</Heading>

@@ -44,6 +44,7 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
     injectablesFixed,
     height = DEFAULT_HEIGHT,
     growWhenScrolling = DEFAULT_SHOULD_GROW_WHEN_SCROLLING,
+    toggleFullScreen,
   } = args ?? {};
 
   const [state, dispatch] = React.useReducer(makePdfReducer(args), {
@@ -190,22 +191,18 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
   /**
    * Update the atStart/atEnd state to tell the UI whether to show the prev/next buttons
    * Whether to have the next/prev buttons enabled. We disable them:
-   *   - In scroll mode when on the first or last resource
-   *   - In paginated mode when on the first or last page of the first or last resource
+   *   - When on the first or last page of the first or last resource
    */
   React.useEffect(() => {
-    const isScrolling = state.settings?.isScrolling;
     const isFirstResource = state.resourceIndex === 0;
     const isFirstResourceStart = isFirstResource && state.pageNumber === 1;
-    const showPrevButton = isScrolling
-      ? !isFirstResource
-      : !isFirstResourceStart;
+    const showPrevButton = !isFirstResourceStart;
 
     const isLastResource =
       state.resourceIndex === (manifest?.readingOrder?.length ?? 1) - 1;
     const isLastResourceEnd =
       isLastResource && state.pageNumber === state.numPages;
-    const showNextButton = isScrolling ? !isLastResource : !isLastResourceEnd;
+    const showNextButton = !isLastResourceEnd;
 
     dispatch({
       type: 'BOOK_BOUNDARY_CHANGED',
@@ -484,5 +481,6 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
     },
     currentPage: state.pageNumber,
     totalPages: state.numPages ?? 0,
+    toggleFullScreen,
   };
 }
