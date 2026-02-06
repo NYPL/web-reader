@@ -44,14 +44,12 @@ class WebReaderPage {
     this.scrollingMode = page.getByText('Scrolling', { exact: true });
 
     // footer
-    this.nextPageButton = this.page
-      .getByRole('contentinfo')
-      .getByRole('button', {
-        name: 'Next Page',
-      });
-    this.previousPageButton = page
-      .getByRole('contentinfo')
-      .getByRole('button', { name: 'Previous Page' });
+    this.nextPageButton = this.page.getByRole('button', {
+      name: 'Next page',
+    });
+    this.previousPageButton = page.getByRole('button', {
+      name: 'Previous page',
+    });
   }
 
   async changeScreenSize(): Promise<void> {
@@ -294,4 +292,4 @@ class PdfReaderPage extends WebReaderPage {
   }
 }
 
-export { WebReaderPage, HtmlReaderPage, PdfReaderPage };
+export { HtmlReaderPage, PdfReaderPage, WebReaderPage };
