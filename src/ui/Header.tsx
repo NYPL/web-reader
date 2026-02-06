@@ -136,7 +136,7 @@ export default function Header(
           </Tooltip>
           {type === 'PDF' && (
             <Tooltip content="Rotate left">
-              <Button isIcon onClick={navigator.rotateLeft}>
+              <Button isIcon onClick={navigator.rotateCounterClockwise}>
                 <Icon as={Rotate} w={18} h={18} />
               </Button>
             </Tooltip>

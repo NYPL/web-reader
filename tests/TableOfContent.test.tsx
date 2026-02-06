@@ -1,5 +1,5 @@
-import * as React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
+import * as React from 'react';
 import TableOfContent from '../src/ui/TableOfContent';
 import { MockNavigator, MockWebpubManifest } from './utils/MockData';
 
@@ -50,7 +50,7 @@ describe('Table Of Content rendering', () => {
     expect(screen.queryByText('Chapter 1')).not.toBeVisible();
 
     // We need to open the TOC element for TOC links to show up
-    const toggleBtn = screen.getByRole('button', { name: 'Table of Contents' });
+    const toggleBtn = screen.getByRole('button', { name: 'Table of contents' });
     fireEvent.click(toggleBtn);
 
     const tocLinkElm = await screen.findByRole('menuitem', {
@@ -60,7 +60,7 @@ describe('Table Of Content rendering', () => {
   });
 
   test('navigation should be called with the correct url', async () => {
-    const toggleBtn = screen.getByRole('button', { name: 'Table of Contents' });
+    const toggleBtn = screen.getByRole('button', { name: 'Table of contents' });
     fireEvent.click(toggleBtn);
 
     const chapterOneElm = await screen.findByRole('menuitem', {
@@ -71,7 +71,7 @@ describe('Table Of Content rendering', () => {
   });
 
   test('navigation should call chapter and subchapters separately if both are provided', async () => {
-    const toggleBtn = screen.getByRole('button', { name: 'Table of Contents' });
+    const toggleBtn = screen.getByRole('button', { name: 'Table of contents' });
     fireEvent.click(toggleBtn);
 
     const chapterThreeElm = await screen.findByRole('menuitem', {
@@ -92,7 +92,7 @@ describe('Table Of Content rendering', () => {
   });
 
   test('navigation should use first subchapter as chapter link if nothing is provided', async () => {
-    const toggleBtn = screen.getByRole('button', { name: 'Table of Contents' });
+    const toggleBtn = screen.getByRole('button', { name: 'Table of contents' });
     fireEvent.click(toggleBtn);
 
     const chapterFourElm = await screen.findByRole('menuitem', {
@@ -112,7 +112,7 @@ describe('Table Of Content rendering', () => {
 
   //Documentation of not-yet-implemented functionality
   test('navigation does not show recursive child links', async () => {
-    const toggleBtn = screen.getByRole('button', { name: 'Table of Contents' });
+    const toggleBtn = screen.getByRole('button', { name: 'Table of contents' });
     fireEvent.click(toggleBtn);
 
     const chapterFourElm = await screen.findByRole('menuitem', {

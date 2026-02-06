@@ -61,7 +61,7 @@ class HtmlReaderPage extends WebReaderPage {
   // settings
   readonly defaultFont = this.page.getByText('Default', { exact: true });
   readonly serifFont = this.page.getByText('Serif', { exact: true });
-  readonly sansSerifFont = this.page.getByText('Sans-Serif', { exact: true });
+  readonly sansSerifFont = this.page.getByText('Sans-serif', { exact: true });
   readonly dyslexiaFont = this.page.getByText('Dyslexia', { exact: true });
 
   readonly whiteBackground = this.page.getByText('Day', { exact: true });

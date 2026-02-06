@@ -27,7 +27,7 @@ export type Navigator = {
 export type PdfNavigator = Navigator & {
   zoomIn: () => Promise<void>;
   zoomOut: () => Promise<void>;
-  rotateLeft: () => void;
+  rotateCounterClockwise: () => void;
 };
 
 export type HtmlNavigator = Navigator & {

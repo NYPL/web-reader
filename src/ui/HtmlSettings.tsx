@@ -55,7 +55,7 @@ export default function HtmlSettings(
             fontWeight: 'regular',
           },
           {
-            label: 'Sans-Serif',
+            label: 'Sans-serif',
             value: 'sans-serif',
             fontFamily: 'body',
             fontWeight: 'regular',
@@ -166,7 +166,7 @@ export default function HtmlSettings(
           </Button>
           <Button
             onClick={increaseFontSize}
-            aria-label="decrease text"
+            aria-label="Decrease text"
             bgColor="ui.white"
             width="150px"
             sx={{
@@ -191,19 +191,3 @@ export default function HtmlSettings(
     </>
   );
 }
-
-// Returns true if the reader's settings match the default settings
-const areSettingsDefault = (readerSettings: ReaderSettings) => {
-  if (!readerSettings) {
-    return false;
-  }
-
-  let setting: keyof ReaderSettings;
-
-  for (setting in DEFAULT_SETTINGS) {
-    if (readerSettings[setting] !== DEFAULT_SETTINGS[setting]) {
-      return false;
-    }
-  }
-  return true;
-};

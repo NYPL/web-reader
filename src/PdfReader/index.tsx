@@ -263,7 +263,7 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
     });
   }, [state.scale]);
 
-  const rotateLeft = React.useCallback(async () => {
+  const rotateCounterClockwise = React.useCallback(async () => {
     dispatch({ type: 'ROTATE_COUNTER_CLOCKWISE' });
   }, []);
 
@@ -414,7 +414,8 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
         height={pageHeight}
         sx={{
           '.react-pdf__Document': {
-            height: `${pageHeight}px`,
+            width: '100%',
+            height: '100%',
             overflowX: 'hidden',
             overflowY: 'auto',
           },
@@ -473,7 +474,7 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
       setScroll,
       zoomIn,
       zoomOut,
-      rotateLeft,
+      rotateCounterClockwise,
       goToPage,
       goToPageNumber,
       // resetSettings,

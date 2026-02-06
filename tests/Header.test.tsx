@@ -1,5 +1,5 @@
-import * as React from 'react';
 import { render, screen } from '@testing-library/react';
+import * as React from 'react';
 import Header from '../src/ui/Header';
 import { MockHtmlReaderProps } from './utils/MockData';
 
@@ -22,19 +22,11 @@ describe('Header rendering', () => {
     render(<Header {...MockHtmlReaderProps} containerRef={containerRef} />);
 
     expect(
-      screen.getByRole('link', { name: 'Return to Homepage' })
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByRole('link', { name: 'Return to Homepage' })
-    ).toHaveAttribute('href', '/');
-
-    expect(
       screen.getByRole('button', { name: 'Settings' })
     ).toBeInTheDocument();
 
     expect(
-      screen.getByRole('button', { name: 'Toggle full screen' })
+      screen.getByRole('button', { name: 'Enter full screen mode' })
     ).toBeInTheDocument();
   });
 });

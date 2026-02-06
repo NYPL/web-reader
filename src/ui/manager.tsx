@@ -23,7 +23,7 @@ const WebReaderContent: React.FC<ReaderReturn> = ({ children, ...props }) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
 
   return (
-    <Flex flexDir="column" w="100%" position="relative">
+    <Flex flexDir="column" w="100%" h="100%" position="relative">
       {!props.isLoading && <Header containerRef={containerRef} {...props} />}
 
       <Flex
