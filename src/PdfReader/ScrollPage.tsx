@@ -47,10 +47,23 @@ const ScrollPage: FC<ScrollPageProps> = ({
   fitMode,
   rotate,
 }) => {
-  const { ref, inView, entry } = useInView({
+  const { ref: loadRef, inView: loadInView } = useInView({
+    threshold: 0,
+    triggerOnce: true,
+  });
+
+  const { ref: visibilityRef, entry } = useInView({
     threshold: Array.from({ length: 11 }, (_, i) => i * 0.1),
     triggerOnce: false,
   });
+
+  const setRefs = React.useCallback(
+    (el: Element | null) => {
+      if (typeof loadRef === 'function') loadRef(el);
+      if (typeof visibilityRef === 'function') visibilityRef(el);
+    },
+    [loadRef, visibilityRef]
+  );
 
   const handleLoadSuccess = React.useCallback(
     (page: PageProps) => {
@@ -60,14 +73,14 @@ const ScrollPage: FC<ScrollPageProps> = ({
   );
 
   React.useEffect(() => {
-    if (onInView && entry && allowInView) {
+    if (onInView && entry) {
       onInView(pageNumber, entry.intersectionRatio || 0);
     }
-  }, [allowInView, entry, onInView, pageNumber]);
+  }, [entry, onInView, pageNumber]);
 
   return (
-    <div ref={ref}>
-      {inView ? (
+    <div ref={setRefs}>
+      {loadInView ? (
         <ChakraPage
           // data-page-number is used in Cypress tests
           data-page-number={pageNumber}

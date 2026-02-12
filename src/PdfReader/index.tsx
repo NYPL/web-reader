@@ -162,7 +162,6 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
       ) {
         aspectRatio = pdfHeight / pdfWidth;
         height = Math.round((containerSize.height - READER_MARGIN) * scale);
-        console.log(height);
         width = Math.round((height / aspectRatio) * scale);
       }
       if (width || height) {
@@ -226,7 +225,6 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
     if (!state.settings?.isScrolling) return;
     // if the resource is not yet loaded, don't do anything yet
     if (!state.rendered) return;
-
     process.nextTick(() => {
       const page = document.querySelector(
         `[data-page-number="${state.pageNumber}"]`
