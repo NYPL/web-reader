@@ -9,6 +9,7 @@ class WebReaderPage {
   readonly exitFullScreenButton: Locator;
   readonly nextPageButton: Locator;
   readonly previousPageButton: Locator;
+  readonly pageInput: Locator;
   readonly firstChapter: Locator;
   readonly lastChapter: Locator;
 
@@ -34,13 +35,14 @@ class WebReaderPage {
     this.exitFullScreenButton = page.getByRole('button', {
       name: 'Exit full screen mode',
     });
-
-    // footer
     this.nextPageButton = this.page.getByRole('button', {
       name: 'Next page',
     });
     this.previousPageButton = page.getByRole('button', {
       name: 'Previous page',
+    });
+    this.pageInput = page.getByRole('spinbutton', {
+      name: 'Current page number',
     });
   }
 
@@ -182,11 +184,8 @@ class PdfReaderPage extends WebReaderPage {
   readonly pageTwo = this.page
     .locator('#mainContent')
     .locator('[data-page-number="2"]');
-  readonly firstIndexPage = this.page.getByText('367', { exact: true });
-  readonly lastIndexPage = this.page.getByText('376', { exact: true });
-  readonly permissionsPage = this.page
-    .locator('[data-page-number="2"]')
-    .getByText('Permissions', { exact: true });
+  readonly firstIndexPage = this.page.getByText('3', { exact: true });
+  readonly lastIndexPage = this.page.getByText('7', { exact: true });
 
   async loadPub(gotoPage: string): Promise<WebReaderPage> {
     await this.page.goto(gotoPage, { waitUntil: 'domcontentloaded' });
@@ -196,31 +195,22 @@ class PdfReaderPage extends WebReaderPage {
   }
 
   async loadPage(): Promise<void> {
+    const loadingPDF = this.page.getByText('Loading...');
+    await expect(loadingPDF).not.toBeVisible({ timeout: 10000 });
     const loadingBook = this.page.getByLabel('Loading book...');
-    await expect(loadingBook).not.toBeVisible();
-    const loadingPDF = this.page.getByText('Loading PDF…');
-    await expect(loadingPDF).not.toBeVisible();
-  }
-
-  async changeSettings(): Promise<void> {
-    await expect(this.settingsButton).toBeVisible();
-    await this.settingsButton.click();
-    await expect(this.zoomInButton).toBeVisible();
-    await this.zoomInButton.click();
+    await expect(loadingBook).not.toBeVisible({ timeout: 10000 });
   }
 
   async getZoomValue(): Promise<number> {
-    return await this.page.locator('canvas').evaluate((el) => {
+    return await this.page.locator('canvas:visible').evaluate((el) => {
       return Number(
-        window.getComputedStyle(el).getPropertyValue('--scale-factor')
+        window.getComputedStyle(el).getPropertyValue('--user-unit')
       );
     });
   }
 
   async zoomIn(): Promise<void> {
     const beforeScaleFactor = await this.getZoomValue();
-    await expect(this.settingsButton).toBeVisible();
-    await this.settingsButton.click();
     await expect(this.zoomInButton).toBeVisible();
     await this.zoomInButton.click();
     const afterScaleFactor = await this.getZoomValue();
@@ -229,8 +219,6 @@ class PdfReaderPage extends WebReaderPage {
 
   async zoomOut(): Promise<void> {
     const beforeScaleFactor = await this.getZoomValue();
-    await expect(this.settingsButton).toBeVisible();
-    await this.settingsButton.click();
     await expect(this.zoomOutButton).toBeVisible();
     await this.zoomOutButton.click();
     const afterScaleFactor = await this.getZoomValue();
@@ -265,8 +253,6 @@ class PdfReaderPage extends WebReaderPage {
     await expect(this.nextPageButton).toBeEnabled();
     await expect(this.previousPageButton).toBeVisible();
     await expect(this.previousPageButton).toBeDisabled();
-    await expect(this.settingsButton).toBeVisible();
-    await this.settingsButton.click();
     await expect(this.tocButton).toBeVisible();
     await this.tocButton.click();
     await expect(this.lastChapter).toBeVisible();

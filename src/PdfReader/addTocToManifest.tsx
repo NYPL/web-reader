@@ -21,6 +21,10 @@ export default async function addTocToManifest(
     pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerSrc;
     const pdf = await pdfjs.getDocument(pdfData).promise;
     const outline = await pdf.getOutline(); // get the TOC outline
+    if (!outline || !Array.isArray(outline) || outline.length === 0) {
+      return manifest;
+    }
+
     const tocPromises = outline.map(async (chapter) => {
       const dest = chapter.dest;
       if (dest && dest.length > 0) {
