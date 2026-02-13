@@ -196,17 +196,20 @@ class PdfReaderPage extends WebReaderPage {
 
   async loadPage(): Promise<void> {
     const loadingPDF = this.page.getByText('Loading...');
-    await expect(loadingPDF).not.toBeVisible({ timeout: 10000 });
+    await expect(loadingPDF).not.toBeVisible();
     const loadingBook = this.page.getByLabel('Loading book...');
-    await expect(loadingBook).not.toBeVisible({ timeout: 10000 });
+    await expect(loadingBook).not.toBeVisible();
   }
 
   async getZoomValue(): Promise<number> {
-    return await this.page.locator('canvas:visible').evaluate((el) => {
-      return Number(
-        window.getComputedStyle(el).getPropertyValue('--user-unit')
-      );
-    });
+    return await this.page
+      .locator('canvas:visible')
+      .first()
+      .evaluate((el) => {
+        return Number(
+          window.getComputedStyle(el).getPropertyValue('--user-unit')
+        );
+      });
   }
 
   async zoomIn(): Promise<void> {
