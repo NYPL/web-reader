@@ -13,13 +13,13 @@ test.describe('Test settings in PDF pub', () => {
   test('Zoom in', async ({ page }) => {
     const pdfReaderPage = new PdfReaderPage(page);
     await pdfReaderPage.loadPub('/pdf/single-resource-short');
-    await expect(await pdfReaderPage.zoomIn()).toBeTruthy;
+    await pdfReaderPage.zoomIn();
   });
 
   test('Zoom out', async ({ page }) => {
     const pdfReaderPage = new PdfReaderPage(page);
     await pdfReaderPage.loadPub('/pdf/single-resource-short');
-    await expect(await pdfReaderPage.zoomOut()).toBeTruthy;
+    await pdfReaderPage.zoomOut();
   });
 
   test('Open and exit full screen', async ({ page }) => {
