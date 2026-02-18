@@ -1,17 +1,16 @@
-import React, { ReactElement } from 'react';
 import {
   Box as ChakraBox,
+  Icon,
+  Text,
   ThemeProvider,
   useRadio,
   useTheme,
-  Icon,
-  Text,
 } from '@chakra-ui/react';
+import React, { ReactElement } from 'react';
 
-import Button from './Button';
-import Fonts from './theme/foundations/fonts';
-import { getTheme } from './theme';
 import { ColorMode } from '../types';
+import Button from './Button';
+import { getTheme } from './theme';
 
 export type ToggleButtonProps = React.ComponentPropsWithoutRef<
   typeof ChakraBox
@@ -46,17 +45,24 @@ function ToggleButton(
   return (
     // This will override the default theme if we specify the colorMode to the toggle button.
     <ThemeProvider theme={getTheme(colorMode ?? theme.currentColorMode)}>
-      <Fonts />
-      <ChakraBox as="label" display="flex" flexGrow={1} aria-label={label}>
+      <ChakraBox as="label" display="flex" aria-label={label}>
         <input {...input} />
-        <Button as="div" variant="settings" flexGrow={1} {...radio} {...rest}>
+        <Button
+          as="div"
+          px={4}
+          py={2}
+          width="150px"
+          height="40px"
+          {...radio}
+          {...rest}
+        >
           {icon && (
             <Icon
               as={icon}
               verticalAlign="middle"
               mr={1.5}
-              w={6}
-              h={6}
+              w={18}
+              h={18}
               fill={iconFill && iconFill}
             />
           )}
@@ -67,10 +73,6 @@ function ToggleButton(
   );
 }
 
-export const FontToggleButton: typeof ToggleButton = (props) => {
-  return <ToggleButton fontSize={[-2, -2, -1, -1, 0]} py={6} {...props} />;
-};
-
 export const ColorModeToggleButton: typeof ToggleButton = ({
   bgColor,
   ...rest
@@ -80,10 +82,8 @@ export const ColorModeToggleButton: typeof ToggleButton = ({
       sx={{
         _checked: {
           bgColor,
-          p: {
-            textDecoration: 'underline',
-            textUnderlinePosition: 'under',
-          },
+          border: '2px solid',
+          borderColor: 'section.research.secondary',
         },
       }}
       {...rest}

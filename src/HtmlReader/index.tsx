@@ -1,28 +1,34 @@
 import React from 'react';
-import { ColorMode, ReaderReturn, FontFamily, HtmlNavigator } from '../types';
-import LoadingSkeleton from '../ui/LoadingSkeleton';
 import {
   DEFAULT_HEIGHT,
   DEFAULT_SHOULD_GROW_WHEN_SCROLLING,
   MAIN_CONTENT_ID,
 } from '../constants';
 import {
-  fetchAsTxt,
+  ColorMode,
+  FitMode,
+  FontFamily,
+  HtmlNavigator,
+  ReaderReturn,
+} from '../types';
+import LoadingSkeleton from '../ui/LoadingSkeleton';
+import useUpdateLocalStorage from '../utils/localstorage';
+import { navigateToHash, navigateToProgression } from './effects';
+import {
   calcPosition,
   defaultInjectables,
   defaultInjectablesFixed,
+  fetchAsTxt,
   isSameResource,
 } from './lib';
 import makeHtmlReducer, { inactiveState } from './reducer';
-import { navigateToHash, navigateToProgression } from './effects';
-import useResource from './useResource';
-import useLocationQuery from './useLocationQuery';
-import useWindowResize from './useWindowResize';
-import { useUpdateScroll } from './useUpdateScroll';
-import useUpdateCSS from './useUpdateCSS';
-import useIframeLinkClick from './useIframeLinkClick';
-import useUpdateLocalStorage from '../utils/localstorage';
 import { HtmlReaderArguments } from './types';
+import useIframeLinkClick from './useIframeLinkClick';
+import useLocationQuery from './useLocationQuery';
+import useResource from './useResource';
+import useUpdateCSS from './useUpdateCSS';
+import { useUpdateScroll } from './useUpdateScroll';
+import useWindowResize from './useWindowResize';
 
 export default function useHtmlReader(args: HtmlReaderArguments): ReaderReturn {
   const {
@@ -35,6 +41,7 @@ export default function useHtmlReader(args: HtmlReaderArguments): ReaderReturn {
     growWhenScrolling = DEFAULT_SHOULD_GROW_WHEN_SCROLLING,
     persistLastLocation = true,
     persistSettings = true,
+    toggleFullScreen,
   } = args ?? {};
 
   const [state, dispatch] = React.useReducer(
@@ -164,6 +171,9 @@ export default function useHtmlReader(args: HtmlReaderArguments): ReaderReturn {
     goToPage(href) {
       dispatch({ type: 'GO_TO_HREF', href });
     },
+    goToPageNumber(page) {
+      dispatch({ type: 'GO_TO_PAGE', page });
+    },
     async goForward() {
       dispatch({ type: 'GO_FORWARD' });
     },
@@ -188,6 +198,9 @@ export default function useHtmlReader(args: HtmlReaderArguments): ReaderReturn {
     },
     async setFontFamily(family: FontFamily) {
       dispatch({ type: 'SET_FONT_FAMILY', family });
+    },
+    async setFitMode(mode: FitMode) {
+      dispatch({ type: 'SET_FIT_MODE', fitMode: mode });
     },
   }).current;
 
@@ -241,6 +254,13 @@ export default function useHtmlReader(args: HtmlReaderArguments): ReaderReturn {
   const atStart = isFirstResource && isStartOfResource;
   const atEnd = isLastResource && isEndOfResource;
 
+  const totalPages =
+    state.iframe && state.settings
+      ? calcPosition(state.iframe, state.settings.isScrolling).totalPages
+      : 0;
+
+  const currentPage = state.location?.locations?.position ?? 1;
+
   // the reader is active
   return {
     type: 'HTML',
@@ -280,5 +300,8 @@ export default function useHtmlReader(args: HtmlReaderArguments): ReaderReturn {
     },
     manifest,
     navigator,
+    currentPage,
+    totalPages,
+    toggleFullScreen,
   };
 }

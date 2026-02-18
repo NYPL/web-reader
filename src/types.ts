@@ -13,24 +13,29 @@ export type ColorMode = 'night' | 'sepia' | 'day';
 
 export type FontFamily = 'publisher' | 'serif' | 'sans-serif' | 'open-dyslexic';
 
+export type FitMode = 'width' | 'height';
+
 export type Navigator = {
   goForward: () => void;
   goBackward: () => void;
   setScroll: (val: 'scrolling' | 'paginated') => Promise<void>;
   goToPage: (href: string) => void;
+  goToPageNumber: (pageNumber: number) => void;
+  setFitMode: (mode: FitMode) => void;
 };
 
 export type PdfNavigator = Navigator & {
   zoomIn: () => Promise<void>;
   zoomOut: () => Promise<void>;
+  rotateCounterClockwise: () => void;
 };
 
 export type HtmlNavigator = Navigator & {
   increaseFontSize: () => Promise<void>;
   decreaseFontSize: () => Promise<void>;
-  resetSettings: () => Promise<void>;
   setFontFamily: (family: FontFamily) => Promise<void>;
   setColorMode: (mode: ColorMode) => Promise<void>;
+  resetSettings: () => Promise<void>;
 };
 
 export type ReaderSettings = {
@@ -51,6 +56,8 @@ export type ReaderState = {
   atEnd: boolean;
   location?: Locator;
   settings: ReaderSettings | undefined;
+  fitMode: FitMode;
+  rotation?: number;
 };
 
 export type InactiveReader = null;
@@ -68,6 +75,9 @@ type CommonReader = {
   isLoading: false;
   content: JSX.Element;
   manifest: WebpubManifest;
+  currentPage: number;
+  totalPages: number;
+  toggleFullScreen?: () => void;
 };
 
 export type PDFActiveReader = CommonReader & {
@@ -91,10 +101,6 @@ export type GetContent<T extends string | Uint8Array> = (
   href: string,
   proxyUrl?: string
 ) => Promise<T>;
-
-export type ReaderManagerArguments = {
-  headerLeft?: JSX.Element; // Top-left header section
-};
 
 export type UseWebReaderArguments<T extends string | Uint8Array> = {
   webpubManifestUrl: string;
@@ -138,6 +144,10 @@ export type UseWebReaderArguments<T extends string | Uint8Array> = {
    * Default: `true`
    */
   persistSettings?: boolean;
+  /**
+   * Optional callback to expand the reader to full viewport.
+   */
+  toggleFullScreen?: () => void;
 };
 
 export type ActiveReaderArguments<

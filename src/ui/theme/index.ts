@@ -1,13 +1,14 @@
 import { extendTheme } from '@chakra-ui/react';
-import Alert from './components/alert';
-import Text from './components/text';
-import SkipNavigation from './components/skipNavigation';
-import colors from './foundations/colors';
-import typography from './foundations/typography';
-import nyplTheme from '../nypl-base-theme';
 import { ColorMode } from '../../types';
 import { getColor } from '../../utils/getColor';
+import nyplTheme from '../nypl-base-theme';
+import Alert from './components/alert';
 import getButtonStyle from './components/button';
+import SkipNavigation from './components/skipNavigation';
+import getTabsStyle from './components/tabs';
+import Text from './components/text';
+import Tooltip from './components/tooltip';
+import colors from './foundations/colors';
 import { Dict } from './types';
 
 /**
@@ -23,7 +24,6 @@ export function getTheme(colorMode: ColorMode = 'day'): Dict<unknown> {
   return extendTheme(
     {
       colors,
-      ...typography,
       /**
        * Chakra documentation on component styles:
        * https://chakra-ui.com/docs/theming/component-style
@@ -33,6 +33,8 @@ export function getTheme(colorMode: ColorMode = 'day'): Dict<unknown> {
         Text,
         Alert,
         SkipNavigation,
+        Tabs: getTabsStyle(getColor(colorMode)),
+        Tooltip,
       },
       currentColorMode: colorMode,
     },

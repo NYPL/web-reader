@@ -1,11 +1,12 @@
+import { Box, Icon, Portal } from '@chakra-ui/react';
 import React from 'react';
-import { Portal, Text, Icon, Box } from '@chakra-ui/react';
 import { Navigator, WebpubManifest } from '../types';
+import { ReadiumLink } from '../WebpubManifestTypes/ReadiumLink';
 import Button from './Button';
 import useColorModeValue from './hooks/useColorModeValue';
-import { ReadiumLink } from '../WebpubManifestTypes/ReadiumLink';
-import { Menu, MenuButton, MenuItem, MenuList } from './menu';
 import { TableOfContents } from './icons';
+import { Menu, MenuButton, MenuItem, MenuList } from './menu';
+import Tooltip from './Tooltip';
 
 export default function TableOfContent({
   navigator,
@@ -20,7 +21,6 @@ export default function TableOfContent({
     navigator.goToPage(href);
   };
   const tocBgColor = useColorModeValue('ui.white', 'ui.black', 'ui.sepia');
-  const iconFill = useColorModeValue('ui.black', 'ui.white', 'ui.black');
 
   const getLinkHref = (link: ReadiumLink): string => {
     if (link.href) return link.href;
@@ -28,18 +28,27 @@ export default function TableOfContent({
     return getLinkHref(link.children[0]);
   };
 
+  const mainBgColor = useColorModeValue(
+    'ui.gray.xx-dark',
+    'ui.black',
+    'ui.sepia'
+  );
   return (
     <Menu>
       {({ isOpen }) => (
         <>
-          <MenuButton
-            as={Button}
-            border="none"
-            aria-label="Table of Contents"
-            leftIcon={<Icon as={TableOfContents} w={6} h={6} fill={iconFill} />}
-          >
-            <Text variant="headerNav">Table of Contents</Text>
-          </MenuButton>
+          <Tooltip content="Table of contents">
+            <MenuButton
+              as={Button}
+              border="none"
+              aria-label="Table of contents"
+              bg={mainBgColor}
+              me={0}
+              isIcon
+            >
+              <Icon as={TableOfContents} w={18} h={18} />
+            </MenuButton>
+          </Tooltip>
           <Portal containerRef={containerRef}>
             <MenuList
               overflowY="auto"

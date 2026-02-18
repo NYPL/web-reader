@@ -6,18 +6,24 @@ export const IS_DEV = process.env.NODE_ENV === 'development';
 
 // we have to set a constant height to make this work with R2D2BC
 export const HEADER_HEIGHT = 48;
-export const FOOTER_HEIGHT = 48;
-export const CHROME_HEIGHT = HEADER_HEIGHT + FOOTER_HEIGHT;
+export const CHROME_HEIGHT = HEADER_HEIGHT;
 
 export const DEFAULT_HEIGHT = `calc(100vh - ${CHROME_HEIGHT}px)`;
 export const DEFAULT_SHOULD_GROW_WHEN_SCROLLING = true;
 
+export const READER_MARGIN = 16;
+
 export const DEFAULT_SETTINGS: ReaderSettings = {
   colorMode: 'day',
-  isScrolling: false,
+  isScrolling: true,
   fontSize: 100,
   fontFamily: 'publisher',
 };
+
+export const DEFAULT_FIT_MODE = 'height';
+
+export const DEFAULT_FONT_HEIGHT = 100;
+export const DEFAULT_FONT_WIDTH = 250;
 
 export const FONT_DETAILS = {
   publisher: {

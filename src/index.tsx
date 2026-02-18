@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { ReaderManagerArguments, UseWebReaderArguments } from './types';
+import { UseWebReaderArguments } from './types';
 import ErrorBoundary from './ui/ErrorBoundary';
 import ManagerUI from './ui/manager';
 import useWebReader from './useWebReader';
@@ -8,14 +8,12 @@ import useWebReader from './useWebReader';
  * The main React component export.
  */
 
-export type WebReaderProps = UseWebReaderArguments<string | Uint8Array> &
-  ReaderManagerArguments;
+export type WebReaderProps = UseWebReaderArguments<string | Uint8Array>;
 
 export const WebReaderWithoutBoundary: FC<WebReaderProps> = ({
   webpubManifestUrl,
   proxyUrl,
   getContent,
-  headerLeft,
   ...props
 }) => {
   const webReader = useWebReader({
@@ -26,11 +24,7 @@ export const WebReaderWithoutBoundary: FC<WebReaderProps> = ({
   });
   const { content } = webReader;
 
-  return (
-    <ManagerUI headerLeft={headerLeft} {...webReader}>
-      {content}
-    </ManagerUI>
-  );
+  return <ManagerUI {...webReader}>{content}</ManagerUI>;
 };
 
 const WebReader: FC<WebReaderProps> = (props) => {
@@ -43,13 +37,13 @@ const WebReader: FC<WebReaderProps> = (props) => {
 
 export default WebReader;
 
-export { default as useWebReader } from './useWebReader';
+export * from './constants';
 export { default as useHtmlReader } from './HtmlReader';
 export { default as usePdfReader } from './PdfReader';
-export { getTheme } from './ui/theme';
-export { default as useColorModeValue } from './ui/hooks/useColorModeValue';
-export * from './constants';
-export { clearWebReaderLocalStorage } from './utils/localstorage';
 export { default as addTocToManifest } from './PdfReader/addTocToManifest';
+export { default as useColorModeValue } from './ui/hooks/useColorModeValue';
+export { getTheme } from './ui/theme';
+export { default as useWebReader } from './useWebReader';
+export { clearWebReaderLocalStorage } from './utils/localstorage';
 export type { ReadiumLink } from './WebpubManifestTypes/ReadiumLink';
 export type { WebpubManifest } from './WebpubManifestTypes/WebpubManifest';

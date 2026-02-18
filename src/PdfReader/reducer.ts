@@ -1,10 +1,10 @@
-import { DEFAULT_SETTINGS } from '../constants';
+import { DEFAULT_FIT_MODE, DEFAULT_SETTINGS } from '../constants';
 import {
   getIndexFromHref,
-  getStartPageFromHref,
   getPageNumberFromHref,
+  getStartPageFromHref,
 } from './lib';
-import { PdfState, PdfReaderAction, PdfReaderArguments } from './types';
+import { PdfReaderAction, PdfReaderArguments, PdfState } from './types';
 
 export function makePdfReducer(
   args: PdfReaderArguments
@@ -56,6 +56,8 @@ export function makePdfReducer(
           pageWidth: undefined,
           pdfHeight: 0,
           pdfWidth: 0,
+          fitMode: DEFAULT_FIT_MODE,
+          rotation: 0,
         };
       }
       return newState;
@@ -78,19 +80,12 @@ export function makePdfReducer(
           atStart: true,
           atEnd: false,
           rendered: false,
+          fitMode: DEFAULT_FIT_MODE,
+          rotation: 0,
         };
       }
 
       case 'GO_FORWARD': {
-        /**
-         * In scrolling mode, we simply move forward one whole resource
-         */
-        if (state.settings?.isScrolling) {
-          const atEndOfBook =
-            state.resourceIndex === args.manifest.readingOrder.length - 1;
-          if (atEndOfBook) return state;
-          return goToLocation(state.resourceIndex + 1);
-        }
         /**
          * Navigate forward one page or one resource if at the end of the current
          * resource. Do nothing at the end of the last resource.
@@ -111,14 +106,6 @@ export function makePdfReducer(
       }
 
       case 'GO_BACKWARD': {
-        /**
-         * In scrolling mode, we simply move forward one whole resource
-         */
-        if (state.settings?.isScrolling) {
-          const atStartOfBook = state.resourceIndex === 0;
-          if (atStartOfBook) return state;
-          return goToLocation(state.resourceIndex - 1);
-        }
         /**
          * Navigate backward one page or to the end of the previous resource
          * if at the beginning of the current resource. Do nothing at the
@@ -150,6 +137,20 @@ export function makePdfReducer(
 
         const page = pageNumber ?? startPage ?? 1;
         return goToLocation(resourceIndex, page);
+      }
+
+      case 'GO_TO_PAGE': {
+        const numPages = state.numPages || 1;
+        const page = Math.max(1, Math.min(action.page, numPages));
+        return goToLocation(state.resourceIndex, page);
+      }
+
+      case 'PAGE_IN_VIEW': {
+        if (state.pageNumber === action.page) return state;
+        return {
+          ...state,
+          pageNumber: action.page,
+        };
       }
 
       case 'RESOURCE_FETCH_SUCCESS':
@@ -196,6 +197,17 @@ export function makePdfReducer(
           scale: action.scale,
         };
 
+      // case 'RESET_SETTINGS':
+      //   if (state.state === 'INACTIVE') {
+      //     return handleInvalidTransition(state, action);
+      //   }
+
+      //   return {
+      //     ...state,
+      //     settings: DEFAULT_SETTINGS,
+      //     scale: 1,
+      //   };
+
       case 'PAGE_LOAD_SUCCESS':
         return {
           ...state,
@@ -212,6 +224,20 @@ export function makePdfReducer(
           pageWidth: action.width,
           pageHeight: action.height,
         };
+
+      case 'SET_FIT_MODE':
+        return { ...state, fitMode: action.fitMode, scale: 1 };
+
+      case 'ROTATE_COUNTER_CLOCKWISE': {
+        const newRotation = ((state.rotation ?? 0) - 90 + 360) % 360;
+
+        return {
+          ...state,
+          rotation: newRotation,
+          fitMode:
+            newRotation === 0 || newRotation === 180 ? 'height' : 'width',
+        };
+      }
 
       case 'BOOK_BOUNDARY_CHANGED':
         return {

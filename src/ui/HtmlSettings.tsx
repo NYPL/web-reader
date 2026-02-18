@@ -1,24 +1,13 @@
+import { Box, ButtonGroup, Heading, Icon, Text } from '@chakra-ui/react';
 import * as React from 'react';
-import { Box, ButtonGroup, Heading, Text } from '@chakra-ui/react';
-import { HtmlNavigator, ReaderSettings, ReaderState } from '../types';
+import { FONT_DETAILS } from '../constants';
+import { HtmlNavigator, ReaderState } from '../types';
 import Button from './Button';
-import {
-  Continuous,
-  Day,
-  EnlargeFont,
-  Night,
-  Paginated,
-  ReduceFont,
-  Reset,
-  Sepia,
-} from './icons';
-import { DEFAULT_SETTINGS, FONT_DETAILS } from '../constants';
-import ToggleButton, {
-  ColorModeToggleButton,
-  FontToggleButton,
-} from './ToggleButton';
-import ToggleGroup from './ToggleGroup';
 import useColorModeValue from './hooks/useColorModeValue';
+import { Day, Night, Reset, Sepia, ZoomIn, ZoomOut } from './icons';
+import Tabs from './Tabs';
+import { ColorModeToggleButton } from './ToggleButton';
+import ToggleGroup from './ToggleGroup';
 
 export type HtmlSettingsProps = {
   navigator: HtmlNavigator;
@@ -30,7 +19,7 @@ export type HtmlSettingsProps = {
 export default function HtmlSettings(
   props: HtmlSettingsProps
 ): React.ReactElement | null {
-  const { navigator, iconFill, readerState, paginationValue } = props;
+  const { navigator, readerState } = props;
 
   const buttonTextColor = useColorModeValue('ui.black', 'ui.white', 'ui.black');
   const checkedButtonBgColor = useColorModeValue(
@@ -43,54 +32,55 @@ export default function HtmlSettings(
   const { colorMode, fontFamily } = readerState.settings;
 
   const {
-    setFontFamily,
     decreaseFontSize,
     increaseFontSize,
     resetSettings,
+    setFontFamily,
     setColorMode,
-    setScroll,
   } = navigator;
 
   return (
     <>
-      <ToggleGroup
+      <Tabs
         value={fontFamily}
-        label="text font options"
-        onChange={setFontFamily}
-      >
-        <FontToggleButton value="publisher" label="Default" />
-        <FontToggleButton
-          value="serif"
-          label="Serif"
-          fontFamily="serif"
-          fontWeight="regular"
-        />
-        <FontToggleButton
-          value="sans-serif"
-          label="Sans-Serif"
-          fontFamily="body"
-          fontWeight="regular"
-        />
-        <FontToggleButton
-          value="open-dyslexic"
-          label="Dyslexia"
-          fontFamily="opendyslexic"
-          fontWeight="regular"
-        />
-      </ToggleGroup>
+        onChange={(value: string) => {
+          setFontFamily(value as typeof fontFamily);
+        }}
+        options={[
+          { label: 'Default', value: 'publisher' },
+          {
+            label: 'Serif',
+            value: 'serif',
+            fontFamily: 'serif',
+            fontWeight: 'regular',
+          },
+          {
+            label: 'Sans-serif',
+            value: 'sans-serif',
+            fontFamily: 'body',
+            fontWeight: 'regular',
+          },
+          {
+            label: 'Dyslexia',
+            value: 'open-dyslexic',
+            fontFamily: 'opendyslexic',
+            fontWeight: 'regular',
+          },
+        ]}
+      />
       <Box
         bgColor={checkedButtonBgColor}
         display="flex"
         flexDirection="column"
-        px={[3, 3, 7]}
-        py={[4, 4, 5]}
+        p={4}
+        gap={4}
       >
         <Heading
           as="h3"
           color={buttonTextColor}
-          pb={[1.5, 1.5, 2.5]}
-          fontSize={2}
-          fontWeight="light"
+          fontSize="18px"
+          fontWeight="bold"
+          mb={2}
         >
           {FONT_DETAILS[fontFamily].heading}
         </Heading>
@@ -100,122 +90,104 @@ export default function HtmlSettings(
           fontSize={-1}
           fontWeight={FONT_DETAILS[fontFamily].fontWeight}
           margin={0}
+          mb={4}
         >
           {FONT_DETAILS[fontFamily].body}
         </Text>
-      </Box>
-      <ToggleGroup
-        value={colorMode}
-        label="reading theme options"
-        onChange={setColorMode}
-      >
-        <ColorModeToggleButton
-          colorMode="day"
-          icon={Day}
-          value="day"
-          label="Day"
-          bgColor="ui.white"
-          textColor="ui.black"
-        />
-        <ColorModeToggleButton
-          colorMode="sepia"
-          icon={Sepia}
-          value="sepia"
-          label="Sepia"
-          bgColor="ui.sepia"
-          textColor="ui.black"
-        />
-        <ColorModeToggleButton
-          colorMode="night"
-          icon={Night}
-          value="night"
-          label="Night"
-          bgColor="ui.black"
-          textColor="ui.white"
-        />
-      </ToggleGroup>
-      <ButtonGroup display="flex" spacing={0}>
-        <Button
-          flexGrow={1}
-          aria-label="Reset settings"
-          onClick={resetSettings}
-          variant="settings"
+        <ToggleGroup
+          value={colorMode}
+          label="reading theme options"
+          onChange={setColorMode}
         >
-          <Reset
-            w="45px"
-            h="45px"
-            fill={
-              areSettingsDefault(readerState.settings)
-                ? 'ui.gray.disabled'
-                : iconFill
-            }
+          <ColorModeToggleButton
+            colorMode="day"
+            icon={Day}
+            value="day"
+            label="Day"
+            bgColor="ui.white"
+            textColor="ui.black"
           />
-        </Button>
-        <Button
-          aria-label="Decrease font size"
-          flexGrow={1}
-          onClick={decreaseFontSize}
-          sx={{
-            _active: {
-              bgColor: checkedButtonBgColor,
-            },
-          }}
-          value="decrease font size"
-          variant="settings"
-        >
-          <ReduceFont w="45px" h="45px" fill={iconFill} />
-        </Button>
-        <Button
-          aria-label="Increase font size"
-          flexGrow={1}
-          onClick={increaseFontSize}
-          sx={{
-            _active: {
-              bgColor: checkedButtonBgColor,
-            },
-          }}
-          value="increase font size"
-          variant="settings"
-        >
-          <EnlargeFont w="45px" h="45px" fill={iconFill} />
-        </Button>
-      </ButtonGroup>
-      <ToggleGroup
-        onChange={setScroll}
-        value={paginationValue}
-        label="pagination options"
-      >
-        <ToggleButton
-          value="paginated"
-          borderRadius="0 0 0 4px"
-          label="Paginated"
-          icon={Paginated}
-          iconFill={iconFill}
-        />
-        <ToggleButton
-          value="scrolling"
-          borderRadius="0 0 4px 0"
-          label="Scrolling"
-          icon={Continuous}
-          iconFill={iconFill}
-        />
-      </ToggleGroup>
+          <ColorModeToggleButton
+            colorMode="night"
+            icon={Night}
+            value="night"
+            label="Night"
+            bgColor="ui.black"
+            textColor="ui.white"
+          />
+          <ColorModeToggleButton
+            colorMode="sepia"
+            icon={Sepia}
+            value="sepia"
+            label="Sepia"
+            bgColor="ui.sepia"
+            textColor="ui.black"
+          />
+        </ToggleGroup>
+        <ButtonGroup display="flex" spacing={4}>
+          <Button
+            onClick={resetSettings}
+            aria-label="Reset all"
+            bgColor="ui.white"
+            width="150px"
+          >
+            <Icon
+              as={Reset}
+              w={18}
+              h={18}
+              mr={1.5}
+              sx={{
+                path: { stroke: 'ui.typography.body' },
+              }}
+            />
+            Reset all
+          </Button>
+          <Button
+            onClick={increaseFontSize}
+            aria-label="Increase text"
+            bgColor="ui.white"
+            width="150px"
+            sx={{
+              _active: {
+                bgColor: checkedButtonBgColor,
+              },
+            }}
+          >
+            <Icon
+              as={ZoomIn}
+              w={18}
+              h={18}
+              mr={1.5}
+              sx={{
+                path: { stroke: 'ui.typography.body' },
+              }}
+            />
+            Increase text
+          </Button>
+          <Button
+            onClick={decreaseFontSize}
+            aria-label="Decrease text"
+            bgColor="ui.white"
+            width="150px"
+            sx={{
+              _active: {
+                bgColor: checkedButtonBgColor,
+              },
+            }}
+          >
+            <Icon
+              as={ZoomOut}
+              w={18}
+              h={18}
+              mr={1.5}
+              sx={{
+                path: { stroke: 'ui.typography.body' },
+              }}
+            />
+            Decrease text
+          </Button>
+        </ButtonGroup>
+      </Box>
     </>
   );
 }
-
-// Returns true if the reader's settings match the default settings
-const areSettingsDefault = (readerSettings: ReaderSettings) => {
-  if (!readerSettings) {
-    return false;
-  }
-
-  let setting: keyof ReaderSettings;
-
-  for (setting in DEFAULT_SETTINGS) {
-    if (readerSettings[setting] !== DEFAULT_SETTINGS[setting]) {
-      return false;
-    }
-  }
-  return true;
-};

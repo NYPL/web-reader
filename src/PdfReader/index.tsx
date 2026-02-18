@@ -1,20 +1,22 @@
-import { Document, PageProps, pdfjs } from 'react-pdf';
-import * as React from 'react';
-import { ReaderReturn } from '../types';
 import { Flex } from '@chakra-ui/react';
-import useMeasure from './useMeasure';
+import * as React from 'react';
+import { Document, PageProps, pdfjs } from 'react-pdf';
+import { FitMode, ReaderReturn } from '../types';
 import ChakraPage from './ChakraPage';
 import ScrollPage from './ScrollPage';
+import useMeasure from './useMeasure';
 // Required CSS in order for links to be clickable in PDFs
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
-import { HEADER_HEIGHT, FOOTER_HEIGHT, MAIN_CONTENT_ID } from '../constants';
 import {
   DEFAULT_HEIGHT,
   DEFAULT_SHOULD_GROW_WHEN_SCROLLING,
+  MAIN_CONTENT_ID,
+  READER_MARGIN,
 } from '../constants';
 import LoadingSkeleton from '../ui/LoadingSkeleton';
 import { fetchAsUint8Array, getResourceUrl, SCALE_STEP } from './lib';
+import './pdfReader.css';
 import { makePdfReducer } from './reducer';
 import { PdfReaderArguments } from './types';
 
@@ -42,6 +44,7 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
     injectablesFixed,
     height = DEFAULT_HEIGHT,
     growWhenScrolling = DEFAULT_SHOULD_GROW_WHEN_SCROLLING,
+    toggleFullScreen,
   } = args ?? {};
 
   const [state, dispatch] = React.useReducer(makePdfReducer(args), {
@@ -59,12 +62,14 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
     atEnd: false,
     settings: undefined,
     rendered: false,
+    fitMode: 'width',
   });
 
   // state we can derive from the state above
   const isFetching = !state.resource;
   const isParsed = typeof state.numPages === 'number';
   const [containerRef, containerSize] = useMeasure<HTMLDivElement>();
+  const [pageHeight, setPageHeight] = React.useState<number>(0);
 
   // dispatch action when arguments change
   React.useEffect(() => {
@@ -125,7 +130,7 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
   }, [state.resourceIndex, manifest, proxyUrl, getContent]);
 
   /**
-   * calculate the height or width of the pdf page in paginated mode.
+   * calculate the height or width of the pdf page to fit to dimensions.
    *  - if the page's aspect ratio is taller than the container's, we will constrain
    *    the page to the height of the container.
    *  - if the page's aspect ratio is wider than the container's, we will constrain
@@ -133,47 +138,72 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
    */
   const resizePage = React.useCallback(
     (
-      pdfWidth: number,
-      pdfHeight: number,
-      containerSize: { width: number; height: number }
+      containerSize: { width: number; height: number },
+      fitMode: FitMode,
+      rotation: number,
+      scale: number
     ) => {
-      const wRatio = pdfWidth / containerSize.width;
-      const hRatio = pdfHeight / containerSize.height;
+      if (!fitMode) return;
 
-      const fitHorizontal = wRatio > hRatio;
-      const width = fitHorizontal ? Math.round(containerSize.width) : undefined;
-      const height = !fitHorizontal
-        ? Math.round(containerSize.height)
-        : undefined;
+      let width, height, aspectRatio;
+      const isRotated = rotation % 180 !== 0;
+      const pdfWidth = isRotated ? state.pdfHeight : state.pdfWidth;
+      const pdfHeight = isRotated ? state.pdfWidth : state.pdfHeight;
 
-      dispatch({ type: 'RESIZE_PAGE', width, height });
+      if (fitMode === 'width' && containerSize.width) {
+        width = Math.round(containerSize.width - READER_MARGIN);
+        aspectRatio = pdfHeight / pdfWidth;
+        height = Math.round(width * aspectRatio);
+      } else if (
+        fitMode === 'height' &&
+        pdfWidth &&
+        pdfHeight &&
+        containerSize.height
+      ) {
+        aspectRatio = pdfHeight / pdfWidth;
+        height = Math.round((containerSize.height - READER_MARGIN) * scale);
+        width = Math.round((height / aspectRatio) * scale);
+      }
+      if (width || height) {
+        dispatch({ type: 'RESIZE_PAGE', width, height });
+      }
     },
-    []
+    [state.pdfWidth, state.pdfHeight]
   );
 
   React.useEffect(() => {
-    resizePage(state.pdfWidth, state.pdfHeight, containerSize);
-  }, [containerSize, state.pdfWidth, state.pdfHeight, resizePage]);
+    resizePage(containerSize, state.fitMode, state.rotation ?? 0, state.scale);
+  }, [containerSize, resizePage, state.fitMode, state.rotation, state.scale]);
+
+  /**
+   * Sets the initial page height for the PDF viewer based on the loaded PDF's aspect ratio
+   * and the current container width. This effect runs only once when the PDF's dimensions
+   * are first available and the page height has not yet been set.
+   */
+  React.useEffect(() => {
+    if (pageHeight === 0 && state.pdfWidth && state.pdfHeight) {
+      const aspectRatio = state.pdfHeight / state.pdfWidth;
+      const initialPageHeight =
+        (containerSize.width - READER_MARGIN) * aspectRatio;
+      setPageHeight(Math.round(initialPageHeight));
+    }
+  }, [state.pdfWidth, state.pdfHeight, containerSize.width, pageHeight]);
 
   /**
    * Update the atStart/atEnd state to tell the UI whether to show the prev/next buttons
    * Whether to have the next/prev buttons enabled. We disable them:
-   *   - In scroll mode when on the first or last resource
-   *   - In paginated mode when on the first or last page of the first or last resource
+   *   - When on the first or last page of the first or last resource
    */
   React.useEffect(() => {
-    const isScrolling = state.settings?.isScrolling;
     const isFirstResource = state.resourceIndex === 0;
     const isFirstResourceStart = isFirstResource && state.pageNumber === 1;
-    const showPrevButton = isScrolling
-      ? !isFirstResource
-      : !isFirstResourceStart;
+    const showPrevButton = !isFirstResourceStart;
 
     const isLastResource =
       state.resourceIndex === (manifest?.readingOrder?.length ?? 1) - 1;
     const isLastResourceEnd =
       isLastResource && state.pageNumber === state.numPages;
-    const showNextButton = isScrolling ? !isLastResource : !isLastResourceEnd;
+    const showNextButton = !isLastResourceEnd;
 
     dispatch({
       type: 'BOOK_BOUNDARY_CHANGED',
@@ -195,7 +225,6 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
     if (!state.settings?.isScrolling) return;
     // if the resource is not yet loaded, don't do anything yet
     if (!state.rendered) return;
-
     process.nextTick(() => {
       const page = document.querySelector(
         `[data-page-number="${state.pageNumber}"]`
@@ -234,9 +263,58 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
     });
   }, [state.scale]);
 
+  const rotateCounterClockwise = React.useCallback(async () => {
+    dispatch({ type: 'ROTATE_COUNTER_CLOCKWISE' });
+  }, []);
+
   const goToPage = React.useCallback(async (href: string) => {
     dispatch({ type: 'GO_TO_HREF', href });
   }, []);
+
+  const goToPageNumber = React.useCallback((page: number) => {
+    dispatch({ type: 'GO_TO_PAGE', page: page });
+  }, []);
+
+  // const resetSettings = React.useCallback(async () => {
+  //   dispatch({ type: 'RESET_SETTINGS' });
+  // }, []);
+
+  const setFitMode = React.useCallback((mode: FitMode) => {
+    dispatch({ type: 'SET_FIT_MODE', fitMode: mode });
+  }, []);
+
+  const intersectionRatios = React.useRef<{ [page: number]: number }>({});
+  const lastMostVisiblePage = React.useRef<number>(state.pageNumber);
+
+  const onInView = React.useCallback(
+    (pageNum: number, ratio: number) => {
+      if (!state.settings?.isScrolling) return;
+      intersectionRatios.current[pageNum] = ratio;
+
+      Object.keys(intersectionRatios.current).forEach((key) => {
+        if (intersectionRatios.current[Number(key)] === 0) {
+          delete intersectionRatios.current[Number(key)];
+        }
+      });
+
+      let maxRatio = -1;
+      let mostVisiblePage = state.pageNumber;
+      for (const [page, r] of Object.entries(intersectionRatios.current)) {
+        if (r > maxRatio) {
+          maxRatio = r;
+          mostVisiblePage = Number(page);
+        }
+      }
+
+      if (mostVisiblePage !== lastMostVisiblePage.current) {
+        lastMostVisiblePage.current = mostVisiblePage;
+        if (state.pageNumber !== mostVisiblePage) {
+          dispatch({ type: 'PAGE_IN_VIEW', page: mostVisiblePage });
+        }
+      }
+    },
+    [state.settings?.isScrolling, state.pageNumber]
+  );
 
   // this format is inactive, return null
   if (!webpubManifestUrl || !manifest) return null;
@@ -315,12 +393,14 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
         width: Math.round(page.width),
       });
 
-      resizePage(page.width, page.height, containerSize);
+      resizePage(
+        containerSize,
+        state.fitMode,
+        state.rotation ?? 0,
+        state.scale
+      );
     }
   }
-
-  const shouldGrow = state.settings?.isScrolling && growWhenScrolling;
-  const finalHeight = shouldGrow ? 'initial' : height;
 
   // the reader is active but loading a page
   return {
@@ -336,18 +416,22 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
         tabIndex={-1}
         id={MAIN_CONTENT_ID}
         ref={containerRef}
-        height={finalHeight}
+        height={pageHeight}
+        sx={{
+          '.react-pdf__Document': {
+            width: '100%',
+            height: '100%',
+            overflowX: 'hidden',
+            overflowY: 'auto',
+          },
+          '.react-pdf__Page': {
+            width: `${
+              containerSize.width ? containerSize.width - READER_MARGIN : 0
+            }px`,
+            height: (state.pageHeight ?? 1) * state.scale,
+          },
+        }}
       >
-        {/* FIXME: POC, update this with more a react proach. chakra.factory throws memory leak error.*/}
-        <style>
-          {`
-            .react-pdf__Document {
-              height: calc(100vh - ${HEADER_HEIGHT + FOOTER_HEIGHT}px);
-              overflow-x: hidden;
-              overflow-y: auto;
-            }
-          `}
-        </style>
         <Document
           file={state.resource}
           onLoadSuccess={onDocumentLoadSuccess}
@@ -359,13 +443,17 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
                 Array.from(new Array(state.numPages), (_, index) => (
                   <ScrollPage
                     key={`page_${index + 1}`}
-                    // width is necessary to pass to react-pdf Page component on initial render
-                    width={containerSize.width}
+                    width={state.pageWidth}
+                    height={state.pageHeight}
                     placeholderHeight={state.pdfHeight}
                     placeholderWidth={state.pdfWidth}
                     scale={state.scale}
                     pageNumber={index + 1}
                     onLoadSuccess={onRenderSuccess}
+                    allowInView={!isFetching}
+                    onInView={onInView}
+                    fitMode={state.fitMode}
+                    rotate={state.rotation ?? 0}
                   />
                 ))}
               {!state.settings.isScrolling && (
@@ -376,6 +464,7 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
                   height={state.pageHeight}
                   scale={state.scale}
                   loading={<></>}
+                  fitMode={state.fitMode}
                 />
               )}
             </>
@@ -391,7 +480,14 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
       setScroll,
       zoomIn,
       zoomOut,
+      rotateCounterClockwise,
       goToPage,
+      goToPageNumber,
+      // resetSettings,
+      setFitMode,
     },
+    currentPage: state.pageNumber,
+    totalPages: state.numPages ?? 0,
+    toggleFullScreen,
   };
 }

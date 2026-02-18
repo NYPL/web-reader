@@ -1,5 +1,6 @@
 import {
   ActiveReaderArguments,
+  FitMode,
   InactiveReaderArguments,
   ReaderSettings,
   ReaderState,
@@ -48,10 +49,13 @@ export type PdfReaderAction =
   | { type: 'GO_FORWARD' }
   | { type: 'GO_BACKWARD' }
   | { type: 'GO_TO_HREF'; href: string }
+  | { type: 'GO_TO_PAGE'; page: number }
+  | { type: 'PAGE_IN_VIEW'; page: number }
   | { type: 'RESOURCE_FETCH_SUCCESS'; resource: { data: Uint8Array } }
   | { type: 'PDF_PARSED'; numPages: number }
   | { type: 'PDF_LOAD_ERROR'; error: Error }
   | { type: 'SET_SCALE'; scale: number }
+  // | { type: 'RESET_SETTINGS' } may be needed in future
   | { type: 'SET_SCROLL'; isScrolling: boolean }
   | { type: 'PAGE_LOAD_SUCCESS'; height: number; width: number }
   | {
@@ -59,4 +63,6 @@ export type PdfReaderAction =
       height: number | undefined;
       width: number | undefined;
     }
+  | { type: 'SET_FIT_MODE'; fitMode: FitMode }
+  | { type: 'ROTATE_COUNTER_CLOCKWISE' }
   | { type: 'BOOK_BOUNDARY_CHANGED'; atStart: boolean; atEnd: boolean };

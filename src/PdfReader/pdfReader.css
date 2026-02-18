@@ -1,0 +1,25 @@
+.react-pdf__Document {
+  scrollbar-color: #8d8d8d #424242;
+  display: flex;
+  flex-direction: column;
+  background: #252525;
+  gap: 8px;
+
+  > div {
+    background: #252525;
+  }
+}
+
+.react-pdf__Page {
+  display: block;
+  background: #252525 !important;
+}
+
+.react-pdf__Page {
+  canvas,
+  .textLayer,
+  .annotationLayer {
+    display: block;
+    margin: 0 auto;
+  }
+}

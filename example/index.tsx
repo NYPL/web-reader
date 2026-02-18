@@ -1,36 +1,36 @@
-import 'react-app-polyfill/ie11';
+import {
+  Box,
+  Button,
+  ChakraProvider,
+  Heading,
+  Input,
+  ListItem,
+  Stack,
+  Text,
+  UnorderedList,
+} from '@chakra-ui/react';
 import * as React from 'react';
+import 'react-app-polyfill/ie11';
 import { createRoot } from 'react-dom/client';
 import {
   BrowserRouter,
-  Switch,
-  Route,
   Link,
+  Route,
+  Switch,
   useParams,
 } from 'react-router-dom';
-import WebReader, { addTocToManifest } from '../src';
-import {
-  ChakraProvider,
-  Heading,
-  UnorderedList,
-  ListItem,
-  Box,
-  Text,
-  Input,
-  Button,
-  Stack,
-} from '@chakra-ui/react';
-import { getTheme } from '../src/ui/theme';
+import useSWR, { Fetcher } from 'swr';
+import readiumAfter from 'url:../src/HtmlReader/ReadiumCss/ReadiumCSS-after.css';
 import readiumBefore from 'url:../src/HtmlReader/ReadiumCss/ReadiumCSS-before.css';
 import readiumDefault from 'url:../src/HtmlReader/ReadiumCss/ReadiumCSS-default.css';
-import readiumAfter from 'url:../src/HtmlReader/ReadiumCss/ReadiumCSS-after.css';
-import Tests from './Tests';
+import WebReader, { addTocToManifest } from '../src';
 import { Injectable } from '../src/Readium/Injectable';
-import useSWR, { Fetcher } from 'swr';
-import UseHtmlReader from './use-html-reader';
+import { WebpubManifest } from '../src/types';
+import { getTheme } from '../src/ui/theme';
 import mobyEpub2Manifest from './static/samples/moby-epub2-exploded/manifest.json';
 import pdfSingleResourceManifest from './static/samples/pdf/single-resource-short.json';
-import { WebpubManifest } from '../src/types';
+import Tests from './Tests';
+import UseHtmlReader from './use-html-reader';
 import UsePdfReader from './use-pdf-reader';
 
 const origin = window.location.origin;
@@ -101,6 +101,10 @@ const App = () => {
 };
 
 const PdfReaders = () => {
+  const [isFullViewport, setIsFullViewport] = React.useState(false);
+
+  const toggleFullScreen = () => setIsFullViewport((v) => !v);
+
   return (
     <>
       <Route path={`/pdf/single-resource-short`}>
@@ -136,12 +140,23 @@ const PdfReaders = () => {
             instead of taking over the full page. It is fixed height, which
             means it will not grow to fit content in scrolling mode.
           </Text>
-          <WebReader
-            webpubManifestUrl={`${origin}/samples/pdf/multi-resource.json`}
-            proxyUrl={pdfProxyUrl}
-            pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.mjs`}
-            growWhenScrolling={false}
-          />
+          <Box
+            margin="0 auto"
+            width={isFullViewport ? '100vw' : '50%'}
+            height={isFullViewport ? '100vh' : 'auto'}
+            position={isFullViewport ? 'fixed' : 'relative'}
+            top={isFullViewport ? 0 : undefined}
+            left={isFullViewport ? 0 : undefined}
+            zIndex={isFullViewport ? 9999 : undefined}
+          >
+            <WebReader
+              webpubManifestUrl={`${origin}/samples/pdf/single-resource-short.json`}
+              proxyUrl={pdfProxyUrl}
+              pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.mjs`}
+              growWhenScrolling={false}
+              toggleFullScreen={toggleFullScreen}
+            />
+          </Box>
           <Heading>The page continues...</Heading>
           <Text as="p">Here is some more content below the reader</Text>
         </Box>

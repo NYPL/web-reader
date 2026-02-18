@@ -36,12 +36,37 @@ const colors: Colors = {
       icon: '#1C1B1F',
       medium: '#BDBDBD',
       dark: '#616161',
+      'xxx-dark': '#252525',
+      'xx-dark': '#2E2E2E',
       'x-dark': '#424242',
-      'light-cool': '#E0E0E0',
+      'semi-dark': '#8D8D8D',
+      'light-cool': '#E9E9E9',
       'light-warm': '#EFEDEB',
       'x-light-cool': '#F5F5F5',
       'x-light-warm': '#F8F8F7',
       'xx-light-cool': '#FAFAFA',
+    },
+    typography: {
+      body: '#2E2E2E',
+      heading: '#000',
+      inverse: {
+        heading: '#E9E9E9',
+      },
+    },
+  },
+  dark: {
+    ui: {
+      typography: {
+        heading: '#E9E9E9',
+      },
+      border: {
+        default: '#8D8D8D',
+      },
+      bg: {
+        hover: '#2E2E2E',
+        active: '#616161',
+        page: '#191919',
+      },
     },
   },
 
@@ -50,6 +75,12 @@ const colors: Colors = {
     primary: '#C60917',
     secondary: '#760000',
     'nypl-red': '#D0343A',
+  },
+
+  section: {
+    research: {
+      secondary: '#006166',
+    },
   },
 
   /**

@@ -1,15 +1,15 @@
 import React from 'react';
 import {
   ActiveReader,
-  Navigator,
+  ColorMode,
+  FitMode,
+  FontFamily,
   HtmlNavigator,
+  Navigator,
   PdfNavigator,
   WebpubManifest,
-  FontFamily,
-  ColorMode,
 } from '../../src/types';
 import { HtmlSettingsProps } from '../../src/ui/HtmlSettings';
-import { PdfSettingsProps } from '../../src/ui/PdfSettings';
 
 const goForwardFn = jest.fn();
 const goBackwardFn = jest.fn();
@@ -22,6 +22,9 @@ const zoomInFn = jest.fn();
 const zoomOutFn = jest.fn();
 const setFontFamilyFn = jest.fn();
 const goToPageFn = jest.fn();
+const goToPageNumberFn = jest.fn();
+const setFitModeFn = jest.fn();
+const rotateCounterClockwiseFn = jest.fn();
 
 export const MockNavigator = {
   goForward: goForwardFn,
@@ -32,6 +35,9 @@ export const MockNavigator = {
   decreaseFontSize: decreaseFontSizeFn,
   setFontFamily: setFontFamilyFn,
   goToPage: goToPageFn,
+  goToPageNumber: goToPageNumberFn,
+  resetSettings: resetSettingsFn,
+  setFitMode: setFitModeFn,
 } as Navigator;
 
 export const MockHtmlNavigator = {
@@ -44,6 +50,8 @@ export const MockHtmlNavigator = {
   resetSettings: resetSettingsFn,
   setFontFamily: setFontFamilyFn,
   goToPage: goToPageFn,
+  goToPageNumber: goToPageNumberFn,
+  setFitMode: setFitModeFn,
 } as HtmlNavigator;
 
 export const MockPdfNavigator = {
@@ -55,6 +63,10 @@ export const MockPdfNavigator = {
   zoomOut: zoomOutFn,
   setFontFamily: setFontFamilyFn,
   goToPage: goToPageFn,
+  goToPageNumber: goToPageNumberFn,
+  resetSettings: resetSettingsFn,
+  setFitMode: setFitModeFn,
+  rotateCounterClockwise: rotateCounterClockwiseFn,
 } as PdfNavigator;
 
 export const MockWebpubManifest = {
@@ -161,6 +173,7 @@ export const MockHtmlReaderState = {
   },
   atStart: true,
   atEnd: false,
+  fitMode: 'height' as FitMode,
 };
 
 const MockPdfReaderState = {
@@ -182,14 +195,8 @@ const MockPdfReaderState = {
 export const MockHtmlSettingsProps = ({
   navigator: MockHtmlNavigator,
   readerState: MockHtmlReaderState,
-  paginationValue: 'paginated',
+  paginationValue: 'scrolling',
 } as unknown) as HtmlSettingsProps;
-
-export const MockPdfSettingsProps = ({
-  navigator: MockPdfNavigator,
-  readerState: MockPdfReaderState,
-  paginationValue: 'paginated',
-} as unknown) as PdfSettingsProps;
 
 export const MockHtmlReaderProps = ({
   type: 'HTML',

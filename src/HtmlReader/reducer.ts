@@ -1,29 +1,34 @@
 import {
+  DEFAULT_FIT_MODE,
+  DEFAULT_FONT_HEIGHT,
+  DEFAULT_FONT_WIDTH,
+  DEFAULT_SETTINGS,
+} from '../constants';
+import {
   getLocalStorageLocation,
   getLocalStorageSettings,
 } from '../utils/localstorage';
 import {
-  getCurrentIndex,
-  linkToLocator,
   calcPosition,
-  getFromReadingOrder,
   FONT_SIZE_STEP,
+  getCurrentIndex,
+  getFromReadingOrder,
   isSameResource,
+  linkToLocator,
 } from './lib';
 import {
   FetchingResourceState,
   HtmlAction,
+  HtmlReaderArguments,
   HtmlState,
+  InactiveState,
   LoadingIframeState,
-  ReadyState,
   NavigatingState,
+  ReadyState,
   RenderingIframeState,
   ResourceFetchErrorState,
-  InactiveState,
-  HtmlReaderArguments,
 } from './types';
 import { getLocationQuery } from './useLocationQuery';
-import { DEFAULT_SETTINGS } from '../constants';
 
 /**
  * A higher order function that makes it easy to access arguments in the reducer
@@ -247,6 +252,33 @@ export default function makeHtmlReducer(
           ...state,
           state: 'NAVIGATING',
           location: locator,
+        };
+        return newState;
+      }
+
+      case 'GO_TO_PAGE': {
+        if (state.state !== 'READY') {
+          return handleInvalidTransition(state, action);
+        }
+        const { totalPages } = calcPosition(
+          state.iframe,
+          state.settings.isScrolling
+        );
+        const page = Math.max(1, Math.min(action.page, totalPages));
+        const progression = (page - 1) / totalPages;
+
+        const newState: NavigatingState = {
+          ...state,
+          state: 'NAVIGATING',
+          location: {
+            ...state.location,
+            locations: {
+              ...state.location.locations,
+              progression,
+              position: page,
+              remainingPositions: totalPages - page,
+            },
+          },
         };
         return newState;
       }
@@ -489,6 +521,7 @@ export default function makeHtmlReducer(
         return {
           ...state,
           settings: DEFAULT_SETTINGS,
+          fitMode: DEFAULT_FIT_MODE,
         };
 
       case 'SET_FONT_FAMILY':
@@ -545,6 +578,22 @@ export default function makeHtmlReducer(
         };
         return newState;
       }
+
+      case 'SET_FIT_MODE':
+        if (state.state === 'INACTIVE') {
+          return handleInvalidTransition(state, action);
+        }
+        return {
+          ...state,
+          fitMode: action.fitMode,
+          settings: {
+            ...state.settings,
+            fontSize:
+              action.fitMode === 'height'
+                ? DEFAULT_FONT_HEIGHT
+                : DEFAULT_FONT_WIDTH,
+          },
+        };
     }
   };
 }
@@ -565,4 +614,5 @@ export const inactiveState: InactiveState = {
   state: 'INACTIVE',
   location: undefined,
   settings: undefined,
+  fitMode: DEFAULT_FIT_MODE,
 };
