@@ -5,9 +5,6 @@ import { FitMode, ReaderReturn } from '../types';
 import ChakraPage from './ChakraPage';
 import ScrollPage from './ScrollPage';
 import useMeasure from './useMeasure';
-// Required CSS in order for links to be clickable in PDFs
-import 'react-pdf/dist/Page/AnnotationLayer.css';
-import 'react-pdf/dist/Page/TextLayer.css';
 import {
   DEFAULT_HEIGHT,
   DEFAULT_SHOULD_GROW_WHEN_SCROLLING,
