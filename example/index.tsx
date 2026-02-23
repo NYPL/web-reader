@@ -32,6 +32,8 @@ import pdfSingleResourceManifest from './static/samples/pdf/single-resource-shor
 import Tests from './Tests';
 import UseHtmlReader from './use-html-reader';
 import UsePdfReader from './use-pdf-reader';
+import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
+import 'react-pdf/dist/esm/Page/TextLayer.css';
 
 const origin = window.location.origin;
 
