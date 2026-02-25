@@ -118,7 +118,7 @@ const MissingToc = ({
 const Item = React.forwardRef<
   HTMLAnchorElement,
   React.ComponentProps<typeof MenuItem> & { html: string }
->(({ html, children, ...props }) => {
+>(({ html, children, ...props }, ref) => {
   const bgColor = useColorModeValue('ui.white', 'ui.black', 'ui.sepia');
   const color = useColorModeValue('ui.black', 'ui.white', 'ui.black');
   const borderColor = useColorModeValue(

@@ -19,12 +19,14 @@ export type ToggleButtonProps = React.ComponentPropsWithoutRef<
   icon?: ReactElement;
   iconFill?: string;
   label?: string;
+  value: string;
+  isChecked: boolean;
 };
 
 function ToggleButton(
   props: React.PropsWithoutRef<ToggleButtonProps>
 ): React.ReactElement {
-  const { colorMode, icon, iconFill, label, ...rest } = props;
+  const { colorMode, icon, iconFill, label, value, isChecked, ...rest } = props;
   const { getInputProps, getRadioProps } = useRadio(props);
 
   const input = getInputProps();
