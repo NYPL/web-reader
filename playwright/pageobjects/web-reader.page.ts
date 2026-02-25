@@ -207,7 +207,7 @@ class PdfReaderPage extends WebReaderPage {
       .first()
       .evaluate((el) => {
         return Number(
-          window.getComputedStyle(el).getPropertyValue('--user-unit')
+          window.getComputedStyle(el).getPropertyValue('--scale-factor')
         );
       });
   }

@@ -123,6 +123,18 @@ There are two different injectables props you can pass to the web reader.
 
 Your app can provide both props or only one. The reader will decide which one to load into the iframe based on the book format defined in the webpub manifest.
 
+## Required CSS for the PDF Reader (Text & Annotation Layers)
+
+When rendering PDFs the library relies on `react-pdf`'s text and annotation layer styles.
+
+To avoid importing global CSS from inside distributed JS in Next.js applications, you must import global CSS only from the app root (`pages/_app.js` / `pages/_app.tsx` or `app/layout.tsx`). After installing `@nypl/web-reader`, import the following CSS from your application root:
+
+```js
+// pages/_app.tsx or app/layout.tsx
+import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
+import 'react-pdf/dist/esm/Page/TextLayer.css';
+```
+
 ## Other Injectables
 
 You can import and inject other files into the `<WebReader />` to customize behavior. For example, in Open eBooks, we import some [custom JavaScript](https://github.com/NYPL/ereading-clients/blob/staging/apps/oew/src/components/theme-ui/WebReader.tsx#L65) to disable right clicking & copying copywritten content.
