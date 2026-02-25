@@ -34,7 +34,7 @@ export default function useResource(
       try {
         const content = await getContent(url);
         const mimetype =
-          state.location?.type ?? url.endsWith('.html')
+          (state.location?.type ?? url.endsWith('.html'))
             ? 'text/html'
             : 'application/xhtml+xml';
         const document = new DOMParser().parseFromString(content, mimetype);
@@ -54,9 +54,8 @@ export default function useResource(
         injectJS(document.body);
 
         // While fetching, the page renders a progressbar with skeleton
-        const iframeContainer: HTMLElement | null = window.document.querySelector(
-          'main [role="progressbar"]'
-        );
+        const iframeContainer: HTMLElement | null =
+          window.document.querySelector('main [role="progressbar"]');
 
         const readerSettings = {
           colorMode: state.settings.colorMode,

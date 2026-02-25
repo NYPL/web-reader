@@ -12,7 +12,6 @@ type ScrollPageProps = {
   onLoadSuccess: (page: PageProps) => void;
   placeholderHeight: number;
   placeholderWidth: number;
-  allowInView?: boolean;
   onInView?: (pageNumber: number, ratio: number) => void;
   fitMode: FitMode;
   rotate: number;
@@ -42,7 +41,6 @@ const ScrollPage: FC<ScrollPageProps> = ({
   onLoadSuccess,
   placeholderHeight,
   placeholderWidth,
-  allowInView,
   onInView,
   fitMode,
   rotate,

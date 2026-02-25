@@ -301,8 +301,10 @@ export interface UseMenuReturn extends ReturnType<typeof useMenu> {}
 /* -------------------------------------------------------------------------------------------------
  * useMenuButton hook
  * -----------------------------------------------------------------------------------------------*/
-export interface UseMenuButtonProps
-  extends Omit<React.HTMLAttributes<Element>, 'color'> {}
+export interface UseMenuButtonProps extends Omit<
+  React.HTMLAttributes<Element>,
+  'color'
+> {}
 
 /**
  * React Hook to manage a menu button.
@@ -373,8 +375,10 @@ function isTargetMenuItem(target: EventTarget | null) {
  * useMenuList
  * -----------------------------------------------------------------------------------------------*/
 
-export interface UseMenuListProps
-  extends Omit<React.HTMLAttributes<Element>, 'color'> {}
+export interface UseMenuListProps extends Omit<
+  React.HTMLAttributes<Element>,
+  'color'
+> {}
 
 /**
  * React Hook to manage a menu list.
@@ -520,8 +524,10 @@ export function useMenuList(
    We also use it in `useMenuItemOption`
  * -----------------------------------------------------------------------------------------------*/
 
-export interface UseMenuItemProps
-  extends Omit<React.HTMLAttributes<Element>, 'color'> {
+export interface UseMenuItemProps extends Omit<
+  React.HTMLAttributes<Element>,
+  'color'
+> {
   /**
    * If `true`, the menuitem will be disabled
    */
@@ -665,8 +671,7 @@ export interface UseMenuOptionOptions {
 }
 
 export interface UseMenuOptionProps
-  extends UseMenuItemProps,
-    UseMenuOptionOptions {}
+  extends UseMenuItemProps, UseMenuOptionOptions {}
 
 export function useMenuOption(
   props: UseMenuOptionProps = {},

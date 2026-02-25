@@ -447,7 +447,6 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
                     scale={state.scale}
                     pageNumber={index + 1}
                     onLoadSuccess={onRenderSuccess}
-                    allowInView={!isFetching}
                     onInView={onInView}
                     fitMode={state.fitMode}
                     rotate={state.rotation ?? 0}

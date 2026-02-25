@@ -99,8 +99,8 @@ export function isSameResource(
     const doMatch =
       url1.origin === url2.origin && url1.pathname === url2.pathname;
     return doMatch;
-  } catch (e) {
-    console.error(e);
+  } catch (_e) {
+    console.error(_e);
   }
 
   return false;
@@ -207,9 +207,10 @@ export function calcPosition(
 /**
  * Gets scroll position of an element
  */
-export function getScrollPosition(
-  element: HTMLElement | undefined | null
-): { x: number; y: number } {
+export function getScrollPosition(element: HTMLElement | undefined | null): {
+  x: number;
+  y: number;
+} {
   if (!element) return { x: 0, y: 0 };
   const { scrollTop, scrollLeft } = element;
   return {

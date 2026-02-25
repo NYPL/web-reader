@@ -192,26 +192,26 @@ const MockPdfReaderState = {
   atEnd: false,
 };
 
-export const MockHtmlSettingsProps = ({
+export const MockHtmlSettingsProps = {
   navigator: MockHtmlNavigator,
   readerState: MockHtmlReaderState,
   paginationValue: 'scrolling',
-} as unknown) as HtmlSettingsProps;
+} as unknown as HtmlSettingsProps;
 
-export const MockHtmlReaderProps = ({
+export const MockHtmlReaderProps = {
   type: 'HTML',
   isLoading: false,
   content: <MockComponent />,
   state: MockHtmlReaderState,
   manifest: MockWebpubManifest,
   navigator: MockHtmlNavigator,
-} as unknown) as ActiveReader;
+} as unknown as ActiveReader;
 
-export const MockPdfReaderProps = ({
+export const MockPdfReaderProps = {
   type: 'PDF',
   isLoading: false,
   content: <MockComponent />,
   state: MockPdfReaderState,
   manifest: MockWebpubManifest,
   navigator: MockPdfNavigator,
-} as unknown) as ActiveReader;
+} as unknown as ActiveReader;

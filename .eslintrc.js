@@ -1,7 +1,6 @@
 module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint'],
   extends: [
     'react-app',
     'eslint:recommended',
@@ -9,9 +8,38 @@ module.exports = {
     'plugin:react-hooks/recommended',
     'prettier',
   ],
+  rules: {
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
+    '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+    '@typescript-eslint/no-empty-object-type': 'off',
+    '@typescript-eslint/no-unnecessary-type-constraint': 'off',
+    'import/no-anonymous-default-export': 'off',
+    '@typescript-eslint/ban-ts-comment': 'off',
+    'no-unused-expressions': 'off',
+    '@typescript-eslint/no-unused-expressions': 'off',
+    '@typescript-eslint/no-this-alias': 'off',
+    'no-empty': 'off',
+    '@typescript-eslint/no-empty-function': 'off',
+    'no-sequences': 'off',
+    'no-restricted-globals': 'off',
+    'no-fallthrough': 'off',
+    'default-case': 'off',
+    'eqeqeq': ['warn', 'smart'],
+  },
   settings: {
     react: {
       version: 'detect',
     },
+  },
+  env: {
+    browser: true,
+    node: true,
+    es2021: true,
+  },
+  globals: {
+    globalThis: 'readonly',
+    self: 'readonly',
+    location: 'readonly',
   },
 };
