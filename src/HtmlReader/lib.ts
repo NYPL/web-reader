@@ -207,9 +207,10 @@ export function calcPosition(
 /**
  * Gets scroll position of an element
  */
-export function getScrollPosition(
-  element: HTMLElement | undefined | null
-): { x: number; y: number } {
+export function getScrollPosition(element: HTMLElement | undefined | null): {
+  x: number;
+  y: number;
+} {
   if (!element) return { x: 0, y: 0 };
   const { scrollTop, scrollLeft } = element;
   return {

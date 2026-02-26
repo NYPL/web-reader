@@ -29,14 +29,8 @@ export default function Header(
 ): React.ReactElement {
   const [, toggleFullscreenHook] = useFullscreen();
   const [isFullscreen, setIsFullScreen] = useState(false);
-  const {
-    navigator,
-    manifest,
-    type,
-    containerRef,
-    currentPage,
-    totalPages,
-  } = props;
+  const { navigator, manifest, type, containerRef, currentPage, totalPages } =
+    props;
 
   const isAtStart = props.state?.atStart;
   const isAtEnd = props.state?.atEnd;

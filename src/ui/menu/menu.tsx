@@ -206,7 +206,7 @@ const StyledMenuItem = forwardRef<StyledMenuItemProps, 'button'>(
      * Else, use no type to avoid invalid html, e.g. <a type="button" />
      * Else, fall back to "button"
      */
-    const btnType = rest.as ? type ?? undefined : 'button';
+    const btnType = rest.as ? (type ?? undefined) : 'button';
 
     const buttonStyles: SystemStyleObject = {
       textDecoration: 'none',
@@ -227,11 +227,10 @@ const StyledMenuItem = forwardRef<StyledMenuItemProps, 'button'>(
   }
 );
 
-interface MenuItemOptions
-  extends Pick<
-    UseMenuItemProps,
-    'isDisabled' | 'isFocusable' | 'closeOnSelect'
-  > {
+interface MenuItemOptions extends Pick<
+  UseMenuItemProps,
+  'isDisabled' | 'isFocusable' | 'closeOnSelect'
+> {
   /**
    * The icon to render before the menu item's label.
    * @type React.ReactElement
@@ -256,8 +255,7 @@ interface MenuItemOptions
 type HTMLAttributes = React.HTMLAttributes<HTMLElement>;
 
 export interface MenuItemProps
-  extends HTMLChakraProps<'button'>,
-    MenuItemOptions {}
+  extends HTMLChakraProps<'button'>, MenuItemOptions {}
 
 export const MenuItem = forwardRef<MenuItemProps, 'button'>((props, ref) => {
   const {
@@ -311,7 +309,8 @@ const CheckIcon: React.FC<PropsOf<'svg'>> = (props) => (
 );
 
 export interface MenuItemOptionProps
-  extends UseMenuOptionOptions,
+  extends
+    UseMenuOptionOptions,
     Omit<MenuItemProps, keyof UseMenuOptionOptions> {
   /**
    * @type React.ReactElement
@@ -354,7 +353,8 @@ if (__DEV__) {
 }
 
 export interface MenuOptionGroupProps
-  extends UseMenuOptionGroupProps,
+  extends
+    UseMenuOptionGroupProps,
     Omit<MenuGroupProps, 'value' | 'defaultValue' | 'onChange'> {}
 
 export const MenuOptionGroup: React.FC<MenuOptionGroupProps> = (props) => {

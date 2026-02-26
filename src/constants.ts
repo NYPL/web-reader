@@ -28,8 +28,7 @@ export const DEFAULT_FONT_WIDTH = 250;
 export const FONT_DETAILS = {
   publisher: {
     heading: "Publisher's default font",
-    body:
-      "Show the publisher's-specified fonts and layout choices in this ebook",
+    body: "Show the publisher's-specified fonts and layout choices in this ebook",
     token: 'body',
     fontWeight: 'light',
   },

@@ -134,13 +134,11 @@ export function setFixedCss(
 ): void {
   if (!iframeContainer) return;
 
-  let { contentWidth, contentHeight } = extractContentViewportSize(
-    iframeDocument
-  );
+  let { contentWidth, contentHeight } =
+    extractContentViewportSize(iframeDocument);
 
-  const { containerWidth, containerHeight } = extractContentContainerSize(
-    iframeContainer
-  );
+  const { containerWidth, containerHeight } =
+    extractContentContainerSize(iframeContainer);
 
   // Make it default scale of 1 in case we don't have the content width/height
   contentWidth = contentWidth ?? containerWidth;
@@ -173,9 +171,10 @@ export function setFixedCss(
 /**
  * Extract the publication's width and height from the iframe viewport meta tag.
  */
-function extractContentViewportSize(
-  iframeDocument: Document
-): { contentWidth: number | undefined; contentHeight: number | undefined } {
+function extractContentViewportSize(iframeDocument: Document): {
+  contentWidth: number | undefined;
+  contentHeight: number | undefined;
+} {
   const viewport = iframeDocument?.querySelector('meta[name="viewport"]');
   const content = viewport?.getAttribute('content');
 
@@ -191,9 +190,10 @@ function extractContentViewportSize(
 /**
  * Extract the width and height of the main container where iframe resides.
  */
-function extractContentContainerSize(
-  container: HTMLElement
-): { containerWidth: number; containerHeight: number } {
+function extractContentContainerSize(container: HTMLElement): {
+  containerWidth: number;
+  containerHeight: number;
+} {
   return {
     containerWidth: container.clientWidth,
     containerHeight: container.clientHeight,

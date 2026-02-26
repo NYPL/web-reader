@@ -73,7 +73,7 @@ export default function useHtmlReader(args: HtmlReaderArguments): ReaderReturn {
    * the webpubManifestUrl as the key.
    */
   const identifier = manifest
-    ? manifest.metadata.identifier ?? webpubManifestUrl ?? null
+    ? (manifest.metadata.identifier ?? webpubManifestUrl ?? null)
     : null;
   useUpdateLocalStorage(identifier, state, args);
 
@@ -238,7 +238,7 @@ export default function useHtmlReader(args: HtmlReaderArguments): ReaderReturn {
   const englishTitle =
     typeof manifest.metadata.title === 'string'
       ? manifest.metadata.title
-      : manifest.metadata.title.en ?? 'Unknown Title';
+      : (manifest.metadata.title.en ?? 'Unknown Title');
 
   const resourceIndex = manifest.readingOrder.findIndex((link) =>
     isSameResource(link.href, state.location.href, webpubManifestUrl)

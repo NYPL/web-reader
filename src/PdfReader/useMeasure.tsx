@@ -11,7 +11,7 @@ export type Dimensions = Pick<
 export type UseMeasureRef<E extends Element = Element> = (element: E) => void;
 export type UseMeasureResult<E extends Element = Element> = [
   UseMeasureRef<E> | null,
-  Dimensions
+  Dimensions,
 ];
 
 const DEFAULT_DIMENSION = {
@@ -26,7 +26,7 @@ const DEFAULT_DIMENSION = {
 };
 
 export default function useMeasure<
-  E extends Element = Element
+  E extends Element = Element,
 >(): UseMeasureResult<E> {
   // this is a little trick to get a reference to an HTML element. Using useRef wouldn't
   // work because we actually need rerenders when it changes, to update the useLayoutEffect
@@ -50,16 +50,8 @@ export default function useMeasure<
           }[]
         ) => {
           if (entries[0]) {
-            const {
-              x,
-              y,
-              width,
-              height,
-              top,
-              left,
-              bottom,
-              right,
-            } = entries[0].contentRect;
+            const { x, y, width, height, top, left, bottom, right } =
+              entries[0].contentRect;
             setRect({ x, y, width, height, top, left, bottom, right });
           }
         }
