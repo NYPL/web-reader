@@ -191,22 +191,7 @@ class PdfReaderPage extends WebReaderPage {
     await this.page.goto(gotoPage, { waitUntil: 'domcontentloaded' });
     await this.loadPage();
     await expect(this.pageOne).toBeVisible();
-    await this.ensureOnFirstPage();
     return new WebReaderPage(this.page);
-  }
-
-  async ensureOnFirstPage(): Promise<void> {
-    await expect(this.pageInput).toBeVisible();
-    const currentPage = await this.pageInput.inputValue();
-
-    if (currentPage !== '1') {
-      await this.pageInput.fill('1');
-      await this.pageInput.press('Enter');
-      await this.loadPage();
-    }
-
-    await expect(this.pageInput).toHaveValue('1');
-    await expect(this.previousPageButton).toBeDisabled();
   }
 
   async loadPage(): Promise<void> {
@@ -255,7 +240,6 @@ class PdfReaderPage extends WebReaderPage {
   }
 
   async navigateReader(): Promise<void> {
-    await this.ensureOnFirstPage();
     await expect(this.nextPageButton).toBeVisible();
     await expect(this.nextPageButton).toBeEnabled();
     await expect(this.previousPageButton).toBeVisible();

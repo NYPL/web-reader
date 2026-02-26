@@ -73,10 +73,10 @@ const ScrollPage: FC<ScrollPageProps> = ({
   );
 
   React.useEffect(() => {
-    if (onInView && entry) {
+    if (allowInView && onInView && entry) {
       onInView(pageNumber, entry.intersectionRatio || 0);
     }
-  }, [entry, onInView, pageNumber]);
+  }, [allowInView, entry, onInView, pageNumber]);
 
   return (
     <div ref={setRefs}>
