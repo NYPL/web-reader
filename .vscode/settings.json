@@ -4,7 +4,7 @@
     "source.organizeImports": "explicit",
     "source.fixAll.eslint": "explicit"
   },
-  "eslint.lintTask.options": "-c ./web/.eslintrc.json --ignore-path ./web/.eslintignore .",
+  "eslint.lintTask.options": "-c ./.eslintrc.js --ignore-path ./.eslintignore .",
   "eslint.validate": [
     "javascript",
     "javascriptreact",
