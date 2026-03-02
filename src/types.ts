@@ -150,11 +150,10 @@ export type UseWebReaderArguments<T extends string | Uint8Array> = {
   toggleFullScreen?: () => void;
 };
 
-export type ActiveReaderArguments<
-  T extends string | Uint8Array
-> = UseWebReaderArguments<T> & {
-  manifest: WebpubManifest;
-};
+export type ActiveReaderArguments<T extends string | Uint8Array> =
+  UseWebReaderArguments<T> & {
+    manifest: WebpubManifest;
+  };
 
 export type InactiveReaderArguments = undefined;
 

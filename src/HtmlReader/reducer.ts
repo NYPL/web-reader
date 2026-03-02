@@ -134,8 +134,8 @@ export default function makeHtmlReducer(
         const location = isQueryValid
           ? queryLocation
           : isLocalStorageLocationValid
-          ? localStorageRecord.location
-          : defaultStartLocation;
+            ? localStorageRecord.location
+            : defaultStartLocation;
 
         // get initial settings from local storage, if they exist
         const settings =

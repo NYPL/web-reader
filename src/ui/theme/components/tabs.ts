@@ -1,10 +1,8 @@
 import { createMultiStyleConfigHelpers } from '@chakra-ui/styled-system';
 import { GetColor } from '../../../types';
 
-const {
-  defineMultiStyleConfig,
-  definePartsStyle,
-} = createMultiStyleConfigHelpers(['root', 'tab', 'tablist']);
+const { defineMultiStyleConfig, definePartsStyle } =
+  createMultiStyleConfigHelpers(['root', 'tab', 'tablist']);
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 const getTabsStyle = (getColor: GetColor) =>

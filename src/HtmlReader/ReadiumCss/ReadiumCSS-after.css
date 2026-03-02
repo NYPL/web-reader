@@ -637,14 +637,16 @@ body {
 
 :root[style*='readium-font-on'][style*='AccessibleDfA'] {
   /* We won’t use the variable there since we need fallbacks for missing characters */
-  font-family: AccessibleDfA, Verdana, Tahoma, 'Trebuchet MS', sans-serif !important;
+  font-family:
+    AccessibleDfA, Verdana, Tahoma, 'Trebuchet MS', sans-serif !important;
   --RS__lineHeightCompensation: 1.167;
 }
 
 :root[style*='readium-font-on'][style*='IA Writer Duospace'] {
   /* We won’t use the variable there since we need fallbacks for missing characters */
-  font-family: 'IA Writer Duospace', Menlo, 'DejaVu Sans Mono',
-    'Bitstream Vera Sans Mono', Courier, monospace !important;
+  font-family:
+    'IA Writer Duospace', Menlo, 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono',
+    Courier, monospace !important;
   --RS__lineHeightCompensation: 1.167;
 }
 

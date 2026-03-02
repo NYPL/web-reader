@@ -1,21 +1,21 @@
 import { Flex } from '@chakra-ui/react';
 import * as React from 'react';
 import { Document, PageProps, pdfjs } from 'react-pdf';
-import { FitMode, ReaderReturn } from '../types';
-import ChakraPage from './ChakraPage';
-import ScrollPage from './ScrollPage';
-import useMeasure from './useMeasure';
 import {
   DEFAULT_HEIGHT,
   DEFAULT_SHOULD_GROW_WHEN_SCROLLING,
   MAIN_CONTENT_ID,
   READER_MARGIN,
 } from '../constants';
+import { FitMode, ReaderReturn } from '../types';
 import LoadingSkeleton from '../ui/LoadingSkeleton';
+import ChakraPage from './ChakraPage';
 import { fetchAsUint8Array, getResourceUrl, SCALE_STEP } from './lib';
 import './pdfReader.css';
 import { makePdfReducer } from './reducer';
+import ScrollPage from './ScrollPage';
 import { PdfReaderArguments } from './types';
+import useMeasure from './useMeasure';
 
 /**
  * The PDF reader
@@ -222,6 +222,10 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
     if (!state.settings?.isScrolling) return;
     // if the resource is not yet loaded, don't do anything yet
     if (!state.rendered) return;
+    if (scrollState.current.isInViewUpdate) {
+      scrollState.current.isInViewUpdate = false;
+      return;
+    }
     process.nextTick(() => {
       const page = document.querySelector(
         `[data-page-number="${state.pageNumber}"]`
@@ -280,32 +284,43 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
     dispatch({ type: 'SET_FIT_MODE', fitMode: mode });
   }, []);
 
-  const intersectionRatios = React.useRef<{ [page: number]: number }>({});
-  const lastMostVisiblePage = React.useRef<number>(state.pageNumber);
+  const scrollState = React.useRef({
+    ratios: new Map<number, number>(),
+    lastVisiblepage: state.pageNumber,
+    hasScrolled: false,
+    isInViewUpdate: false,
+  });
 
   const onInView = React.useCallback(
     (pageNum: number, ratio: number) => {
+      const currentScrollState = scrollState.current;
       if (!state.settings?.isScrolling) return;
-      intersectionRatios.current[pageNum] = ratio;
 
-      Object.keys(intersectionRatios.current).forEach((key) => {
-        if (intersectionRatios.current[Number(key)] === 0) {
-          delete intersectionRatios.current[Number(key)];
+      currentScrollState.ratios.set(pageNum, ratio);
+
+      if (!currentScrollState.hasScrolled && state.pageNumber === 1) {
+        const container = document.querySelector(
+          `#${MAIN_CONTENT_ID} .react-pdf__Document`
+        );
+        if (container && container.scrollTop > 0)
+          currentScrollState.hasScrolled = true;
+        else return;
+      }
+
+      let mostVisiblePage = currentScrollState.lastVisiblepage;
+      let maxRatio = -1;
+
+      currentScrollState.ratios.forEach((r, p) => {
+        if (r > maxRatio) {
+          maxRatio = r;
+          mostVisiblePage = p;
         }
       });
 
-      let maxRatio = -1;
-      let mostVisiblePage = state.pageNumber;
-      for (const [page, r] of Object.entries(intersectionRatios.current)) {
-        if (r > maxRatio) {
-          maxRatio = r;
-          mostVisiblePage = Number(page);
-        }
-      }
-
-      if (mostVisiblePage !== lastMostVisiblePage.current) {
-        lastMostVisiblePage.current = mostVisiblePage;
+      if (mostVisiblePage !== currentScrollState.lastVisiblepage) {
+        currentScrollState.lastVisiblepage = mostVisiblePage;
         if (state.pageNumber !== mostVisiblePage) {
+          currentScrollState.isInViewUpdate = true;
           dispatch({ type: 'PAGE_IN_VIEW', page: mostVisiblePage });
         }
       }
@@ -447,7 +462,7 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
                     scale={state.scale}
                     pageNumber={index + 1}
                     onLoadSuccess={onRenderSuccess}
-                    allowInView={!isFetching}
+                    allowInView={state.rendered}
                     onInView={onInView}
                     fitMode={state.fitMode}
                     rotate={state.rotation ?? 0}

@@ -31,7 +31,7 @@ export default async function addTocToManifest(
         // get the page referance
         const ref = dest[0];
         // the return value is improperly typed in the pdfjs library, and so we have to cast it here.
-        const pageIndex = ((await pdf.getPageIndex(ref)) as unknown) as number;
+        const pageIndex = (await pdf.getPageIndex(ref)) as unknown as number;
         // just in case the above cast is incorrect, we will check that pageIndex is a number
         if (typeof pageIndex !== 'number') return undefined;
         if (pageIndex) {
