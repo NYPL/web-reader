@@ -10,6 +10,7 @@ type ScrollPageProps = {
   height: number | undefined;
   scale: number;
   onLoadSuccess: (page: PageProps) => void;
+  onPageRef?: (pageNumber: number, element: HTMLElement | null) => void;
   placeholderHeight: number;
   placeholderWidth: number;
   allowInView?: boolean;
@@ -40,6 +41,7 @@ const ScrollPage: FC<ScrollPageProps> = ({
   width,
   height,
   onLoadSuccess,
+  onPageRef,
   placeholderHeight,
   placeholderWidth,
   allowInView,
@@ -61,8 +63,9 @@ const ScrollPage: FC<ScrollPageProps> = ({
     (el: Element | null) => {
       if (typeof loadRef === 'function') loadRef(el);
       if (typeof visibilityRef === 'function') visibilityRef(el);
+      if (onPageRef) onPageRef(pageNumber, el as HTMLElement | null);
     },
-    [loadRef, visibilityRef]
+    [loadRef, onPageRef, pageNumber, visibilityRef]
   );
 
   const handleLoadSuccess = React.useCallback(

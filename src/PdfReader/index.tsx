@@ -4,6 +4,7 @@ import { Document, PageProps, pdfjs } from 'react-pdf';
 import {
   DEFAULT_HEIGHT,
   DEFAULT_SHOULD_GROW_WHEN_SCROLLING,
+  IN_VIEW_DELAY_MS,
   MAIN_CONTENT_ID,
   READER_MARGIN,
 } from '../constants';
@@ -66,7 +67,19 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
   const isFetching = !state.resource;
   const isParsed = typeof state.numPages === 'number';
   const [containerRef, containerSize] = useMeasure<HTMLDivElement>();
-  const [pageHeight, setPageHeight] = React.useState<number>(0);
+
+  const documentContainerRef = React.useRef<HTMLDivElement | null>(null);
+  const pageRefs = React.useRef<Map<number, HTMLElement>>(new Map());
+  const setPageRef = React.useCallback(
+    (pageNumber: number, element: HTMLElement | null) => {
+      if (element) {
+        pageRefs.current.set(pageNumber, element);
+        return;
+      }
+      pageRefs.current.delete(pageNumber);
+    },
+    []
+  );
 
   // dispatch action when arguments change
   React.useEffect(() => {
@@ -173,20 +186,6 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
   }, [containerSize, resizePage, state.fitMode, state.rotation, state.scale]);
 
   /**
-   * Sets the initial page height for the PDF viewer based on the loaded PDF's aspect ratio
-   * and the current container width. This effect runs only once when the PDF's dimensions
-   * are first available and the page height has not yet been set.
-   */
-  React.useEffect(() => {
-    if (pageHeight === 0 && state.pdfWidth && state.pdfHeight) {
-      const aspectRatio = state.pdfHeight / state.pdfWidth;
-      const initialPageHeight =
-        (containerSize.width - READER_MARGIN) * aspectRatio;
-      setPageHeight(Math.round(initialPageHeight));
-    }
-  }, [state.pdfWidth, state.pdfHeight, containerSize.width, pageHeight]);
-
-  /**
    * Update the atStart/atEnd state to tell the UI whether to show the prev/next buttons
    * Whether to have the next/prev buttons enabled. We disable them:
    *   - When on the first or last page of the first or last resource
@@ -219,28 +218,58 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
    * In scrolling mode, manually scroll the user when the page changes
    */
   React.useEffect(() => {
-    if (!state.settings?.isScrolling) return;
     // if the resource is not yet loaded, don't do anything yet
-    if (!state.rendered) return;
+    if (!state.settings?.isScrolling || !state.rendered) return;
+
+    // If the change came from a scroll event, don't trigger a manual scroll back
     if (scrollState.current.isInViewUpdate) {
       scrollState.current.isInViewUpdate = false;
       return;
     }
-    process.nextTick(() => {
-      const page = document.querySelector(
-        `[data-page-number="${state.pageNumber}"]`
-      );
-      page?.scrollIntoView();
-    });
+
+    const documentContainer = documentContainerRef.current;
+    const pageRef = pageRefs.current.get(state.pageNumber);
+
+    if (documentContainer && pageRef) {
+      const containerRect = documentContainer.getBoundingClientRect();
+      const pageRect = pageRef.getBoundingClientRect();
+
+      documentContainer.scrollTo({
+        top: documentContainer.scrollTop + (pageRect.top - containerRect.top),
+      });
+    }
   }, [state.pageNumber, state.settings?.isScrolling, state.rendered]);
 
+  const scrollState = React.useRef({
+    ratios: new Map<number, number>(),
+    lastVisiblePage: state.pageNumber,
+    isInViewUpdate: false,
+    lastProgrammaticNavAt: 0,
+  });
+
+  const beginProgrammaticNavigation = React.useCallback(
+    (pendingPage: number) => {
+      const currentScrollState = scrollState.current;
+      currentScrollState.lastVisiblePage = pendingPage;
+      currentScrollState.lastProgrammaticNavAt = Date.now();
+      currentScrollState.ratios.clear();
+    },
+    []
+  );
+
   const goForward = React.useCallback(async () => {
+    beginProgrammaticNavigation(
+      state.numPages
+        ? Math.min(state.pageNumber + 1, state.numPages)
+        : state.pageNumber + 1
+    );
     dispatch({ type: 'GO_FORWARD' });
-  }, []);
+  }, [beginProgrammaticNavigation, state.numPages, state.pageNumber]);
 
   const goBackward = React.useCallback(async () => {
+    beginProgrammaticNavigation(Math.max(1, state.pageNumber - 1));
     dispatch({ type: 'GO_BACKWARD' });
-  }, []);
+  }, [beginProgrammaticNavigation, state.pageNumber]);
 
   const setScroll = React.useCallback(
     async (val: 'scrolling' | 'paginated') => {
@@ -272,9 +301,13 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
     dispatch({ type: 'GO_TO_HREF', href });
   }, []);
 
-  const goToPageNumber = React.useCallback((page: number) => {
-    dispatch({ type: 'GO_TO_PAGE', page: page });
-  }, []);
+  const goToPageNumber = React.useCallback(
+    (page: number) => {
+      beginProgrammaticNavigation(page);
+      dispatch({ type: 'GO_TO_PAGE', page: page });
+    },
+    [beginProgrammaticNavigation]
+  );
 
   // const resetSettings = React.useCallback(async () => {
   //   dispatch({ type: 'RESET_SETTINGS' });
@@ -284,41 +317,36 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
     dispatch({ type: 'SET_FIT_MODE', fitMode: mode });
   }, []);
 
-  const scrollState = React.useRef({
-    ratios: new Map<number, number>(),
-    lastVisiblepage: state.pageNumber,
-    hasScrolled: false,
-    isInViewUpdate: false,
-  });
-
   const onInView = React.useCallback(
     (pageNum: number, ratio: number) => {
       const currentScrollState = scrollState.current;
-      if (!state.settings?.isScrolling) return;
+
+      if (
+        !state.settings?.isScrolling ||
+        Date.now() - currentScrollState.lastProgrammaticNavAt < IN_VIEW_DELAY_MS
+      )
+        return;
+
+      if (ratio <= 0) {
+        currentScrollState.ratios.delete(pageNum);
+        return;
+      }
 
       currentScrollState.ratios.set(pageNum, ratio);
 
-      if (!currentScrollState.hasScrolled && state.pageNumber === 1) {
-        const container = document.querySelector(
-          `#${MAIN_CONTENT_ID} .react-pdf__Document`
-        );
-        if (container && container.scrollTop > 0)
-          currentScrollState.hasScrolled = true;
-        else return;
-      }
-
-      let mostVisiblePage = currentScrollState.lastVisiblepage;
+      let mostVisiblePage = currentScrollState.lastVisiblePage;
       let maxRatio = -1;
 
-      currentScrollState.ratios.forEach((r, p) => {
+      for (const [p, r] of currentScrollState.ratios) {
         if (r > maxRatio) {
           maxRatio = r;
           mostVisiblePage = p;
         }
-      });
+        if (r > 0.8) break;
+      }
 
-      if (mostVisiblePage !== currentScrollState.lastVisiblepage) {
-        currentScrollState.lastVisiblepage = mostVisiblePage;
+      if (mostVisiblePage !== currentScrollState.lastVisiblePage) {
+        currentScrollState.lastVisiblePage = mostVisiblePage;
         if (state.pageNumber !== mostVisiblePage) {
           currentScrollState.isInViewUpdate = true;
           dispatch({ type: 'PAGE_IN_VIEW', page: mostVisiblePage });
@@ -428,7 +456,7 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
         tabIndex={-1}
         id={MAIN_CONTENT_ID}
         ref={containerRef}
-        height={pageHeight}
+        height={height}
         sx={{
           '.react-pdf__Document': {
             width: '100%',
@@ -448,6 +476,7 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
           file={state.resource}
           onLoadSuccess={onDocumentLoadSuccess}
           onLoadError={onDocumentLoadError}
+          inputRef={documentContainerRef}
         >
           {isParsed && state.numPages && (
             <>
@@ -466,6 +495,7 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
                     onInView={onInView}
                     fitMode={state.fitMode}
                     rotate={state.rotation ?? 0}
+                    onPageRef={setPageRef}
                   />
                 ))}
               {!state.settings.isScrolling && (

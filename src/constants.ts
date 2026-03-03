@@ -5,7 +5,7 @@ export const ReadiumWebpubContext = 'http://readium.org/webpub/default.jsonld';
 export const IS_DEV = process.env.NODE_ENV === 'development';
 
 // we have to set a constant height to make this work with R2D2BC
-export const HEADER_HEIGHT = 48;
+export const HEADER_HEIGHT = 49;
 export const CHROME_HEIGHT = HEADER_HEIGHT;
 
 export const DEFAULT_HEIGHT = `calc(100vh - ${CHROME_HEIGHT}px)`;
@@ -51,6 +51,8 @@ export const FONT_DETAILS = {
     fontWeight: 'regular',
   },
 };
+
+export const IN_VIEW_DELAY_MS = 150;
 
 // local storage keys
 export const LOCAL_STORAGE_SETTINGS_KEY = 'web-reader-settings';
