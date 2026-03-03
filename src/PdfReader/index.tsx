@@ -81,6 +81,13 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
     []
   );
 
+  const scrollState = React.useRef({
+    ratios: new Map<number, number>(),
+    lastVisiblePage: state.pageNumber,
+    isInViewUpdate: false,
+    lastProgrammaticNavAt: 0,
+  });
+
   // dispatch action when arguments change
   React.useEffect(() => {
     if (!webpubManifestUrl || !manifest) {
@@ -239,13 +246,6 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
       });
     }
   }, [state.pageNumber, state.settings?.isScrolling, state.rendered]);
-
-  const scrollState = React.useRef({
-    ratios: new Map<number, number>(),
-    lastVisiblePage: state.pageNumber,
-    isInViewUpdate: false,
-    lastProgrammaticNavAt: 0,
-  });
 
   const beginProgrammaticNavigation = React.useCallback(
     (pendingPage: number) => {
