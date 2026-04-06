@@ -33,10 +33,10 @@
     "playwright": "npx playwright test"
   },
   "peerDependencies": {
-    "@chakra-ui/react": "2.x",
-    "@emotion/react": ">=11.11.1",
-    "@emotion/styled": ">=11.11.0",
-    "react": "18.x",
+    "@chakra-ui/react": "2.8.2",
+    "@emotion/react": "11.11.1",
+    "@emotion/styled": "11.11.0",
+    "react": "18.3.1",
     "react-dom": "18.x",
     "swr": "2.2.5"
   },
@@ -100,7 +100,7 @@
     "parcel-reporter-static-files-copy": "1.5.3",
     "prettier": "3.8.1",
     "process": "0.11.10",
-    "react": "18.2.0",
+    "react": "18.3.1",
     "react-app-polyfill": "2.0.0",
     "react-dom": "18.2.0",
     "react-router-dom": "5.3.4",
@@ -113,7 +113,7 @@
     "typescript": "5.9.3"
   },
   "dependencies": {
-    "@chakra-ui/react": "2.x",
+    "@chakra-ui/react": "2.8.2",
     "@chakra-ui/system": "2.6.2",
     "comlink": "4.4.1",
     "debounce": "1.2.1",
