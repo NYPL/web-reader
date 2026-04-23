@@ -1,5 +1,5 @@
 import { Flex, HStack, Icon, Input, Spacer, Text } from '@chakra-ui/react';
-import React, { ComponentProps, useState } from 'react';
+import React, { ComponentProps, useEffect, useState } from 'react';
 import { ActiveReader } from '../types';
 import useColorModeValue from '../ui/hooks/useColorModeValue';
 import Button from './Button';
@@ -81,7 +81,7 @@ export default function Header(
     }
   };
 
-  const handleFullscreen = () => {
+  const handleFullscreen = React.useCallback(() => {
     if (props.toggleFullScreen) {
       props.toggleFullScreen();
       setIsFullScreen((prev) => !prev);
@@ -89,7 +89,20 @@ export default function Header(
       toggleFullscreenHook();
       setIsFullScreen((prev) => !prev);
     }
-  };
+  }, [props, toggleFullscreenHook]);
+
+  useEffect(() => {
+    if (!isFullscreen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        handleFullscreen();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleFullscreen, isFullscreen]);
 
   return (
     <HeaderWrapper
@@ -130,7 +143,11 @@ export default function Header(
           </Tooltip>
           {type === 'PDF' && (
             <Tooltip content="Rotate left">
-              <Button isIcon onClick={navigator.rotateCounterClockwise}>
+              <Button
+                isIcon
+                onClick={navigator.rotateCounterClockwise}
+                aria-label="Rotate left"
+              >
                 <Icon as={Rotate} w={18} h={18} />
               </Button>
             </Tooltip>
@@ -236,7 +253,8 @@ export const HeaderWrapper = React.forwardRef<
   return (
     <Flex
       ref={ref}
-      as="header"
+      role="region"
+      aria-label="Reader controls"
       position="sticky"
       top={0}
       left={0}

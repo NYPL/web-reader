@@ -27,7 +27,6 @@ const WebReaderContent: React.FC<ReaderReturn> = ({ children, ...props }) => {
       {!props.isLoading && <Header containerRef={containerRef} {...props} />}
 
       <Flex
-        as="main"
         ref={containerRef}
         position="relative"
         bg={bgColor}

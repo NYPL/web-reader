@@ -10,9 +10,9 @@ export const SkipNavigation = (): React.ReactElement => {
   const styles = useStyleConfig('SkipNavigation');
 
   return (
-    <Box as="nav" aria-label="Skip to Main Content" __css={styles}>
-      <Link href="#mainContent" textDecoration="none">
-        Skip to Main Content
+    <Box __css={styles}>
+      <Link href="#reader-content" textDecoration="none" zIndex="skipLink">
+        Skip to book contents
       </Link>
     </Box>
   );

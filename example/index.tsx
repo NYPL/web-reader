@@ -12,6 +12,8 @@ import {
 import * as React from 'react';
 import 'react-app-polyfill/ie11';
 import { createRoot } from 'react-dom/client';
+import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
+import 'react-pdf/dist/esm/Page/TextLayer.css';
 import {
   BrowserRouter,
   Link,
@@ -32,8 +34,6 @@ import pdfSingleResourceManifest from './static/samples/pdf/single-resource-shor
 import Tests from './Tests';
 import UseHtmlReader from './use-html-reader';
 import UsePdfReader from './use-pdf-reader';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import 'react-pdf/dist/esm/Page/TextLayer.css';
 
 const origin = window.location.origin;
 
@@ -135,7 +135,7 @@ const PdfReaders = () => {
         />
       </Route>
       <Route path={`/pdf/fixed-height-embedded-collection`}>
-        <Box bg="lavenderblush" p={6} w="100vw">
+        <Box bg="lavenderblush" p={6}>
           <Heading>Fixed-height Embedded PDF</Heading>
           <Text as="p">
             This example shows how a web reader looks embedded within a page

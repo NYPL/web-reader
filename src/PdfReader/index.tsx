@@ -425,7 +425,7 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
       );
     if (
       Math.round(page.height) !== state.pdfHeight ||
-      Math.round(page.width) !== state.pdfWidth
+      Math.round(page.width) > state.pdfWidth
     ) {
       dispatch({
         type: 'PAGE_LOAD_SUCCESS',
@@ -448,7 +448,8 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
     isLoading: false,
     content: (
       <Flex
-        as="main"
+        role="region"
+        aria-label="Reader content"
         zIndex="base"
         flex="1 0 auto"
         justifyContent="center"
@@ -461,7 +462,7 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
           '.react-pdf__Document': {
             width: '100%',
             height: '100%',
-            overflowX: 'hidden',
+            overflowX: 'auto',
             overflowY: 'auto',
           },
           '.react-pdf__Page': {

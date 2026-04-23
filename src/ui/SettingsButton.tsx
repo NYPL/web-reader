@@ -92,6 +92,7 @@ export default function SettingsCard(
           marginRight={[4, 4, 4, 0]}
           maxWidth="100vw"
           padding={1}
+          aria-label="Settings dialog"
         >
           <PopoverBody p={0}>
             {props.type === 'HTML' && (

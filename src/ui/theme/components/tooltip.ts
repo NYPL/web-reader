@@ -16,6 +16,7 @@ const Tooltip = defineStyleConfig({
     marginTop: '0px',
     px: 2,
     py: 1,
+    zIndex: 9999,
     _dark: {
       [$bg.variable]: 'ui.gray.x-dark',
       color: 'dark.ui.typography.heading',
