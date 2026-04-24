@@ -111,7 +111,9 @@ class HtmlReaderPage extends WebReaderPage {
   }
 
   async getIframe(): Promise<Locator> {
-    const htmlElement = this.page.frameLocator('#mainContent').locator('html');
+    const htmlElement = this.page
+      .frameLocator('#reader-content')
+      .locator('html');
     return htmlElement;
   }
 
@@ -179,10 +181,10 @@ class PdfReaderPage extends WebReaderPage {
 
   // content
   readonly pageOne = this.page
-    .locator('#mainContent')
+    .locator('#reader-content')
     .locator('[data-page-number="1"]');
   readonly pageTwo = this.page
-    .locator('#mainContent')
+    .locator('#reader-content')
     .locator('[data-page-number="2"]');
   readonly firstIndexPage = this.page.getByText('3', { exact: true });
   readonly lastIndexPage = this.page.getByText('7', { exact: true });
