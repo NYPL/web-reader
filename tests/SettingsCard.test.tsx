@@ -44,10 +44,7 @@ describe('Render settings for different media type', () => {
     expect(getByRole('radio', { name: 'Night' })).toBeInTheDocument();
 
     // default checked buttons. Can't mock 'click' because it's controlled.
-    expect(getByRole('radio', { name: 'Sans-serif' })).toHaveAttribute(
-      'aria-selected',
-      'true'
-    );
+    expect(getByRole('radio', { name: 'Sans-serif' })).toBeChecked();
     expect(getByRole('radio', { name: 'Day' })).toBeChecked();
 
     expect(queryByLabelText('Zoom In')).toBeNull();
