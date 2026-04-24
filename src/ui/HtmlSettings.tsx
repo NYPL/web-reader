@@ -54,7 +54,7 @@ export default function HtmlSettings(
     <>
       <ToggleGroup
         value={fontFamily}
-        label="font family options"
+        label="Font family options"
         onChange={(value: string) => {
           setFontFamily(value as typeof fontFamily);
         }}
