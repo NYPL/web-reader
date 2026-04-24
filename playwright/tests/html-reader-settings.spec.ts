@@ -37,10 +37,7 @@ test.describe('Test settings in HTML pub', () => {
     await expect(htmlReaderPage.settingsButton).toBeVisible();
     await htmlReaderPage.settingsButton.click();
     await expect(htmlReaderPage.defaultFont).toBeVisible();
-    await expect(htmlReaderPage.defaultFont).toHaveAttribute(
-      'aria-selected',
-      'true'
-    );
+    await expect(htmlReaderPage.defaultFont).toBeChecked();
     await expect(htmlReaderPage.whiteBackground).toBeVisible();
     await expect(htmlReaderPage.whiteBackground).toBeChecked();
     await expect(await htmlReaderPage.getTextSize()).toBe('100%');
@@ -53,28 +50,16 @@ test.describe('Test settings in HTML pub', () => {
     await htmlReaderPage.settingsButton.click();
     await expect(htmlReaderPage.serifFont).toBeVisible();
     await htmlReaderPage.serifFont.click();
-    await expect(htmlReaderPage.serifFont).toHaveAttribute(
-      'aria-selected',
-      'true'
-    );
+    await expect(htmlReaderPage.serifFont).toBeChecked();
     await expect(htmlReaderPage.sansSerifFont).toBeVisible();
     await htmlReaderPage.sansSerifFont.click();
-    await expect(htmlReaderPage.sansSerifFont).toHaveAttribute(
-      'aria-selected',
-      'true'
-    );
+    await expect(htmlReaderPage.sansSerifFont).toBeChecked();
     await expect(htmlReaderPage.dyslexiaFont).toBeVisible();
     await htmlReaderPage.dyslexiaFont.click();
-    await expect(htmlReaderPage.dyslexiaFont).toHaveAttribute(
-      'aria-selected',
-      'true'
-    );
+    await expect(htmlReaderPage.dyslexiaFont).toBeChecked();
     await expect(htmlReaderPage.defaultFont).toBeVisible();
     await htmlReaderPage.defaultFont.click();
-    await expect(htmlReaderPage.defaultFont).toHaveAttribute(
-      'aria-selected',
-      'true'
-    );
+    await expect(htmlReaderPage.defaultFont).toBeChecked();
   });
 
   test('Change background color', async ({ page }) => {
@@ -120,10 +105,7 @@ test.describe('Test settings in HTML pub', () => {
     await expect(htmlReaderPage.settingsButton).toBeVisible();
     await htmlReaderPage.settingsButton.click();
     await expect(htmlReaderPage.dyslexiaFont).toBeVisible();
-    await expect(htmlReaderPage.dyslexiaFont).toHaveAttribute(
-      'aria-selected',
-      'true'
-    );
+    await expect(htmlReaderPage.dyslexiaFont).toBeChecked();
     await expect(htmlReaderPage.sepiaBackground).toBeVisible();
     await expect(htmlReaderPage.sepiaBackground).toBeChecked();
     await expect(await htmlReaderPage.getTextSize()).toBe('104%');
@@ -137,10 +119,7 @@ test.describe('Test settings in HTML pub', () => {
     await expect(htmlReaderPage.settingsButton).toBeVisible();
     await htmlReaderPage.settingsButton.click();
     await expect(htmlReaderPage.dyslexiaFont).toBeVisible();
-    await expect(htmlReaderPage.dyslexiaFont).toHaveAttribute(
-      'aria-selected',
-      'true'
-    );
+    await expect(htmlReaderPage.dyslexiaFont).toBeChecked();
     await expect(htmlReaderPage.sepiaBackground).toBeVisible();
     await expect(htmlReaderPage.sepiaBackground).toBeChecked();
     await expect(await htmlReaderPage.getTextSize()).toBe('104%');
@@ -153,10 +132,7 @@ test.describe('Test settings in HTML pub', () => {
     await expect(htmlReaderPage.resetTextSize).toBeVisible();
     await htmlReaderPage.resetTextSize.click();
     await expect(htmlReaderPage.defaultFont).toBeVisible();
-    await expect(htmlReaderPage.defaultFont).toHaveAttribute(
-      'aria-selected',
-      'true'
-    );
+    await expect(htmlReaderPage.defaultFont).toBeChecked();
     await expect(htmlReaderPage.whiteBackground).toBeVisible();
     await expect(htmlReaderPage.whiteBackground).toBeChecked();
     await expect(await htmlReaderPage.getTextSize()).toBe('100%');
@@ -174,10 +150,7 @@ test.describe('Test settings in HTML pub', () => {
     await expect(htmlReaderPage.settingsButton).toBeVisible();
     await htmlReaderPage.settingsButton.click();
     await expect(htmlReaderPage.dyslexiaFont).toBeVisible();
-    await expect(htmlReaderPage.dyslexiaFont).not.toHaveAttribute(
-      'aria-selected',
-      'true'
-    );
+    await expect(htmlReaderPage.dyslexiaFont).not.toBeChecked();
     await expect(htmlReaderPage.sepiaBackground).toBeVisible();
     await expect(htmlReaderPage.sepiaBackground).not.toBeChecked();
     await expect(await htmlReaderPage.getTextSize()).not.toBe('104%');
@@ -200,10 +173,7 @@ test.describe('Test settings in HTML pub', () => {
     await htmlReaderPage.fullScreenButton.click();
     await htmlReaderPage.changeSettings();
     await expect(htmlReaderPage.dyslexiaFont).toBeVisible();
-    await expect(htmlReaderPage.dyslexiaFont).toHaveAttribute(
-      'aria-selected',
-      'true'
-    );
+    await expect(htmlReaderPage.dyslexiaFont).toBeChecked();
     await expect(htmlReaderPage.sepiaBackground).toBeVisible();
     await expect(htmlReaderPage.sepiaBackground).toBeChecked();
     await expect(await htmlReaderPage.getTextSize()).toBe('104%');
