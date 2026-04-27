@@ -1,12 +1,18 @@
-import { Box, ButtonGroup, Heading, Icon, Text } from '@chakra-ui/react';
+import {
+  Box,
+  ButtonGroup,
+  Heading,
+  Icon,
+  Text,
+  useMultiStyleConfig,
+} from '@chakra-ui/react';
 import * as React from 'react';
 import { FONT_DETAILS } from '../constants';
 import { HtmlNavigator, ReaderState } from '../types';
 import Button from './Button';
 import useColorModeValue from './hooks/useColorModeValue';
 import { Day, Night, Reset, Sepia, ZoomIn, ZoomOut } from './icons';
-import Tabs from './Tabs';
-import { ColorModeToggleButton } from './ToggleButton';
+import ToggleButton, { ColorModeToggleButton } from './ToggleButton';
 import ToggleGroup from './ToggleGroup';
 
 export type HtmlSettingsProps = {
@@ -28,6 +34,11 @@ export default function HtmlSettings(
     'ui.sepiaChecked'
   );
 
+  const fontFamilyToggleStyles = useMultiStyleConfig('FontFamilyToggle', {
+    variant: 'custom',
+  });
+  const toggleButtonStyles = fontFamilyToggleStyles.button ?? {};
+
   if (!readerState.settings) return null;
   const { colorMode, fontFamily } = readerState.settings;
 
@@ -41,33 +52,44 @@ export default function HtmlSettings(
 
   return (
     <>
-      <Tabs
+      <ToggleGroup
         value={fontFamily}
+        label="Font family options"
         onChange={(value: string) => {
           setFontFamily(value as typeof fontFamily);
         }}
-        options={[
-          { label: 'Default', value: 'publisher' },
-          {
-            label: 'Serif',
-            value: 'serif',
-            fontFamily: 'serif',
-            fontWeight: 'regular',
-          },
-          {
-            label: 'Sans-serif',
-            value: 'sans-serif',
-            fontFamily: 'body',
-            fontWeight: 'regular',
-          },
-          {
-            label: 'Dyslexia',
-            value: 'open-dyslexic',
-            fontFamily: 'opendyslexic',
-            fontWeight: 'regular',
-          },
-        ]}
-      />
+        gap={0}
+        width="100%"
+        sx={{ '& > label': { flex: 1 } }}
+      >
+        <ToggleButton
+          value="publisher"
+          label="Default"
+          width="full"
+          sx={toggleButtonStyles}
+        />
+        <ToggleButton
+          value="serif"
+          label="Serif"
+          fontFamily="serif"
+          width="full"
+          sx={toggleButtonStyles}
+        />
+        <ToggleButton
+          value="sans-serif"
+          label="Sans-serif"
+          fontFamily="body"
+          width="full"
+          sx={toggleButtonStyles}
+        />
+        <ToggleButton
+          value="open-dyslexic"
+          label="Dyslexia"
+          fontFamily="opendyslexic"
+          width="full"
+          sx={toggleButtonStyles}
+        />
+      </ToggleGroup>
       <Box
         bgColor={checkedButtonBgColor}
         display="flex"

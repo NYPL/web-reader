@@ -2,23 +2,14 @@ import { createMultiStyleConfigHelpers } from '@chakra-ui/styled-system';
 import { GetColor } from '../../../types';
 
 const { defineMultiStyleConfig, definePartsStyle } =
-  createMultiStyleConfigHelpers(['root', 'tab', 'tablist']);
+  createMultiStyleConfigHelpers(['root', 'button']);
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-const getTabsStyle = (getColor: GetColor) =>
+const getFontFamilyToggleStyle = (getColor: GetColor) =>
   defineMultiStyleConfig({
     variants: {
       custom: definePartsStyle({
-        root: {},
-        tablist: {
-          borderColor: getColor(
-            'ui.black',
-            'dark.ui.border.default',
-            'ui.sepia'
-          ),
-          width: '100%',
-        },
-        tab: {
+        button: {
           bg: getColor('ui.white', 'dark.ui.bg.page', 'ui.gray.light-cool'),
           border: '0',
           borderBottom: '1px solid',
@@ -50,7 +41,7 @@ const getTabsStyle = (getColor: GetColor) =>
               'ui.black'
             ),
           },
-          _selected: {
+          _checked: {
             fontWeight: 'bold',
             bg: getColor(
               'ui.gray.light-cool',
@@ -74,6 +65,8 @@ const getTabsStyle = (getColor: GetColor) =>
           },
           _focus: {
             boxShadow: '0',
+            zIndex: 1,
+            position: 'relative',
           },
         },
       }),
@@ -83,4 +76,4 @@ const getTabsStyle = (getColor: GetColor) =>
     },
   });
 
-export default getTabsStyle;
+export default getFontFamilyToggleStyle;

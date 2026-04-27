@@ -3,16 +3,16 @@ import React from 'react';
 
 /**
  * SkipNavigation is a component that is used to provide a link
- * used to skip to the main content of the page using the `#mainContent`
+ * used to skip to the reader content of the page using the `#reader-content`
  * id. This link is visually hidden but can be read by screenreaders.
  */
 export const SkipNavigation = (): React.ReactElement => {
   const styles = useStyleConfig('SkipNavigation');
 
   return (
-    <Box as="nav" aria-label="Skip to Main Content" __css={styles}>
-      <Link href="#mainContent" textDecoration="none">
-        Skip to Main Content
+    <Box __css={styles}>
+      <Link href="#reader-content" textDecoration="none" zIndex="skipLink">
+        Skip to book contents
       </Link>
     </Box>
   );

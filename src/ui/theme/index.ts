@@ -4,8 +4,8 @@ import { getColor } from '../../utils/getColor';
 import nyplTheme from '../nypl-base-theme';
 import Alert from './components/alert';
 import getButtonStyle from './components/button';
+import getFontFamilyToggleStyle from './components/fontFamilyToggle';
 import SkipNavigation from './components/skipNavigation';
-import getTabsStyle from './components/tabs';
 import Text from './components/text';
 import Tooltip from './components/tooltip';
 import colors from './foundations/colors';
@@ -33,7 +33,7 @@ export function getTheme(colorMode: ColorMode = 'day'): Dict<unknown> {
         Text,
         Alert,
         SkipNavigation,
-        Tabs: getTabsStyle(getColor(colorMode)),
+        FontFamilyToggle: getFontFamilyToggleStyle(getColor(colorMode)),
         Tooltip,
       },
       currentColorMode: colorMode,

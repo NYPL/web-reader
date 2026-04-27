@@ -1,5 +1,5 @@
 import { Flex, HStack, Icon, Input, Spacer, Text } from '@chakra-ui/react';
-import React, { ComponentProps, useState } from 'react';
+import React, { ComponentProps, useEffect, useState } from 'react';
 import { ActiveReader } from '../types';
 import useColorModeValue from '../ui/hooks/useColorModeValue';
 import Button from './Button';
@@ -27,10 +27,19 @@ export default function Header(
     toggleFullScreen?: () => void;
   }
 ): React.ReactElement {
-  const [, toggleFullscreenHook] = useFullscreen();
-  const [isFullscreen, setIsFullScreen] = useState(false);
-  const { navigator, manifest, type, containerRef, currentPage, totalPages } =
-    props;
+  const [isFullscreenHook, toggleFullscreenHook] = useFullscreen();
+  const [isReaderFullScreen, setIsReaderFullscreen] = useState(false);
+  const {
+    navigator,
+    manifest,
+    type,
+    containerRef,
+    currentPage,
+    totalPages,
+    toggleFullScreen,
+  } = props;
+
+  const isFullScreen = toggleFullScreen ? isReaderFullScreen : isFullscreenHook;
 
   const isAtStart = props.state?.atStart;
   const isAtEnd = props.state?.atEnd;
@@ -81,15 +90,27 @@ export default function Header(
     }
   };
 
-  const handleFullscreen = () => {
-    if (props.toggleFullScreen) {
-      props.toggleFullScreen();
-      setIsFullScreen((prev) => !prev);
+  const handleFullscreen = React.useCallback(() => {
+    if (toggleFullScreen) {
+      toggleFullScreen();
+      setIsReaderFullscreen((prev) => !prev);
     } else {
       toggleFullscreenHook();
-      setIsFullScreen((prev) => !prev);
     }
-  };
+  }, [toggleFullScreen, toggleFullscreenHook]);
+
+  useEffect(() => {
+    if (!toggleFullScreen || !isFullScreen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        handleFullscreen();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleFullscreen, isFullScreen, toggleFullScreen]);
 
   return (
     <HeaderWrapper
@@ -130,7 +151,11 @@ export default function Header(
           </Tooltip>
           {type === 'PDF' && (
             <Tooltip content="Rotate left">
-              <Button isIcon onClick={navigator.rotateCounterClockwise}>
+              <Button
+                isIcon
+                onClick={navigator.rotateCounterClockwise}
+                aria-label="Rotate left"
+              >
                 <Icon as={Rotate} w={18} h={18} />
               </Button>
             </Tooltip>
@@ -200,13 +225,13 @@ export default function Header(
           />
           <Tooltip
             content={
-              isFullscreen ? 'Exit full screen mode' : 'Enter full screen mode'
+              isFullScreen ? 'Exit full screen mode' : 'Enter full screen mode'
             }
           >
             <Button
-              aria-expanded={isFullscreen}
+              aria-expanded={isFullScreen}
               aria-label={
-                isFullscreen
+                isFullScreen
                   ? 'Exit full screen mode'
                   : 'Enter full screen mode'
               }
@@ -216,7 +241,7 @@ export default function Header(
               isIcon
             >
               <Icon
-                as={isFullscreen ? ToggleFullScreenExit : ToggleFullScreen}
+                as={isFullScreen ? ToggleFullScreenExit : ToggleFullScreen}
                 w={18}
                 h={18}
               />
@@ -236,7 +261,8 @@ export const HeaderWrapper = React.forwardRef<
   return (
     <Flex
       ref={ref}
-      as="header"
+      role="region"
+      aria-label="Reader controls"
       position="sticky"
       top={0}
       left={0}

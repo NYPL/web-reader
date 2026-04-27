@@ -1,6 +1,6 @@
 import { Flex, ThemeProvider } from '@chakra-ui/react';
 import * as React from 'react';
-import { ReaderReturn } from '../types';
+import { ActiveReader, ReaderReturn } from '../types';
 import Header from './Header';
 import useColorModeValue from './hooks/useColorModeValue';
 import { getTheme } from './theme';
@@ -22,12 +22,20 @@ const WebReaderContent: React.FC<ReaderReturn> = ({ children, ...props }) => {
   const bgColor = useColorModeValue('ui.white', 'ui.black', 'ui.sepia');
   const containerRef = React.useRef<HTMLDivElement>(null);
 
+  // Keep the last known active props so the Header stays mounted during
+  // chapter-boundary loading transitions, preserving focus on nav buttons.
+  const lastActiveProps = React.useRef<ActiveReader | null>(null);
+  if (props && !props.isLoading) {
+    lastActiveProps.current = props as ActiveReader;
+  }
+
   return (
     <Flex flexDir="column" w="100%" h="100%" position="relative">
-      {!props.isLoading && <Header containerRef={containerRef} {...props} />}
+      {lastActiveProps.current && (
+        <Header containerRef={containerRef} {...lastActiveProps.current} />
+      )}
 
       <Flex
-        as="main"
         ref={containerRef}
         position="relative"
         bg={bgColor}

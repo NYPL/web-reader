@@ -11,7 +11,7 @@ export const CHROME_HEIGHT = HEADER_HEIGHT;
 export const DEFAULT_HEIGHT = `calc(100vh - ${CHROME_HEIGHT}px)`;
 export const DEFAULT_SHOULD_GROW_WHEN_SCROLLING = true;
 
-export const READER_MARGIN = 16;
+export const READER_MARGIN = 32;
 
 export const DEFAULT_SETTINGS: ReaderSettings = {
   colorMode: 'day',
@@ -58,4 +58,4 @@ export const IN_VIEW_DELAY_MS = 150;
 export const LOCAL_STORAGE_SETTINGS_KEY = 'web-reader-settings';
 export const LOCAL_STORAGE_LOCATIONS_KEY = 'web-reader-locations';
 
-export const MAIN_CONTENT_ID = 'mainContent';
+export const MAIN_CONTENT_ID = 'reader-content';

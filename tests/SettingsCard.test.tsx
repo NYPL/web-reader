@@ -1,5 +1,5 @@
-import React from 'react';
 import { render } from '@testing-library/react';
+import React from 'react';
 import HtmlSettings from '../src/ui/HtmlSettings';
 import {
   MockHtmlNavigator,
@@ -31,10 +31,10 @@ describe('Render settings for different media type', () => {
     );
 
     // default buttons
-    expect(getByRole('tab', { name: 'Default' })).toBeInTheDocument();
-    expect(getByRole('tab', { name: 'Serif' })).toBeInTheDocument();
-    expect(getByRole('tab', { name: 'Sans-serif' })).toBeInTheDocument();
-    expect(getByRole('tab', { name: 'Dyslexia' })).toBeInTheDocument();
+    expect(getByRole('radio', { name: 'Default' })).toBeInTheDocument();
+    expect(getByRole('radio', { name: 'Serif' })).toBeInTheDocument();
+    expect(getByRole('radio', { name: 'Sans-serif' })).toBeInTheDocument();
+    expect(getByRole('radio', { name: 'Dyslexia' })).toBeInTheDocument();
 
     expect(getByRole('button', { name: 'Decrease text' })).toBeInTheDocument();
     expect(getByRole('button', { name: 'Increase text' })).toBeInTheDocument();
@@ -44,10 +44,7 @@ describe('Render settings for different media type', () => {
     expect(getByRole('radio', { name: 'Night' })).toBeInTheDocument();
 
     // default checked buttons. Can't mock 'click' because it's controlled.
-    expect(getByRole('tab', { name: 'Sans-serif' })).toHaveAttribute(
-      'aria-selected',
-      'true'
-    );
+    expect(getByRole('radio', { name: 'Sans-serif' })).toBeChecked();
     expect(getByRole('radio', { name: 'Day' })).toBeChecked();
 
     expect(queryByLabelText('Zoom In')).toBeNull();

@@ -11,6 +11,7 @@ import React, { ReactElement } from 'react';
 import { ColorMode } from '../types';
 import Button from './Button';
 import { getTheme } from './theme';
+import Fonts from './theme/foundations/fonts';
 
 export type ToggleButtonProps = React.ComponentPropsWithoutRef<
   typeof ChakraBox
@@ -45,6 +46,7 @@ function ToggleButton(
   return (
     // This will override the default theme if we specify the colorMode to the toggle button.
     <ThemeProvider theme={getTheme(colorMode ?? theme.currentColorMode)}>
+      <Fonts />
       <ChakraBox as="label" display="flex" aria-label={label}>
         <input {...input} />
         <Button
