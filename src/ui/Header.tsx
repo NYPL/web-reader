@@ -27,10 +27,19 @@ export default function Header(
     toggleFullScreen?: () => void;
   }
 ): React.ReactElement {
-  const [, toggleFullscreenHook] = useFullscreen();
-  const [isFullscreen, setIsFullScreen] = useState(false);
-  const { navigator, manifest, type, containerRef, currentPage, totalPages } =
-    props;
+  const [isFullscreenHook, toggleFullscreenHook] = useFullscreen();
+  const [isReaderFullScreen, setIsReaderFullscreen] = useState(false);
+  const {
+    navigator,
+    manifest,
+    type,
+    containerRef,
+    currentPage,
+    totalPages,
+    toggleFullScreen,
+  } = props;
+
+  const isFullScreen = toggleFullScreen ? isReaderFullScreen : isFullscreenHook;
 
   const isAtStart = props.state?.atStart;
   const isAtEnd = props.state?.atEnd;
@@ -82,17 +91,16 @@ export default function Header(
   };
 
   const handleFullscreen = React.useCallback(() => {
-    if (props.toggleFullScreen) {
-      props.toggleFullScreen();
-      setIsFullScreen((prev) => !prev);
+    if (toggleFullScreen) {
+      toggleFullScreen();
+      setIsReaderFullscreen((prev) => !prev);
     } else {
       toggleFullscreenHook();
-      setIsFullScreen((prev) => !prev);
     }
-  }, [props, toggleFullscreenHook]);
+  }, [toggleFullScreen, toggleFullscreenHook]);
 
   useEffect(() => {
-    if (!isFullscreen) return;
+    if (!toggleFullScreen || !isFullScreen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         handleFullscreen();
@@ -102,7 +110,7 @@ export default function Header(
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [handleFullscreen, isFullscreen]);
+  }, [handleFullscreen, isFullScreen, toggleFullScreen]);
 
   return (
     <HeaderWrapper
@@ -217,13 +225,13 @@ export default function Header(
           />
           <Tooltip
             content={
-              isFullscreen ? 'Exit full screen mode' : 'Enter full screen mode'
+              isFullScreen ? 'Exit full screen mode' : 'Enter full screen mode'
             }
           >
             <Button
-              aria-expanded={isFullscreen}
+              aria-expanded={isFullScreen}
               aria-label={
-                isFullscreen
+                isFullScreen
                   ? 'Exit full screen mode'
                   : 'Enter full screen mode'
               }
@@ -233,7 +241,7 @@ export default function Header(
               isIcon
             >
               <Icon
-                as={isFullscreen ? ToggleFullScreenExit : ToggleFullScreen}
+                as={isFullScreen ? ToggleFullScreenExit : ToggleFullScreen}
                 w={18}
                 h={18}
               />
