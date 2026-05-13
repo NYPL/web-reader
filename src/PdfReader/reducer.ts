@@ -31,20 +31,10 @@ export function makePdfReducer(
       // navigating to a different page in the same resource)
       const shouldResetResource = state.resourceIndex !== index;
 
-      // check if there is a `?startPage` in the href of the resource we are navigating to
-      const href = manifest.readingOrder[index].href;
-      const startPage = getStartPageFromHref(href);
-      // only go to the start page if we don't have another valid page we are navigating to
-      // instead.
-      const isNavigatingToEnd = page === -1;
-      const requestedPageIsBeforeStartPage = startPage && page < startPage;
-      const pageNumberToNavigateTo =
-        !isNavigatingToEnd && requestedPageIsBeforeStartPage ? startPage : page;
-
       const newState = {
         ...state,
         resourceIndex: index,
-        pageNumber: pageNumberToNavigateTo,
+        pageNumber: page,
       };
       if (shouldResetResource) {
         return {
@@ -113,11 +103,7 @@ export function makePdfReducer(
          */
         // do nothing if we have not parsed the number of pages yet.
         if (!state.numPages) return state;
-        const atStartOfResource = isStartOfResource(
-          state.pageNumber,
-          args.manifest.readingOrder[state.resourceIndex].href
-        );
-
+        const atStartOfResource = state.pageNumber === 1;
         const atStartOfBook = state.resourceIndex === 0;
         if (atStartOfResource) {
           if (atStartOfBook) return state;
@@ -126,8 +112,11 @@ export function makePdfReducer(
             ...goToLocation(state.resourceIndex - 1, -1),
           };
         }
-        // go to prev page
-        return goToLocation(state.resourceIndex, state.pageNumber - 1);
+        // go to prev page, allowing navigation below startPage within the resource
+        return goToLocation(
+          state.resourceIndex,
+          Math.max(1, state.pageNumber - 1)
+        );
       }
 
       case 'GO_TO_HREF': {
@@ -161,15 +150,24 @@ export function makePdfReducer(
 
       // called when the resource has been parsed by react-pdf
       // and we know the number of pages
-      case 'PDF_PARSED':
+      case 'PDF_PARSED': {
+        const { numPages } = action;
+        const { pageNumber: currentPage, resourceIndex } = state;
+
+        const currentHref = manifest.readingOrder[resourceIndex]?.href;
+        const startPage = getStartPageFromHref(currentHref) ?? 0;
+
+        // 1. If -1, go to the end.
+        // 2. Otherwise, ensure we don't fall below startPage.
+        const pageNumber =
+          currentPage === -1 ? numPages : Math.max(currentPage, startPage);
+
         return {
           ...state,
-          numPages: action.numPages,
-          // if the state.pageNumber is -1, we know to navigate to the
-          // end of the PDF that was just parsed
-          pageNumber:
-            state.pageNumber === -1 ? action.numPages : state.pageNumber,
+          numPages,
+          pageNumber,
         };
+      }
 
       case 'PDF_LOAD_ERROR':
         return {
@@ -254,13 +252,4 @@ function handleInvalidTransition(state: PdfState, action: PdfReaderAction) {
     `Inavlid state transition attempted: ${state} with ${action.type}`
   );
   return state;
-}
-
-/**
- * Checks if we are at the start of the resource, taking into account the `?startPage`
- * query param.
- */
-function isStartOfResource(pageNumber: number, resourceHref: string) {
-  const startPage = getStartPageFromHref(resourceHref);
-  return pageNumber === (startPage ?? 1);
 }
