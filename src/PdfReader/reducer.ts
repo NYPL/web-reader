@@ -155,7 +155,7 @@ export function makePdfReducer(
         const { pageNumber: currentPage, resourceIndex } = state;
 
         const currentHref = manifest.readingOrder[resourceIndex]?.href;
-        const startPage = getStartPageFromHref(currentHref) ?? 0;
+        const startPage = getStartPageFromHref(currentHref) ?? 1;
 
         // 1. If -1, go to the end.
         // 2. Otherwise, ensure we don't fall below startPage.
