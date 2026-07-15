@@ -2,6 +2,7 @@ import { Flex } from '@chakra-ui/react';
 import * as React from 'react';
 import { Document, PageProps, pdfjs } from 'react-pdf';
 import {
+  ANCHOR_SETTLE_MS,
   DEFAULT_HEIGHT,
   DEFAULT_SHOULD_GROW_WHEN_SCROLLING,
   IN_VIEW_DELAY_MS,
@@ -222,7 +223,13 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
   ]);
 
   /**
-   * In scrolling mode, manually scroll the user when the page changes
+   * In scrolling mode, manually scroll the user when the page changes.
+   *
+   * A single scrollTo is not enough: while the PDF streams in, placeholders
+   * are swapped for rendered pages and the fit-mode resize changes every
+   * page's height, both of which shift the target page after we have already
+   * scrolled to it. We keep the target anchored until its position has been
+   * stable for ANCHOR_SETTLE_MS, or until the user interacts with the reader.
    */
   React.useEffect(() => {
     // if the resource is not yet loaded, don't do anything yet
@@ -235,16 +242,59 @@ export default function usePdfReader(args: PdfReaderArguments): ReaderReturn {
     }
 
     const documentContainer = documentContainerRef.current;
-    const pageRef = pageRefs.current.get(state.pageNumber);
+    if (!documentContainer) return;
 
-    if (documentContainer && pageRef) {
-      const containerRect = documentContainer.getBoundingClientRect();
-      const pageRect = pageRef.getBoundingClientRect();
+    const userInteractionEvents = [
+      'wheel',
+      'touchstart',
+      'mousedown',
+      'keydown',
+    ] as const;
+    const targetPage = state.pageNumber;
+    let rafId = 0;
+    let stableSince: number | null = null;
 
-      documentContainer.scrollTo({
-        top: documentContainer.scrollTop + (pageRect.top - containerRect.top),
-      });
-    }
+    const stop = () => {
+      cancelAnimationFrame(rafId);
+      userInteractionEvents.forEach((event) =>
+        documentContainer.removeEventListener(event, stop)
+      );
+    };
+
+    userInteractionEvents.forEach((event) =>
+      documentContainer.addEventListener(event, stop, { passive: true })
+    );
+
+    const anchor = () => {
+      const pageRef = pageRefs.current.get(targetPage);
+      if (pageRef) {
+        const containerRect = documentContainer.getBoundingClientRect();
+        const pageRect = pageRef.getBoundingClientRect();
+        const delta = pageRect.top - containerRect.top;
+
+        if (Math.abs(delta) > 1) {
+          // suppress PAGE_IN_VIEW while we correct, the same way
+          // beginProgrammaticNavigation does for explicit navigation
+          scrollState.current.lastVisiblePage = targetPage;
+          scrollState.current.lastProgrammaticNavAt = Date.now();
+          scrollState.current.ratios.clear();
+
+          documentContainer.scrollTo({
+            top: documentContainer.scrollTop + delta,
+          });
+          stableSince = null;
+        } else if (stableSince === null) {
+          stableSince = Date.now();
+        } else if (Date.now() - stableSince >= ANCHOR_SETTLE_MS) {
+          stop();
+          return;
+        }
+      }
+      rafId = requestAnimationFrame(anchor);
+    };
+
+    anchor();
+    return stop;
   }, [state.pageNumber, state.settings?.isScrolling, state.rendered]);
 
   const beginProgrammaticNavigation = React.useCallback(

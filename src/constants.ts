@@ -28,7 +28,8 @@ export const DEFAULT_FONT_WIDTH = 250;
 export const FONT_DETAILS = {
   publisher: {
     heading: "Publisher's default font",
-    body: "Show the publisher's-specified fonts and layout choices in this ebook",
+    body:
+      "Show the publisher's-specified fonts and layout choices in this ebook",
     token: 'body',
     fontWeight: 'light',
   },
@@ -53,6 +54,9 @@ export const FONT_DETAILS = {
 };
 
 export const IN_VIEW_DELAY_MS = 150;
+// how long the scroll target's position must be stable before we stop
+// re-anchoring it (see the scroll effect in PdfReader)
+export const ANCHOR_SETTLE_MS = 1000;
 
 // local storage keys
 export const LOCAL_STORAGE_SETTINGS_KEY = 'web-reader-settings';
