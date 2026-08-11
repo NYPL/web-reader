@@ -33,6 +33,7 @@ import mobyEpub2Manifest from './static/samples/moby-epub2-exploded/manifest.jso
 import pdfSingleResourceManifest from './static/samples/pdf/single-resource-short.json';
 import Tests from './Tests';
 import UseHtmlReader from './use-html-reader';
+import UseNewPdfReader from './use-new-pdf-reader';
 import UsePdfReader from './use-pdf-reader';
 
 const origin = window.location.origin;
@@ -119,6 +120,30 @@ const PdfReaders = () => {
           proxyUrl={pdfProxyUrl}
           pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.mjs`}
         />
+      </Route>
+      <Route path={`/pdf/new-reader`}>
+        <Box p={4} borderBottom="1px solid" borderColor="gray.200">
+          <Heading size="md">NewReader</Heading>
+          <Text fontSize="sm" mt={1}>
+            New Pdf Reader using pdf.js directly instead of react-pdf.
+          </Text>
+        </Box>
+        <Box
+          margin="0 auto"
+          width={isFullViewport ? '100vw' : '50%'}
+          height={isFullViewport ? '100vh' : 'auto'}
+          position={isFullViewport ? 'fixed' : 'relative'}
+          top={isFullViewport ? 0 : undefined}
+          left={isFullViewport ? 0 : undefined}
+          zIndex={isFullViewport ? 9999 : undefined}
+        >
+          <UseNewPdfReader
+            webpubManifestUrl="/samples/pdf/single-resource-short.json"
+            manifest={pdfSingleResourceManifest as WebpubManifest}
+            proxyUrl={pdfProxyUrl}
+            pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.mjs`}
+          />
+        </Box>
       </Route>
       <Route path={`/pdf/large`}>
         <WebReader
@@ -222,6 +247,15 @@ const fetchAndModifyManifest: Fetcher<string, string> = async (url) => {
     new Blob([JSON.stringify(modifiedManifest)])
   );
   return syntheticUrl;
+};
+
+const fetchAsUrl = async (
+  resourceUrl: string,
+  proxyUrl?: string
+): Promise<string> => {
+  return proxyUrl
+    ? `${proxyUrl}${encodeURIComponent(resourceUrl)}`
+    : resourceUrl;
 };
 
 const SingleResourcePdf = () => {
@@ -426,6 +460,9 @@ const HomePage = () => {
             </ListItem>
             <ListItem>
               <Link to="/pdf/use-pdf-reader-hook">usePdfReader hook</Link>
+            </ListItem>
+            <ListItem>
+              <Link to="/pdf/new-reader">NewReader with Manifest</Link>
             </ListItem>
             <ListItem>
               <Link to="/pdf/large">Single-PDF Webpub (large file)</Link>
