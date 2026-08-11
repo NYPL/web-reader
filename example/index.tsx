@@ -249,15 +249,6 @@ const fetchAndModifyManifest: Fetcher<string, string> = async (url) => {
   return syntheticUrl;
 };
 
-const fetchAsUrl = async (
-  resourceUrl: string,
-  proxyUrl?: string
-): Promise<string> => {
-  return proxyUrl
-    ? `${proxyUrl}${encodeURIComponent(resourceUrl)}`
-    : resourceUrl;
-};
-
 const SingleResourcePdf = () => {
   const { data: modifiedManifestUrl, isLoading } = useSWR<string>(
     '/samples/pdf/single-resource-short.json',

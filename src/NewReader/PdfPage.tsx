@@ -224,7 +224,7 @@ const PdfPage = React.memo(function PdfPage({
           div: annotationLayerDiv,
           annotations,
           page,
-          linkService, // properly typed here via AnnotationLayerParameters
+          linkService,
           annotationStorage: undefined,
           renderForms: true,
         });
