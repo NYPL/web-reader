@@ -6,8 +6,6 @@
   min-height: 400px;
   background: #525659;
   color: #e8eaed;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   overflow: hidden;
 }
 
@@ -160,6 +158,7 @@
   overflow: auto;
   position: relative;
   background: #252525;
+  color-scheme: dark;
 }
 
 /* Loading / error states */
@@ -224,7 +223,6 @@
 }
 
 .pdf-text-layer.textLayer {
-  color-scheme: only light;
   position: absolute;
   text-align: initial;
   inset: 0;
@@ -275,23 +273,9 @@
 }
 
 .pdf-text-layer.textLayer .highlight {
-  --highlight-bg-color: rgb(180 0 170 / 0.25);
-  --highlight-selected-bg-color: rgb(0 100 0 / 0.25);
-  --highlight-backdrop-filter: none;
-  --highlight-selected-backdrop-filter: none;
-
   margin: -1px;
   padding: 1px;
-  background-color: var(--highlight-bg-color);
-  backdrop-filter: var(--highlight-backdrop-filter);
   border-radius: 4px;
-}
-
-@media screen and (forced-colors: active) {
-  .pdf-text-layer.textLayer .highlight {
-    --highlight-bg-color: Highlight;
-    --highlight-selected-bg-color: ButtonText;
-  }
 }
 
 .pdf-text-layer.textLayer .highlight.appended {
@@ -308,21 +292,6 @@
 
 .pdf-text-layer.textLayer .highlight.middle {
   border-radius: 0;
-}
-
-.pdf-text-layer.textLayer .highlight.selected {
-  background-color: var(--highlight-selected-bg-color);
-  backdrop-filter: var(--highlight-selected-backdrop-filter);
-}
-
-.pdf-text-layer.textLayer ::selection {
-  background: rgba(0, 0, 255, 0.25);
-}
-
-@supports (background: color-mix(in srgb, AccentColor, transparent 75%)) {
-  .pdf-text-layer.textLayer ::selection {
-    background: color-mix(in srgb, AccentColor, transparent 75%);
-  }
 }
 
 .pdf-text-layer.textLayer br::selection {

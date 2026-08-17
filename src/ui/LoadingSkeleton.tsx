@@ -31,10 +31,12 @@ const LoadingSkeletonContent = ({
         role="progressbar"
       >
         <Flex justifyContent="center">
-          <Skeleton height="20px" mb="7" w="30%" />
+          <Skeleton height="32px" mb="6" w="30%" />
         </Flex>
-        <SkeletonText mb="7" noOfLines={10} spacing="4" />
-        <SkeletonText mb="7" noOfLines={5} spacing="4" />
+        <SkeletonText mb="6" noOfLines={6} skeletonHeight="20px" spacing="2" />
+        <SkeletonText mb="6" noOfLines={6} skeletonHeight="20px" spacing="2" />
+        <SkeletonText mb="6" noOfLines={6} skeletonHeight="20px" spacing="2" />
+        <SkeletonText mb="6" noOfLines={6} skeletonHeight="20px" spacing="2" />
       </Box>
     </>
   );

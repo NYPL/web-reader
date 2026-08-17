@@ -1,4 +1,3 @@
-import { Box } from '@chakra-ui/react';
 import React from 'react';
 import { useNewReader } from '../src';
 import { WebpubManifest } from '../src/types';
@@ -22,21 +21,15 @@ const UseNewPdfReader: React.FC<UseNewPdfReaderProps> = ({
     manifest,
     proxyUrl,
     pdfWorkerSrc,
+    height: '80vh',
   });
   const containerRef = React.useRef<HTMLDivElement>(null);
 
   return (
-    <Box display="flex" flexDirection="column" height="100vh" marginTop="16px">
+    <div>
       {newReader.type && <Header {...newReader} containerRef={containerRef} />}
-      <Box
-        ref={containerRef}
-        flex="1 1 auto"
-        position="relative"
-        overflow="hidden"
-      >
-        {newReader.content}
-      </Box>
-    </Box>
+      {newReader.content}
+    </div>
   );
 };
 

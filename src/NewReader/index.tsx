@@ -11,7 +11,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { DEFAULT_SETTINGS } from '../constants';
+import { DEFAULT_HEIGHT, DEFAULT_SETTINGS } from '../constants';
 import {
   PdfNavigator,
   ReaderReturn,
@@ -56,7 +56,6 @@ export const PdfReader = ({
   file,
   data,
   pdfWorkerSrc,
-  className = '',
   onDocumentLoad,
   onLoadComplete,
   onPageChange,
@@ -82,6 +81,7 @@ export const PdfReader = ({
   const [visiblePages, setVisiblePages] = useState<Set<number>>(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [hasInitialWidthFit, setHasInitialWidthFit] = useState(false);
 
   const rootRef = useRef<HTMLDivElement | null>(null);
   const viewportWrapRef = useRef<HTMLDivElement | null>(null);
@@ -97,7 +97,6 @@ export const PdfReader = ({
   const onLoadCompleteRef = useRef(onLoadComplete);
   const onErrorRef = useRef(onError);
   const onPageSizesReadyRef = useRef(onPageSizesReady);
-  const [hasInitialWidthFit, setHasInitialWidthFit] = useState(false);
 
   useEffect(() => {
     onDocumentLoadRef.current = onDocumentLoad;
@@ -553,14 +552,6 @@ export const PdfReader = ({
       if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
         dispatch({ type: 'GO_BACKWARD' });
       }
-      if (e.key === '+' || e.key === '=') {
-        captureViewportAnchor();
-        dispatch({ type: 'ZOOM_IN' });
-      }
-      if (e.key === '-') {
-        captureViewportAnchor();
-        dispatch({ type: 'ZOOM_OUT' });
-      }
     };
     window.addEventListener('keydown', handler as unknown as EventListener);
     return () =>
@@ -576,7 +567,13 @@ export const PdfReader = ({
   );
 
   return (
-    <div ref={rootRef} className={`pdf-root ${className}`} tabIndex={-1}>
+    <div
+      ref={rootRef}
+      className="pdf-root"
+      tabIndex={-1}
+      role="region"
+      aria-label="Reader content"
+    >
       <div className="pdf-body">
         <div
           className="pdf-viewport"
@@ -645,12 +642,11 @@ export function useNewReader({
   manifest: inputManifest,
   proxyUrl,
   pdfWorkerSrc,
-  height = '100%',
+  height = DEFAULT_HEIGHT,
   initialPage = 1,
   initialScale = 1,
   initialFit = 'width',
   showToc = true,
-  className = '',
   onDocumentLoad,
   onLoadComplete,
   onPageChange,
@@ -783,7 +779,6 @@ export function useNewReader({
         file={file}
         data={data}
         pdfWorkerSrc={pdfWorkerSrc}
-        className={className}
         onDocumentLoad={onDocumentLoad}
         onLoadComplete={onLoadComplete}
         onPageChange={onPageChange}

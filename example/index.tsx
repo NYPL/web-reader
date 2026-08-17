@@ -123,19 +123,20 @@ const PdfReaders = () => {
       </Route>
       <Route path={`/pdf/new-reader`}>
         <Box p={4} borderBottom="1px solid" borderColor="gray.200">
-          <Heading size="md">NewReader</Heading>
+          <Heading size="md">UseNewPdfReader</Heading>
           <Text fontSize="sm" mt={1}>
             New Pdf Reader using pdf.js directly instead of react-pdf.
           </Text>
         </Box>
         <Box
           margin="0 auto"
-          width={isFullViewport ? '100vw' : '50%'}
-          height={isFullViewport ? '100vh' : 'auto'}
+          width={isFullViewport ? '100vw' : '80%'}
+          height={isFullViewport ? '100vh' : '80%'}
           position={isFullViewport ? 'fixed' : 'relative'}
           top={isFullViewport ? 0 : undefined}
           left={isFullViewport ? 0 : undefined}
           zIndex={isFullViewport ? 9999 : undefined}
+          padding="16px"
         >
           <UseNewPdfReader
             webpubManifestUrl="/samples/pdf/single-resource-short.json"
