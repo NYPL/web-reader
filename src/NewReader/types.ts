@@ -1,4 +1,3 @@
-import { PDFDocumentProxy } from 'pdfjs-dist';
 import { Dispatch } from 'react';
 import { WebpubManifest } from '../types';
 import { PdfReaderAction } from './reducer';
@@ -24,35 +23,18 @@ export interface ViewportAnchor {
 
 export interface PdfReaderProps {
   fileUrl?: string;
-  file?: Blob | File | Uint8Array | ArrayBuffer;
-  data?: Uint8Array | ArrayBuffer;
   webpubManifestUrl?: string;
   manifest?: WebpubManifest;
   proxyUrl?: string;
   pdfWorkerSrc?: string;
   height?: string | number;
-  initialPage?: number;
-  initialScale?: number;
-  initialFit?: FitMode;
-  showToc?: boolean;
   className?: string;
-  onDocumentLoad?: (pdfDoc: PDFDocumentProxy) => void;
-  onLoadComplete?: (numPages: number) => void;
-  onPageChange?: (pageNumber: number) => void;
-  onError?: (error: Error) => void;
   toggleFullScreen?: () => void;
 }
 
 export interface PdfReaderContentProps {
-  fileUrl?: string;
-  file?: Blob | File | Uint8Array | ArrayBuffer;
-  data?: Uint8Array | ArrayBuffer;
+  fileUrl: string | undefined;
   pdfWorkerSrc?: string;
-  className?: string;
-  onDocumentLoad?: (pdfDoc: PDFDocumentProxy) => void;
-  onLoadComplete?: (numPages: number) => void;
-  onPageChange?: (pageNumber: number) => void;
-  onError?: (error: Error) => void;
   pageNumber: number;
   navigationRequestId: number;
   scale: number;

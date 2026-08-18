@@ -11,7 +11,12 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { DEFAULT_HEIGHT, DEFAULT_SETTINGS } from '../constants';
+import { getPageNumberFromHref } from '../PdfReader/lib';
+import {
+  DEFAULT_HEIGHT,
+  DEFAULT_SETTINGS,
+  MAIN_CONTENT_ID,
+} from '../constants';
 import {
   PdfNavigator,
   ReaderReturn,
@@ -46,20 +51,13 @@ import {
   resolveOutline,
   resolveResourceUrl,
   toError,
-  toWorkerSafePdfBytes,
 } from './utils';
 
 GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${version}/pdf.worker.min.mjs`;
 
 export const PdfReader = ({
   fileUrl,
-  file,
-  data,
   pdfWorkerSrc,
-  onDocumentLoad,
-  onLoadComplete,
-  onPageChange,
-  onError,
   pageNumber,
   navigationRequestId,
   scale,
@@ -93,17 +91,11 @@ export const PdfReader = ({
   const pendingViewportAnchorRef = useRef<ViewportAnchor | null>(null);
   const initialWidthFitTargetScaleRef = useRef<number | null>(null);
   const suppressNextResizeFitRef = useRef(false);
-  const onDocumentLoadRef = useRef(onDocumentLoad);
-  const onLoadCompleteRef = useRef(onLoadComplete);
-  const onErrorRef = useRef(onError);
   const onPageSizesReadyRef = useRef(onPageSizesReady);
 
   useEffect(() => {
-    onDocumentLoadRef.current = onDocumentLoad;
-    onLoadCompleteRef.current = onLoadComplete;
-    onErrorRef.current = onError;
     onPageSizesReadyRef.current = onPageSizesReady;
-  }, [onDocumentLoad, onLoadComplete, onError, onPageSizesReady]);
+  }, [onPageSizesReady]);
 
   useEffect(() => {
     currentPageRef.current = pageNumber;
@@ -131,26 +123,16 @@ export const PdfReader = ({
 
     const loadDocument = async () => {
       try {
-        const resolvedFile = file ?? data;
-
-        if (!resolvedFile && !fileUrl) {
-          throw new Error('A PDF file/data or fileUrl is required');
+        if (!fileUrl) {
+          throw new Error('A PDF fileUrl is required');
         }
 
-        const source = resolvedFile
-          ? {
-              data: await toWorkerSafePdfBytes(resolvedFile),
-            }
-          : { url: fileUrl, withCredentials: false };
-
-        loadingTask = getDocument(source);
+        loadingTask = getDocument({ url: fileUrl, withCredentials: false });
         const doc = await loadingTask.promise;
         if (cancelled) return;
 
         setPdfDoc(doc);
         dispatch({ type: 'PAGES_LOADED', numPages: doc.numPages });
-        onDocumentLoadRef.current?.(doc);
-        onLoadCompleteRef.current?.(doc.numPages);
 
         try {
           const rawOutline = (await doc.getOutline()) as
@@ -166,7 +148,6 @@ export const PdfReader = ({
         if (cancelled) return;
         const nextError = toError(err, 'Failed to load PDF document');
         setError(nextError);
-        onErrorRef.current?.(nextError);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -178,7 +159,7 @@ export const PdfReader = ({
       cancelled = true;
       loadingTask?.destroy?.();
     };
-  }, [fileUrl, file, data, dispatch, onOutlineLoad]);
+  }, [fileUrl, dispatch, onOutlineLoad]);
 
   // Read every page's intrinsic size to determine scroll container's height
   // before any page has actually been painted.
@@ -205,7 +186,6 @@ export const PdfReader = ({
         if (cancelled) return;
         const nextError = toError(err, 'Failed to read page dimensions');
         setError(nextError);
-        onErrorRef.current?.(nextError);
       }
     })();
 
@@ -334,10 +314,6 @@ export const PdfReader = ({
     target.scrollIntoView({ block: 'start', behavior: 'auto' });
     lastHandledNavigationRequestRef.current = navigationRequestId;
   }, [navigationRequestId, pageBaseSizes.length, pageNumber]);
-
-  useEffect(() => {
-    onPageChange?.(pageNumber);
-  }, [onPageChange, pageNumber]);
 
   // Viewport anchor capture
   // Records what content is currently visible so that after a layout-affecting
@@ -573,6 +549,7 @@ export const PdfReader = ({
       tabIndex={-1}
       role="region"
       aria-label="Reader content"
+      id={MAIN_CONTENT_ID}
     >
       <div className="pdf-body">
         <div
@@ -582,9 +559,7 @@ export const PdfReader = ({
         >
           {loading && (
             <div className="pdf-status-container">
-              <div className="pdf-status">
-                <LoadingSkeleton height="100%" state={null} />
-              </div>
+              <div className="pdf-status">Loading</div>
             </div>
           )}
           {!loading && error && (
@@ -622,7 +597,6 @@ export const PdfReader = ({
                     isVisible={visiblePages.has(pageNumber)}
                     registerContainer={registerContainer}
                     goToPage={requestGoToPage}
-                    onError={onErrorRef.current}
                   />
                 );
               })}
@@ -635,37 +609,38 @@ export const PdfReader = ({
 };
 
 export function useNewReader({
-  fileUrl: fileUrlProp,
-  file,
-  data,
   webpubManifestUrl,
   manifest: inputManifest,
   proxyUrl,
   pdfWorkerSrc,
   height = DEFAULT_HEIGHT,
-  initialPage = 1,
-  initialScale = 1,
-  initialFit = 'width',
-  showToc = true,
-  onDocumentLoad,
-  onLoadComplete,
-  onPageChange,
-  onError,
   toggleFullScreen,
 }: PdfReaderProps): Exclude<ReaderReturn, null> {
-  // Resolve fileUrl from manifest when webpubManifestUrl + manifest are provided
+  // Resolve fileUrl from manifest
   const fileUrl = useMemo(() => {
-    if (fileUrlProp) return fileUrlProp;
     if (webpubManifestUrl && inputManifest) {
       return resolveResourceUrl(inputManifest, proxyUrl);
     }
     return undefined;
-  }, [fileUrlProp, webpubManifestUrl, inputManifest, proxyUrl]);
+  }, [webpubManifestUrl, inputManifest, proxyUrl]);
+
+  // Extract initial page from resource href if present
+  const resolvedInitialPage = useMemo(() => {
+    if (webpubManifestUrl && inputManifest) {
+      const originalHref = inputManifest?.readingOrder?.[0]?.href;
+      if (originalHref) {
+        const pageFromUrl = getPageNumberFromHref(originalHref);
+        if (pageFromUrl) return pageFromUrl;
+      }
+    }
+    return 1;
+  }, [webpubManifestUrl, inputManifest]);
+
   const [viewerState, dispatch] = useReducer(pdfReaderReducer, {
-    pageNumber: initialPage,
+    pageNumber: resolvedInitialPage,
     numPages: 0,
-    scale: initialScale,
-    fitMode: initialFit,
+    scale: 1,
+    fitMode: 'width',
     rotation: 0,
     navigationRequestId: 0,
   } satisfies PdfReaderState);
@@ -683,35 +658,29 @@ export function useNewReader({
   );
   const [pdfLoadFailed, setPdfLoadFailed] = useState(false);
   const [pageSizesReady, setPageSizesReady] = useState(false);
+  const hasNavigatedToInitialPageRef = useRef(false);
 
   useEffect(() => {
     setPdfLoadFailed(false);
     setPageSizesReady(false);
-  }, [fileUrl, file, data]);
+    hasNavigatedToInitialPageRef.current = false;
+  }, [fileUrl]);
 
   const wrappedOnPageSizesReady = useCallback(() => {
     setPageSizesReady(true);
   }, []);
 
-  const wrappedOnError = useCallback(
-    (error: Error) => {
-      setPdfLoadFailed(true);
-      onError?.(error);
-    },
-    [onError]
-  );
-
   useEffect(() => {
-    dispatch({ type: 'GO_TO_PAGE', page: initialPage });
-  }, [initialPage]);
-
-  useEffect(() => {
-    dispatch({ type: 'SET_SCALE', scale: initialScale });
-  }, [initialScale]);
-
-  useEffect(() => {
-    dispatch({ type: 'SET_FIT', mode: initialFit });
-  }, [initialFit]);
+    if (
+      pageSizesReady &&
+      numPages > 0 &&
+      !hasNavigatedToInitialPageRef.current
+    ) {
+      hasNavigatedToInitialPageRef.current = true;
+      const validPage = Math.min(Math.max(resolvedInitialPage, 1), numPages);
+      dispatch({ type: 'GO_TO_PAGE', page: validPage });
+    }
+  }, [pageSizesReady, numPages, resolvedInitialPage]);
 
   const clearPendingAction = useCallback(() => setPendingAction(null), []);
 
@@ -741,7 +710,7 @@ export function useNewReader({
     []
   );
 
-  const fileName = file instanceof File ? file.name : undefined;
+  const fileName: string | undefined = undefined;
   const manifestTitle = getManifestTitle('PDF Document', fileName);
 
   const manifest: WebpubManifest = useMemo(() => {
@@ -749,7 +718,7 @@ export function useNewReader({
       return {
         ...inputManifest,
         toc:
-          showToc && outline.length > 0
+          outline.length > 0
             ? getManifestTocFromOutline(outline)
             : (inputManifest.toc ?? []),
       };
@@ -760,15 +729,16 @@ export function useNewReader({
       },
       links: [],
       readingOrder: [],
-      toc: showToc ? getManifestTocFromOutline(outline) : [],
+      toc: getManifestTocFromOutline(outline),
     };
-  }, [inputManifest, manifestTitle, outline, showToc]);
+  }, [inputManifest, manifestTitle, outline]);
 
-  const hasSource = !!(fileUrl || file || data);
+  const hasSource = !!fileUrl;
   const isDocLoading = hasSource && !pageSizesReady && !pdfLoadFailed;
+  const heightValue = typeof height === 'number' ? `${height}px` : height;
 
   const content = (
-    <div style={{ position: 'relative', height }}>
+    <div style={{ position: 'relative', height: heightValue }}>
       {isDocLoading && (
         <div style={{ position: 'absolute', inset: 0, zIndex: 1 }}>
           <LoadingSkeleton height="100%" state={null} />
@@ -776,13 +746,7 @@ export function useNewReader({
       )}
       <PdfReader
         fileUrl={fileUrl}
-        file={file}
-        data={data}
         pdfWorkerSrc={pdfWorkerSrc}
-        onDocumentLoad={onDocumentLoad}
-        onLoadComplete={onLoadComplete}
-        onPageChange={onPageChange}
-        onError={wrappedOnError}
         pageNumber={pageNumber}
         navigationRequestId={navigationRequestId}
         scale={scale}
@@ -812,9 +776,13 @@ export function useNewReader({
 
 export default function NewReader(props: PdfReaderProps): React.ReactElement {
   const reader = useNewReader(props);
+  const heightValue =
+    typeof props.height === 'number'
+      ? `${props.height}px`
+      : (props.height ?? DEFAULT_HEIGHT);
 
-  if (!props.fileUrl && !props.file && !props.data) {
-    return <LoadingSkeleton height="100%" state={null} />;
+  if (!props.webpubManifestUrl || !props.manifest) {
+    return <LoadingSkeleton height={heightValue} state={null} />;
   }
 
   return reader.content;

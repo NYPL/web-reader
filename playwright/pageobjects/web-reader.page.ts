@@ -205,7 +205,7 @@ class PdfReaderPage extends WebReaderPage {
 
   async getZoomValue(): Promise<number> {
     return await this.page
-      .locator('canvas:visible')
+      .locator('.textLayer:visible')
       .first()
       .evaluate((el) => {
         return Number(
