@@ -5,20 +5,6 @@ import { MockHtmlReaderProps } from './utils/MockData';
 
 import { axe } from 'jest-axe';
 
-beforeEach(() => {
-  Object.defineProperty(window, 'matchMedia', {
-    writable: true,
-    value: jest.fn().mockImplementation((query) => ({
-      matches: false,
-      media: query,
-      onchange: null,
-      addEventListener: jest.fn(),
-      removeEventListener: jest.fn(),
-      dispatchEvent: jest.fn(),
-    })),
-  });
-});
-
 describe('Header Accessibility checker', () => {
   test('header component should have no violation', async () => {
     const containerRef = React.createRef<HTMLDivElement>();
