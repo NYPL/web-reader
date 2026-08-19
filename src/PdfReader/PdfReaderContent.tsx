@@ -430,6 +430,16 @@ const PdfReaderContent = ({
   }, [fitMode, pageBaseSizes]);
 
   // Re-apply fit scale on container resize.
+  const fitModeRef = useRef(fitMode);
+  useEffect(() => {
+    fitModeRef.current = fitMode;
+  }, [fitMode]);
+
+  const applyFitScaleRef = useRef(applyFitScale);
+  useEffect(() => {
+    applyFitScaleRef.current = applyFitScale;
+  }, [applyFitScale]);
+
   useEffect(() => {
     const wrap = viewportWrapRef.current;
     if (!wrap) return undefined;
@@ -438,11 +448,11 @@ const PdfReaderContent = ({
         suppressNextResizeFitRef.current = false;
         return;
       }
-      if (fitMode) applyFitScale(fitMode);
+      if (fitModeRef.current) applyFitScaleRef.current(fitModeRef.current);
     });
     ro.observe(wrap);
     return () => ro.disconnect();
-  }, [fitMode, applyFitScale]);
+  }, []);
 
   // Keyboard shortcuts
   useEffect(() => {
