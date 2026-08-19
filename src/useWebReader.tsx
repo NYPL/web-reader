@@ -93,7 +93,7 @@ export default function useWebReader(
       : undefined
   );
 
-  const newPdfReader = usePdfReader(
+  const pdfReader = usePdfReader(
     readerType === 'PDF' && manifest
       ? {
           webpubManifestUrl,
@@ -131,8 +131,8 @@ export default function useWebReader(
   if (htmlReader) {
     return htmlReader;
   }
-  if (newPdfReader) {
-    return newPdfReader;
+  if (pdfReader) {
+    return pdfReader;
   }
 
   throw new Error(
