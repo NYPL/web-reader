@@ -11,7 +11,6 @@ import React, {
 } from 'react';
 import { MAIN_CONTENT_ID } from '../constants';
 import PdfPage from './PdfPage';
-import './PdfReader.css';
 import {
   PAGE_GAP,
   PAGE_PADDING,

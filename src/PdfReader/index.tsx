@@ -19,7 +19,7 @@ import {
   WebpubManifest,
 } from '../types';
 import LoadingSkeleton from '../ui/LoadingSkeleton';
-import './PdfReader.css';
+import './pdfReader.css';
 import PdfReaderContent from './PdfReaderContent';
 import { PdfReaderAction, pdfReaderReducer, PdfReaderState } from './reducer';
 import { OutlineItem, PdfReaderProps } from './types';
