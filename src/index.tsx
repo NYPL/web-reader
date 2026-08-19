@@ -39,7 +39,6 @@ export default WebReader;
 
 export * from './constants';
 export { default as useHtmlReader } from './HtmlReader';
-export { default as NewReader, useNewReader } from './NewReader';
 export { default as usePdfReader } from './PdfReader';
 export { default as addTocToManifest } from './PdfReader/addTocToManifest';
 export { default as useColorModeValue } from './ui/hooks/useColorModeValue';

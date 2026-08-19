@@ -1,29 +1,15 @@
 import { Icon } from '@chakra-ui/react';
 import type { PDFDocumentProxy } from 'pdfjs-dist';
-import { getDocument, GlobalWorkerOptions, version } from 'pdfjs-dist';
+import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist';
 import React, {
   KeyboardEvent,
   useCallback,
   useEffect,
   useLayoutEffect,
-  useMemo,
-  useReducer,
   useRef,
   useState,
 } from 'react';
-import { getPageNumberFromHref } from '../PdfReader/lib';
-import {
-  DEFAULT_HEIGHT,
-  DEFAULT_SETTINGS,
-  MAIN_CONTENT_ID,
-} from '../constants';
-import {
-  PdfNavigator,
-  ReaderReturn,
-  ReaderState,
-  WebpubManifest,
-} from '../types';
-import LoadingSkeleton from '../ui/LoadingSkeleton';
+import { MAIN_CONTENT_ID } from '../constants';
 import PdfPage from './PdfPage';
 import './PdfReader.css';
 import {
@@ -32,30 +18,22 @@ import {
   RENDER_ROOT_MARGIN,
   SCROLLSPY_ANCHOR_RATIO,
 } from './constants';
-import { PdfReaderAction, pdfReaderReducer, PdfReaderState } from './reducer';
 import {
   FitMode,
-  OutlineItem,
   PageSize,
   PdfOutlineEntry,
   PdfReaderContentProps,
-  PdfReaderProps,
   ViewportAnchor,
 } from './types';
 import {
   getDisplayPageHeight,
-  getManifestTitle,
-  getManifestTocFromOutline,
   getPageTop,
   getRotatedSize,
   resolveOutline,
-  resolveResourceUrl,
   toError,
 } from './utils';
 
-GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${version}/pdf.worker.min.mjs`;
-
-export const PdfReader = ({
+const PdfReaderContent = ({
   fileUrl,
   pdfWorkerSrc,
   pageNumber,
@@ -79,7 +57,6 @@ export const PdfReader = ({
   const [visiblePages, setVisiblePages] = useState<Set<number>>(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const [hasInitialWidthFit, setHasInitialWidthFit] = useState(false);
 
   const rootRef = useRef<HTMLDivElement | null>(null);
   const viewportWrapRef = useRef<HTMLDivElement | null>(null);
@@ -89,7 +66,6 @@ export const PdfReader = ({
   const pendingScrollTargetRef = useRef<number | null>(null);
   const lastHandledNavigationRequestRef = useRef(0);
   const pendingViewportAnchorRef = useRef<ViewportAnchor | null>(null);
-  const initialWidthFitTargetScaleRef = useRef<number | null>(null);
   const suppressNextResizeFitRef = useRef(false);
   const onPageSizesReadyRef = useRef(onPageSizesReady);
 
@@ -117,8 +93,6 @@ export const PdfReader = ({
     onOutlineLoad([]);
     setPageBaseSizes([]);
     setVisiblePages(new Set());
-    setHasInitialWidthFit(false);
-    initialWidthFitTargetScaleRef.current = null;
     containerRefs.current.clear();
 
     const loadDocument = async () => {
@@ -456,52 +430,6 @@ export const PdfReader = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fitMode, pageBaseSizes]);
 
-  useLayoutEffect(() => {
-    if (hasInitialWidthFit) return;
-    if (fitMode !== 'width') {
-      setHasInitialWidthFit(true);
-      return;
-    }
-    if (!pageBaseSizes.length) return;
-
-    const targetScale = computeFitScaleValue('width', rotation);
-    if (targetScale == null) return;
-
-    initialWidthFitTargetScaleRef.current = targetScale;
-
-    const relativeDelta = scale > 0 ? Math.abs(scale - targetScale) / scale : 1;
-
-    if (relativeDelta < 0.005) {
-      setHasInitialWidthFit(true);
-      initialWidthFitTargetScaleRef.current = null;
-      return;
-    }
-
-    suppressNextResizeFitRef.current = true;
-    dispatch({ type: 'SET_SCALE', scale: targetScale });
-  }, [
-    computeFitScaleValue,
-    dispatch,
-    fitMode,
-    hasInitialWidthFit,
-    pageBaseSizes.length,
-    rotation,
-    scale,
-  ]);
-
-  useEffect(() => {
-    if (hasInitialWidthFit) return;
-    const targetScale = initialWidthFitTargetScaleRef.current;
-    if (targetScale == null) return;
-
-    const relativeDelta =
-      targetScale > 0 ? Math.abs(scale - targetScale) / targetScale : 0;
-    if (relativeDelta < 0.005) {
-      setHasInitialWidthFit(true);
-      initialWidthFitTargetScaleRef.current = null;
-    }
-  }, [hasInitialWidthFit, scale]);
-
   // Re-apply fit scale on container resize.
   useEffect(() => {
     const wrap = viewportWrapRef.current;
@@ -552,11 +480,7 @@ export const PdfReader = ({
       id={MAIN_CONTENT_ID}
     >
       <div className="pdf-body">
-        <div
-          className="pdf-viewport"
-          ref={viewportWrapRef}
-          style={{ overflowX: hasInitialWidthFit ? 'auto' : 'hidden' }}
-        >
+        <div className="pdf-viewport" ref={viewportWrapRef}>
           {loading && (
             <div className="pdf-status-container">
               <div className="pdf-status">Loading</div>
@@ -608,182 +532,4 @@ export const PdfReader = ({
   );
 };
 
-export function useNewReader({
-  webpubManifestUrl,
-  manifest: inputManifest,
-  proxyUrl,
-  pdfWorkerSrc,
-  height = DEFAULT_HEIGHT,
-  toggleFullScreen,
-}: PdfReaderProps): Exclude<ReaderReturn, null> {
-  // Resolve fileUrl from manifest
-  const fileUrl = useMemo(() => {
-    if (webpubManifestUrl && inputManifest) {
-      return resolveResourceUrl(inputManifest, proxyUrl);
-    }
-    return undefined;
-  }, [webpubManifestUrl, inputManifest, proxyUrl]);
-
-  // Extract initial page from resource href if present
-  const resolvedInitialPage = useMemo(() => {
-    if (webpubManifestUrl && inputManifest) {
-      const originalHref = inputManifest?.readingOrder?.[0]?.href;
-      if (originalHref) {
-        const pageFromUrl = getPageNumberFromHref(originalHref);
-        if (pageFromUrl) return pageFromUrl;
-      }
-    }
-    return 1;
-  }, [webpubManifestUrl, inputManifest]);
-
-  const [viewerState, dispatch] = useReducer(pdfReaderReducer, {
-    pageNumber: resolvedInitialPage,
-    numPages: 0,
-    scale: 1,
-    fitMode: 'width',
-    rotation: 0,
-    navigationRequestId: 0,
-  } satisfies PdfReaderState);
-  const {
-    pageNumber,
-    numPages,
-    scale,
-    fitMode,
-    rotation,
-    navigationRequestId,
-  } = viewerState;
-  const [outline, setOutline] = useState<OutlineItem[]>([]);
-  const [pendingAction, setPendingAction] = useState<PdfReaderAction | null>(
-    null
-  );
-  const [pdfLoadFailed, setPdfLoadFailed] = useState(false);
-  const [pageSizesReady, setPageSizesReady] = useState(false);
-  const hasNavigatedToInitialPageRef = useRef(false);
-
-  useEffect(() => {
-    setPdfLoadFailed(false);
-    setPageSizesReady(false);
-    hasNavigatedToInitialPageRef.current = false;
-  }, [fileUrl]);
-
-  const wrappedOnPageSizesReady = useCallback(() => {
-    setPageSizesReady(true);
-  }, []);
-
-  useEffect(() => {
-    if (
-      pageSizesReady &&
-      numPages > 0 &&
-      !hasNavigatedToInitialPageRef.current
-    ) {
-      hasNavigatedToInitialPageRef.current = true;
-      const validPage = Math.min(Math.max(resolvedInitialPage, 1), numPages);
-      dispatch({ type: 'GO_TO_PAGE', page: validPage });
-    }
-  }, [pageSizesReady, numPages, resolvedInitialPage]);
-
-  const clearPendingAction = useCallback(() => setPendingAction(null), []);
-
-  const state: ReaderState = useMemo(
-    () => ({
-      atStart: pageNumber <= 1,
-      atEnd: pageNumber >= numPages,
-      settings: DEFAULT_SETTINGS,
-      fitMode: fitMode ?? 'width',
-      rotation,
-    }),
-    [fitMode, numPages, pageNumber, rotation]
-  );
-
-  const navigator: PdfNavigator = useMemo(
-    () => ({
-      goForward: () => dispatch({ type: 'GO_FORWARD' }),
-      goBackward: () => dispatch({ type: 'GO_BACKWARD' }),
-      setScroll: async () => undefined,
-      goToPage: (href: string) => dispatch({ type: 'GO_TO_HREF', href }),
-      goToPageNumber: (page: number) => dispatch({ type: 'GO_TO_PAGE', page }),
-      setFitMode: (mode) => dispatch({ type: 'SET_FIT', mode }),
-      zoomIn: async () => setPendingAction({ type: 'ZOOM_IN' }),
-      zoomOut: async () => setPendingAction({ type: 'ZOOM_OUT' }),
-      rotateCounterClockwise: () => setPendingAction({ type: 'ROTATE_CCW' }),
-    }),
-    []
-  );
-
-  const fileName: string | undefined = undefined;
-  const manifestTitle = getManifestTitle('PDF Document', fileName);
-
-  const manifest: WebpubManifest = useMemo(() => {
-    if (inputManifest) {
-      return {
-        ...inputManifest,
-        toc:
-          outline.length > 0
-            ? getManifestTocFromOutline(outline)
-            : (inputManifest.toc ?? []),
-      };
-    }
-    return {
-      metadata: {
-        title: manifestTitle,
-      },
-      links: [],
-      readingOrder: [],
-      toc: getManifestTocFromOutline(outline),
-    };
-  }, [inputManifest, manifestTitle, outline]);
-
-  const hasSource = !!fileUrl;
-  const isDocLoading = hasSource && !pageSizesReady && !pdfLoadFailed;
-  const heightValue = typeof height === 'number' ? `${height}px` : height;
-
-  const content = (
-    <div style={{ position: 'relative', height: heightValue }}>
-      {isDocLoading && (
-        <div style={{ position: 'absolute', inset: 0, zIndex: 1 }}>
-          <LoadingSkeleton height="100%" state={null} />
-        </div>
-      )}
-      <PdfReader
-        fileUrl={fileUrl}
-        pdfWorkerSrc={pdfWorkerSrc}
-        pageNumber={pageNumber}
-        navigationRequestId={navigationRequestId}
-        scale={scale}
-        fitMode={fitMode}
-        rotation={rotation}
-        dispatch={dispatch}
-        pendingAction={pendingAction}
-        clearPendingAction={clearPendingAction}
-        onOutlineLoad={setOutline}
-        onPageSizesReady={wrappedOnPageSizesReady}
-      />
-    </div>
-  );
-
-  return {
-    type: 'PDF',
-    isLoading: isDocLoading,
-    content,
-    state,
-    navigator,
-    manifest,
-    currentPage: pageNumber,
-    totalPages: numPages,
-    toggleFullScreen,
-  };
-}
-
-export default function NewReader(props: PdfReaderProps): React.ReactElement {
-  const reader = useNewReader(props);
-  const heightValue =
-    typeof props.height === 'number'
-      ? `${props.height}px`
-      : (props.height ?? DEFAULT_HEIGHT);
-
-  if (!props.webpubManifestUrl || !props.manifest) {
-    return <LoadingSkeleton height={heightValue} state={null} />;
-  }
-
-  return reader.content;
-}
+export default PdfReaderContent;

@@ -117,3 +117,20 @@ export const resolveResourceUrl = (
   if (!href) return undefined;
   return proxyUrl ? `${proxyUrl}${encodeURIComponent(href)}` : href;
 };
+
+/**
+ * Extracts a page number from a href if it exists and is in
+ * the format of `#page=1`
+ */
+export const getPageNumberFromHref = (href: string): number | undefined => {
+  const hash = new URL(href).hash;
+  try {
+    const strPageNumber = hash.replace('#page=', '');
+    if (!strPageNumber || strPageNumber === 'NaN') return undefined;
+    const pageNumber = parseInt(strPageNumber);
+    return pageNumber;
+  } catch (e) {
+    console.warn(`Failed to parse page number from hash ${hash}`);
+    return undefined;
+  }
+};

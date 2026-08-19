@@ -25,7 +25,8 @@ import useSWR, { Fetcher } from 'swr';
 import readiumAfter from 'url:../src/HtmlReader/ReadiumCss/ReadiumCSS-after.css';
 import readiumBefore from 'url:../src/HtmlReader/ReadiumCss/ReadiumCSS-before.css';
 import readiumDefault from 'url:../src/HtmlReader/ReadiumCss/ReadiumCSS-default.css';
-import WebReader, { addTocToManifest } from '../src';
+import WebReader from '../src';
+import addTocToManifest from '../src/PdfReader/addTocToManifest';
 import { Injectable } from '../src/Readium/Injectable';
 import { WebpubManifest } from '../src/types';
 import { getTheme } from '../src/ui/theme';
@@ -33,7 +34,6 @@ import mobyEpub2Manifest from './static/samples/moby-epub2-exploded/manifest.jso
 import pdfSingleResourceManifest from './static/samples/pdf/single-resource-short.json';
 import Tests from './Tests';
 import UseHtmlReader from './use-html-reader';
-import UseNewPdfReader from './use-new-pdf-reader';
 import UsePdfReader from './use-pdf-reader';
 
 const origin = window.location.origin;
@@ -120,31 +120,6 @@ const PdfReaders = () => {
           proxyUrl={pdfProxyUrl}
           pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.mjs`}
         />
-      </Route>
-      <Route path={`/pdf/new-reader`}>
-        <Box p={4} borderBottom="1px solid" borderColor="gray.200">
-          <Heading size="md">UseNewPdfReader</Heading>
-          <Text fontSize="sm" mt={1}>
-            New Pdf Reader using pdf.js directly instead of react-pdf.
-          </Text>
-        </Box>
-        <Box
-          margin="0 auto"
-          width={isFullViewport ? '100vw' : '80%'}
-          height={isFullViewport ? '100vh' : '80%'}
-          position={isFullViewport ? 'fixed' : 'relative'}
-          top={isFullViewport ? 0 : undefined}
-          left={isFullViewport ? 0 : undefined}
-          zIndex={isFullViewport ? 9999 : undefined}
-          padding="16px"
-        >
-          <UseNewPdfReader
-            webpubManifestUrl="/samples/pdf/single-resource-short.json"
-            manifest={pdfSingleResourceManifest as WebpubManifest}
-            proxyUrl={pdfProxyUrl}
-            pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.mjs`}
-          />
-        </Box>
       </Route>
       <Route path={`/pdf/large`}>
         <WebReader
@@ -452,9 +427,6 @@ const HomePage = () => {
             </ListItem>
             <ListItem>
               <Link to="/pdf/use-pdf-reader-hook">usePdfReader hook</Link>
-            </ListItem>
-            <ListItem>
-              <Link to="/pdf/new-reader">NewReader with Manifest</Link>
             </ListItem>
             <ListItem>
               <Link to="/pdf/large">Single-PDF Webpub (large file)</Link>

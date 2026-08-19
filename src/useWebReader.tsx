@@ -4,7 +4,7 @@ import {
   DEFAULT_SHOULD_GROW_WHEN_SCROLLING,
 } from './constants';
 import useHtmlReader from './HtmlReader';
-import { useNewReader } from './NewReader';
+import usePdfReader from './PdfReader';
 import {
   GetContent,
   HTMLActiveReader,
@@ -93,7 +93,7 @@ export default function useWebReader(
       : undefined
   );
 
-  const newPdfReader = useNewReader(
+  const newPdfReader = usePdfReader(
     readerType === 'PDF' && manifest
       ? {
           webpubManifestUrl,
