@@ -22,18 +22,16 @@ export interface ViewportAnchor {
 }
 
 export interface PdfReaderProps {
-  fileUrl?: string;
   webpubManifestUrl?: string;
   manifest?: WebpubManifest;
   proxyUrl?: string;
   pdfWorkerSrc?: string;
   height?: string | number;
-  className?: string;
   toggleFullScreen?: () => void;
 }
 
 export interface PdfReaderContentProps {
-  fileUrl: string | undefined;
+  fileUrl: string;
   pdfWorkerSrc?: string;
   pageNumber: number;
   navigationRequestId: number;
@@ -44,12 +42,8 @@ export interface PdfReaderContentProps {
   pendingAction: PdfReaderAction | null;
   clearPendingAction: () => void;
   onOutlineLoad: (outlineItems: OutlineItem[]) => void;
-  onPageSizesReady?: () => void;
-}
-
-export interface RenderTask {
-  promise: Promise<unknown>;
-  cancel: () => void;
+  onPageSizesReady: () => void;
+  onError: (error: Error) => void;
 }
 
 export interface PdfOutlineEntry {

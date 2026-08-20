@@ -112,9 +112,11 @@ export const getManifestTocFromOutline = (
 export const resolveResourceUrl = (
   manifest: WebpubManifest,
   proxyUrl?: string
-): string | undefined => {
+): string => {
   const href = manifest?.readingOrder?.[0]?.href;
-  if (!href) return undefined;
+  if (!href) {
+    throw new Error('Unable to resolve a PDF file URL from manifest');
+  }
   return proxyUrl ? `${proxyUrl}${encodeURIComponent(href)}` : href;
 };
 

@@ -1,4 +1,3 @@
-import { Icon } from '@chakra-ui/react';
 import type { PDFDocumentProxy } from 'pdfjs-dist';
 import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist';
 import React, {
@@ -10,6 +9,7 @@ import React, {
   useState,
 } from 'react';
 import { MAIN_CONTENT_ID } from '../constants';
+import ReaderErrorAlert from '../ui/ReaderErrorAlert';
 import PdfPage from './PdfPage';
 import {
   PAGE_GAP,
@@ -45,6 +45,7 @@ const PdfReaderContent = ({
   clearPendingAction,
   onOutlineLoad,
   onPageSizesReady,
+  onError,
 }: PdfReaderContentProps): React.ReactElement => {
   const [pdfDoc, setPdfDoc] = useState<PDFDocumentProxy | null>(null);
 
@@ -56,6 +57,9 @@ const PdfReaderContent = ({
   const [visiblePages, setVisiblePages] = useState<Set<number>>(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [pageRenderErrors, setPageRenderErrors] = useState<Map<number, Error>>(
+    new Map()
+  );
 
   const rootRef = useRef<HTMLDivElement | null>(null);
   const viewportWrapRef = useRef<HTMLDivElement | null>(null);
@@ -73,8 +77,25 @@ const PdfReaderContent = ({
   }, [onPageSizesReady]);
 
   useEffect(() => {
+    if (error) onError(error);
+  }, [error, onError]);
+
+  useEffect(() => {
     currentPageRef.current = pageNumber;
   }, [pageNumber]);
+
+  const handlePageRenderError = useCallback(
+    (failedPageNumber: number, nextError: Error) => {
+      setPageRenderErrors((prev) => {
+        const existingError = prev.get(failedPageNumber);
+        if (existingError?.message === nextError.message) return prev;
+        const next = new Map(prev);
+        next.set(failedPageNumber, nextError);
+        return next;
+      });
+    },
+    []
+  );
 
   useEffect(() => {
     return () => {
@@ -92,14 +113,11 @@ const PdfReaderContent = ({
     onOutlineLoad([]);
     setPageBaseSizes([]);
     setVisiblePages(new Set());
+    setPageRenderErrors(new Map());
     containerRefs.current.clear();
 
     const loadDocument = async () => {
       try {
-        if (!fileUrl) {
-          throw new Error('A PDF fileUrl is required');
-        }
-
         loadingTask = getDocument({ url: fileUrl, withCredentials: false });
         const doc = await loadingTask.promise;
         if (cancelled) return;
@@ -284,7 +302,7 @@ const PdfReaderContent = ({
     });
 
     pendingScrollTargetRef.current = pageNumber;
-    target.scrollIntoView({ block: 'start', behavior: 'auto' });
+    wrap.scrollTop = target.offsetTop;
     lastHandledNavigationRequestRef.current = navigationRequestId;
   }, [navigationRequestId, pageBaseSizes.length, pageNumber]);
 
@@ -495,19 +513,6 @@ const PdfReaderContent = ({
               <div className="pdf-status">Loading</div>
             </div>
           )}
-          {!loading && error && (
-            <div className="pdf-status-container">
-              <div className="pdf-status pdf-error">
-                <Icon viewBox="0 0 24 24" w={7} h={7}>
-                  <path
-                    fill="currentColor"
-                    d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"
-                  />
-                </Icon>
-                <span>{error.message || 'Failed to load PDF'}</span>
-              </div>
-            </div>
-          )}
           {!loading && !error && pdfDoc && pageBaseSizes.length > 0 && (
             <div
               className="pdf-pages-stack"
@@ -519,6 +524,35 @@ const PdfReaderContent = ({
             >
               {pageBaseSizes.map((size, idx) => {
                 const pageNumber = idx + 1;
+                const pageError = pageRenderErrors.get(pageNumber);
+                if (pageError) {
+                  const rotatedSize = getRotatedSize(size, rotation);
+                  const pageWidth = rotatedSize.width * scale;
+                  const pageHeight = rotatedSize.height * scale;
+
+                  return (
+                    <div
+                      key={pageNumber}
+                      className="pdf-page-wrap"
+                      data-page-number={pageNumber}
+                      ref={(el) => registerContainer(pageNumber, el)}
+                      style={{
+                        width: pageWidth,
+                        height: pageHeight,
+                        overflow: 'hidden',
+                      }}
+                    >
+                      <div className="pdf-page-error">
+                        <ReaderErrorAlert
+                          title="Rendering error"
+                          message={pageError.message}
+                          maxW="90%"
+                        />
+                      </div>
+                    </div>
+                  );
+                }
+
                 return (
                   <PdfPage
                     key={pageNumber}
@@ -530,6 +564,7 @@ const PdfReaderContent = ({
                     isVisible={visiblePages.has(pageNumber)}
                     registerContainer={registerContainer}
                     goToPage={requestGoToPage}
+                    onError={handlePageRenderError}
                   />
                 );
               })}

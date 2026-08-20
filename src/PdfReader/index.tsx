@@ -40,12 +40,29 @@ const usePdfReader = ({
   height = DEFAULT_HEIGHT,
   toggleFullScreen,
 }: PdfReaderProps): Exclude<ReaderReturn, null> => {
-  // Resolve fileUrl from manifest
-  const fileUrl = useMemo(() => {
-    if (webpubManifestUrl && inputManifest) {
-      return resolveResourceUrl(inputManifest, proxyUrl);
+  // Resolve fileUrl from manifest. `resolutionError` surfaces malformed
+  // manifests.
+  const { fileUrl, resolutionError } = useMemo((): {
+    fileUrl: string | undefined;
+    resolutionError: Error | null;
+  } => {
+    if (!webpubManifestUrl || !inputManifest) {
+      return { fileUrl: undefined, resolutionError: null };
     }
-    return undefined;
+    try {
+      return {
+        fileUrl: resolveResourceUrl(inputManifest, proxyUrl),
+        resolutionError: null,
+      };
+    } catch (err) {
+      return {
+        fileUrl: undefined,
+        resolutionError:
+          err instanceof Error
+            ? err
+            : new Error('Failed to resolve PDF file URL'),
+      };
+    }
   }, [webpubManifestUrl, inputManifest, proxyUrl]);
 
   // Extract initial page from resource href if present
@@ -80,18 +97,22 @@ const usePdfReader = ({
   const [pendingAction, setPendingAction] = useState<PdfReaderAction | null>(
     null
   );
-  const [pdfLoadFailed, setPdfLoadFailed] = useState(false);
+  const [pdfLoadError, setPdfLoadError] = useState<Error | null>(null);
   const [pageSizesReady, setPageSizesReady] = useState(false);
   const hasNavigatedToInitialPageRef = useRef(false);
 
   useEffect(() => {
-    setPdfLoadFailed(false);
+    setPdfLoadError(null);
     setPageSizesReady(false);
     hasNavigatedToInitialPageRef.current = false;
   }, [fileUrl]);
 
   const wrappedOnPageSizesReady = useCallback(() => {
     setPageSizesReady(true);
+  }, []);
+
+  const handlePdfLoadError = useCallback((error: Error) => {
+    setPdfLoadError(error);
   }, []);
 
   useEffect(() => {
@@ -157,8 +178,16 @@ const usePdfReader = ({
     };
   }, [inputManifest, manifestTitle, outline]);
 
+  if (resolutionError) {
+    throw resolutionError;
+  }
+
+  if (pdfLoadError) {
+    throw pdfLoadError;
+  }
+
   const hasSource = !!fileUrl;
-  const isDocLoading = hasSource && !pageSizesReady && !pdfLoadFailed;
+  const isDocLoading = hasSource && !pageSizesReady && !pdfLoadError;
   const heightValue = typeof height === 'number' ? `${height}px` : height;
 
   const content = (
@@ -168,20 +197,23 @@ const usePdfReader = ({
           <LoadingSkeleton height="100%" state={null} />
         </div>
       )}
-      <PdfReaderContent
-        fileUrl={fileUrl}
-        pdfWorkerSrc={pdfWorkerSrc}
-        pageNumber={pageNumber}
-        navigationRequestId={navigationRequestId}
-        scale={scale}
-        fitMode={fitMode}
-        rotation={rotation}
-        dispatch={dispatch}
-        pendingAction={pendingAction}
-        clearPendingAction={clearPendingAction}
-        onOutlineLoad={setOutline}
-        onPageSizesReady={wrappedOnPageSizesReady}
-      />
+      {fileUrl && (
+        <PdfReaderContent
+          fileUrl={fileUrl}
+          pdfWorkerSrc={pdfWorkerSrc}
+          pageNumber={pageNumber}
+          navigationRequestId={navigationRequestId}
+          scale={scale}
+          fitMode={fitMode}
+          rotation={rotation}
+          dispatch={dispatch}
+          pendingAction={pendingAction}
+          clearPendingAction={clearPendingAction}
+          onOutlineLoad={setOutline}
+          onPageSizesReady={wrappedOnPageSizesReady}
+          onError={handlePdfLoadError}
+        />
+      )}
     </div>
   );
 

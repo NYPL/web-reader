@@ -1,3 +1,5 @@
+// Constants specific to PdfReader (zoom limits, layout spacing, scroll behavior).
+
 export const MIN_SCALE = 0.25;
 export const MAX_SCALE = 5;
 export const SCALE_STEP = 0.1;
