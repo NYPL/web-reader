@@ -2,7 +2,7 @@ import React from 'react';
 import { useHtmlReader } from '../src';
 import { Injectable } from '../src/Readium/Injectable';
 import { WebpubManifest } from '../src/types';
-import Header from '../src/ui/Header';
+import Toolbar from '../src/ui/toolbar/Toolbar';
 
 type HTMLReaderProps = {
   injectablesReflowable: Injectable[];
@@ -33,7 +33,7 @@ const UseHtmlReader: React.FC<HTMLReaderProps> = ({
 
   return (
     <div>
-      <Header {...reader} containerRef={containerRef} />
+      <Toolbar {...reader} containerRef={containerRef} />
       {reader.content}
     </div>
   );
