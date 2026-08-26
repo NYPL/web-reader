@@ -204,30 +204,35 @@ class PdfReaderPage extends WebReaderPage {
   }
 
   async getZoomValue(): Promise<number> {
-    return await this.page
-      .locator('canvas:visible')
-      .first()
-      .evaluate((el) => {
-        return Number(
-          window.getComputedStyle(el).getPropertyValue('--scale-factor')
+    const textLayer = this.pageOne.locator('.textLayer');
+    let value = 0;
+    await expect
+      .poll(async () => {
+        value = await textLayer.evaluate((el) =>
+          Number(window.getComputedStyle(el).getPropertyValue('--scale-factor'))
         );
-      });
+        return value;
+      })
+      .toBeGreaterThan(0);
+    return value;
   }
 
   async zoomIn(): Promise<void> {
     const beforeScaleFactor = await this.getZoomValue();
     await expect(this.zoomInButton).toBeVisible();
     await this.zoomInButton.click();
-    const afterScaleFactor = await this.getZoomValue();
-    expect(afterScaleFactor).toBeGreaterThan(beforeScaleFactor);
+    await expect
+      .poll(() => this.getZoomValue())
+      .toBeGreaterThan(beforeScaleFactor);
   }
 
   async zoomOut(): Promise<void> {
     const beforeScaleFactor = await this.getZoomValue();
     await expect(this.zoomOutButton).toBeVisible();
     await this.zoomOutButton.click();
-    const afterScaleFactor = await this.getZoomValue();
-    expect(afterScaleFactor).toBeLessThan(beforeScaleFactor);
+    await expect
+      .poll(() => this.getZoomValue())
+      .toBeLessThan(beforeScaleFactor);
   }
 
   async scrollDown(): Promise<void> {

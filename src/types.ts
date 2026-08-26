@@ -72,7 +72,7 @@ export type LoadingReader = {
 };
 
 type CommonReader = {
-  isLoading: false;
+  isLoading: boolean;
   content: JSX.Element;
   manifest: WebpubManifest;
   currentPage: number;

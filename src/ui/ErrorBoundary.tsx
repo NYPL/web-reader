@@ -1,14 +1,8 @@
-import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
-  Flex,
-  ThemeProvider,
-} from '@chakra-ui/react';
+import { Flex, ThemeProvider } from '@chakra-ui/react';
 import * as React from 'react';
 import { WebReaderProps } from '..';
 import { HeaderWrapper } from './Header';
+import ReaderErrorAlert from './ReaderErrorAlert';
 import { getTheme } from './theme';
 
 type ErrorState = { error?: Error; info?: React.ErrorInfo };
@@ -40,21 +34,7 @@ class ErrorBoundary extends React.Component<WebReaderProps, ErrorState> {
         <ThemeProvider theme={getTheme('day')}>
           <HeaderWrapper />
           <Flex m={3} justifyContent="center" mt="20%">
-            <Alert
-              status="error"
-              variant="top-accent"
-              flexDirection="column"
-              alignItems="center"
-              justifyContent="center"
-              textAlign="center"
-              maxW="600px"
-            >
-              <AlertIcon />
-              <AlertTitle as="h1">An error occurred</AlertTitle>
-              <AlertDescription role="alert" aria-label={error.message}>
-                {error.message}
-              </AlertDescription>
-            </Alert>
+            <ReaderErrorAlert message={error.message} />
           </Flex>
         </ThemeProvider>
       );
