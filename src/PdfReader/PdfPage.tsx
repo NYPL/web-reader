@@ -122,7 +122,6 @@ const PdfPage = React.memo(function PdfPage({
         if (cancelled) return;
 
         textLayerDiv.innerHTML = '';
-        textLayerDiv.innerHTML = '';
         textLayerDiv.style.setProperty(
           '--scale-factor',
           String(viewport.scale)
