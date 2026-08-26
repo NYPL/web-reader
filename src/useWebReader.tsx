@@ -70,12 +70,11 @@ export default function useWebReader(
     manifest ? manifest.metadata.conformsTo : null
   );
   const getContentHtml = getContent as GetContent<string> | undefined;
-  const getContentPdf = getContent as GetContent<Uint8Array> | undefined;
   /**
-   * Our HTML reader and PDf Reader. Note that we cannot conditionally
+   * Our HTML reader and PDF Reader. Note that we cannot conditionally
    * call a React hook, so we must _always_ call the hook, but allow for the
-   * case where we call the hook with `undefined`, which tells the hook that
-   * that format is inactive, and it will in turn return the InactiveState.
+   * case where we call the hook with no source, which tells the hook that
+   * that format is inactive.
    */
   const htmlReader = useHtmlReader(
     readerType === 'HTML' && manifest
@@ -99,16 +98,12 @@ export default function useWebReader(
       ? {
           webpubManifestUrl,
           manifest,
-          getContent: getContentPdf,
           proxyUrl,
           pdfWorkerSrc,
           height,
-          growWhenScrolling,
-          persistLastLocation,
-          persistSettings,
           toggleFullScreen,
         }
-      : undefined
+      : {}
   );
 
   // fetch the manifest and set it in state

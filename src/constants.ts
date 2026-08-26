@@ -1,3 +1,4 @@
+// Shared constants used across HtmlReader, PdfReader, and ui.
 import { ReaderSettings } from './types';
 
 export const ReadiumWebpubContext = 'http://readium.org/webpub/default.jsonld';

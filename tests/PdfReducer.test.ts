@@ -1,84 +1,152 @@
-import { makePdfReducer } from '../src/PdfReader/reducer';
-import { PdfReaderArguments, PdfState } from '../src/PdfReader/types';
-import { DEFAULT_FIT_MODE, DEFAULT_SETTINGS } from '../src/constants';
+import { pdfReaderReducer, PdfReaderState } from '../src/PdfReader/reducer';
 
-function makeArgs(href: string): PdfReaderArguments {
-  return {
-    manifest: {
-      metadata: { title: 'Test' },
-      readingOrder: [{ href, type: 'application/pdf' }],
-    },
-  } as unknown as PdfReaderArguments;
-}
-
-const baseState: PdfState = {
-  state: 'ACTIVE',
-  settings: DEFAULT_SETTINGS,
-  resourceIndex: 0,
-  resource: null,
+const baseState: PdfReaderState = {
   pageNumber: 1,
-  numPages: null,
+  numPages: 0,
   scale: 1,
-  pdfWidth: 0,
-  pdfHeight: 0,
-  pageHeight: undefined,
-  pageWidth: undefined,
-  atStart: true,
-  atEnd: false,
-  rendered: false,
-  fitMode: DEFAULT_FIT_MODE,
+  fitMode: 'width',
   rotation: 0,
+  navigationRequestId: 0,
 };
 
-describe('makePdfReducer — PDF_PARSED', () => {
-  it('keeps page 1 when no start query param is present', () => {
-    const args = makeArgs('https://example.com/doc.pdf');
-    const reducer = makePdfReducer(args);
-    const state = reducer(baseState, { type: 'PDF_PARSED', numPages: 100 });
-    expect(state.pageNumber).toBe(1);
+describe('pdfReaderReducer — GO_FORWARD', () => {
+  it('advances to the next page', () => {
+    const state = { ...baseState, pageNumber: 5, numPages: 100 };
+    const result = pdfReaderReducer(state, { type: 'GO_FORWARD' });
+    expect(result.pageNumber).toBe(6);
+    expect(result.navigationRequestId).toBe(1);
   });
 
-  it('jumps to start on initial load when pageNumber is below start', () => {
-    const args = makeArgs('https://example.com/doc.pdf?start=15');
-    const reducer = makePdfReducer(args);
-    const state = reducer(baseState, { type: 'PDF_PARSED', numPages: 100 });
-    expect(state.pageNumber).toBe(15);
-  });
-
-  it('does not override pageNumber when user has already navigated past start', () => {
-    const args = makeArgs('https://example.com/doc.pdf?start=15');
-    const reducer = makePdfReducer(args);
-    const navigatedState = { ...baseState, pageNumber: 20 };
-    const state = reducer(navigatedState, {
-      type: 'PDF_PARSED',
-      numPages: 100,
-    });
-    expect(state.pageNumber).toBe(20);
-  });
-
-  it('navigates to last page when pageNumber is -1', () => {
-    const args = makeArgs('https://example.com/doc.pdf');
-    const reducer = makePdfReducer(args);
-    const endState = { ...baseState, pageNumber: -1 };
-    const state = reducer(endState, { type: 'PDF_PARSED', numPages: 100 });
-    expect(state.pageNumber).toBe(100);
+  it('does not advance past the last page', () => {
+    const state = { ...baseState, pageNumber: 100, numPages: 100 };
+    const result = pdfReaderReducer(state, { type: 'GO_FORWARD' });
+    expect(result.pageNumber).toBe(100);
+    expect(result.navigationRequestId).toBe(0);
   });
 });
 
-describe('makePdfReducer — GO_BACKWARD', () => {
-  it('allows navigating back below start page within the same resource', () => {
-    const args = makeArgs('https://example.com/doc.pdf?start=5');
-    const reducer = makePdfReducer(args);
-    const onStartPage = { ...baseState, pageNumber: 5, numPages: 100 };
-    const state = reducer(onStartPage, { type: 'GO_BACKWARD' });
-    expect(state.pageNumber).toBe(4);
+describe('pdfReaderReducer — GO_BACKWARD', () => {
+  it('goes back a page', () => {
+    const state = { ...baseState, pageNumber: 5, numPages: 100 };
+    const result = pdfReaderReducer(state, { type: 'GO_BACKWARD' });
+    expect(result.pageNumber).toBe(4);
+    expect(result.navigationRequestId).toBe(1);
   });
 
   it('does not go below page 1', () => {
-    const args = makeArgs('https://example.com/doc.pdf');
-    const reducer = makePdfReducer(args);
-    const onFirstPage = { ...baseState, pageNumber: 1, numPages: 100 };
-    const state = reducer(onFirstPage, { type: 'GO_BACKWARD' });
-    expect(state.pageNumber).toBe(1);
+    const state = { ...baseState, pageNumber: 1, numPages: 100 };
+    const result = pdfReaderReducer(state, { type: 'GO_BACKWARD' });
+    expect(result.pageNumber).toBe(1);
+    expect(result.navigationRequestId).toBe(0);
+  });
+});
+
+describe('pdfReaderReducer — GO_TO_PAGE', () => {
+  it('navigates to a valid page', () => {
+    const state = { ...baseState, pageNumber: 1, numPages: 100 };
+    const result = pdfReaderReducer(state, { type: 'GO_TO_PAGE', page: 42 });
+    expect(result.pageNumber).toBe(42);
+    expect(result.navigationRequestId).toBe(1);
+  });
+
+  it('navigates to last page when pageNumber is -1', () => {
+    const state = { ...baseState, pageNumber: 50, numPages: 100 };
+    const result = pdfReaderReducer(state, { type: 'GO_TO_PAGE', page: -1 });
+    expect(result.pageNumber).toBe(1);
+  });
+});
+
+describe('pdfReaderReducer — PAGE_IN_VIEW', () => {
+  it('updates the current page without bumping navigationRequestId', () => {
+    const state = { ...baseState, pageNumber: 1, numPages: 100 };
+    const result = pdfReaderReducer(state, {
+      type: 'PAGE_IN_VIEW',
+      page: 7,
+    });
+    expect(result.pageNumber).toBe(7);
+    expect(result.navigationRequestId).toBe(0);
+  });
+
+  it('is a no-op when already on that page', () => {
+    const state = { ...baseState, pageNumber: 7, numPages: 100 };
+    const result = pdfReaderReducer(state, {
+      type: 'PAGE_IN_VIEW',
+      page: 7,
+    });
+    expect(result).toBe(state);
+  });
+});
+
+describe('pdfReaderReducer — PAGES_LOADED', () => {
+  it('sets numPages', () => {
+    const result = pdfReaderReducer(baseState, {
+      type: 'PAGES_LOADED',
+      numPages: 250,
+    });
+    expect(result.numPages).toBe(250);
+  });
+});
+
+describe('pdfReaderReducer — ZOOM_IN / ZOOM_OUT', () => {
+  it('increases scale and clears fitMode', () => {
+    const state = { ...baseState, scale: 1, fitMode: 'width' as const };
+    const result = pdfReaderReducer(state, { type: 'ZOOM_IN' });
+    expect(result.scale).toBeCloseTo(1.1);
+    expect(result.fitMode).toBeNull();
+  });
+
+  it('does not zoom in past the max scale', () => {
+    const state = { ...baseState, scale: 5, fitMode: null };
+    const result = pdfReaderReducer(state, { type: 'ZOOM_IN' });
+    expect(result.scale).toBe(5);
+  });
+
+  it('decreases scale and clears fitMode', () => {
+    const state = { ...baseState, scale: 1, fitMode: 'width' as const };
+    const result = pdfReaderReducer(state, { type: 'ZOOM_OUT' });
+    expect(result.scale).toBeCloseTo(0.9);
+    expect(result.fitMode).toBeNull();
+  });
+
+  it('does not zoom out past the min scale', () => {
+    const state = { ...baseState, scale: 0.25, fitMode: null };
+    const result = pdfReaderReducer(state, { type: 'ZOOM_OUT' });
+    expect(result.scale).toBe(0.25);
+  });
+});
+
+describe('pdfReaderReducer — ROTATE_CCW', () => {
+  it('rotates counter-clockwise by 270 degrees, wrapping at 360', () => {
+    const state = { ...baseState, rotation: 90 };
+    const result = pdfReaderReducer(state, { type: 'ROTATE_CCW' });
+    expect(result.rotation).toBe(0);
+  });
+
+  it('applies an explicit nextScale when provided', () => {
+    const state = { ...baseState, rotation: 0, scale: 1 };
+    const result = pdfReaderReducer(state, {
+      type: 'ROTATE_CCW',
+      nextScale: 1.5,
+    });
+    expect(result.rotation).toBe(270);
+    expect(result.scale).toBe(1.5);
+  });
+});
+
+describe('pdfReaderReducer — SET_FIT / SET_SCALE', () => {
+  it('sets the fit mode', () => {
+    const result = pdfReaderReducer(baseState, {
+      type: 'SET_FIT',
+      mode: 'height',
+    });
+    expect(result.fitMode).toBe('height');
+  });
+
+  it('sets the scale', () => {
+    const result = pdfReaderReducer(baseState, {
+      type: 'SET_SCALE',
+      scale: 2,
+    });
+    expect(result.scale).toBe(2);
   });
 });
