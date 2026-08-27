@@ -1,7 +1,7 @@
 import React from 'react';
 import { usePdfReader } from '../src';
 import { WebpubManifest } from '../src/types';
-import Header from '../src/ui/Header';
+import Toolbar from '../src/ui/toolbar/Toolbar';
 
 type PDFReaderProps = {
   webpubManifestUrl: string;
@@ -36,7 +36,7 @@ const UsePdfReader: React.FC<PDFReaderProps> = ({
   const { content } = reader;
   return (
     <div>
-      <Header {...reader} containerRef={containerRef} />
+      <Toolbar {...reader} containerRef={containerRef} />
       {content}
     </div>
   );

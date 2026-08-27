@@ -1,25 +1,25 @@
 import { render, screen } from '@testing-library/react';
 import * as React from 'react';
-import Header from '../src/ui/Header';
+import Toolbar from '../src/ui/toolbar/Toolbar';
 import { MockHtmlReaderProps } from './utils/MockData';
 
 import { axe } from 'jest-axe';
 
-describe('Header Accessibility checker', () => {
-  test('header component should have no violation', async () => {
+describe('Toolbar Accessibility checker', () => {
+  test('toolbar component should have no violation', async () => {
     const containerRef = React.createRef<HTMLDivElement>();
     const { container } = render(
-      <Header {...MockHtmlReaderProps} containerRef={containerRef} />
+      <Toolbar {...MockHtmlReaderProps} containerRef={containerRef} />
     );
 
     expect(await axe(container)).toHaveNoViolations();
   }, 15000);
 });
 
-describe('Header rendering', () => {
-  test('render header bar', () => {
+describe('Toolbar rendering', () => {
+  test('render toolbar bar', () => {
     const containerRef = React.createRef<HTMLDivElement>();
-    render(<Header {...MockHtmlReaderProps} containerRef={containerRef} />);
+    render(<Toolbar {...MockHtmlReaderProps} containerRef={containerRef} />);
 
     expect(
       screen.getByRole('button', { name: 'Settings' })

@@ -8,9 +8,9 @@ import {
 import React from 'react';
 import { HtmlState } from '../HtmlReader/types';
 import { ReaderState } from '../types';
-import { HeaderWrapper } from './Header';
 import useColorModeValue from './hooks/useColorModeValue';
 import { getTheme } from './theme';
+import { ToolbarWrapper } from './toolbar/Toolbar';
 
 const LoadingSkeletonContent = ({
   height,
@@ -20,7 +20,7 @@ const LoadingSkeletonContent = ({
   const bgColor = useColorModeValue('ui.white', 'ui.black', 'ui.sepia');
   return (
     <>
-      <HeaderWrapper bg={bgColor} />
+      <ToolbarWrapper bg={bgColor} />
       <Box
         padding="6"
         bg={bgColor}
@@ -31,10 +31,12 @@ const LoadingSkeletonContent = ({
         role="progressbar"
       >
         <Flex justifyContent="center">
-          <Skeleton height="20px" mb="7" w="30%" />
+          <Skeleton height="32px" mb="6" w="30%" />
         </Flex>
-        <SkeletonText mb="7" noOfLines={10} spacing="4" />
-        <SkeletonText mb="7" noOfLines={5} spacing="4" />
+        <SkeletonText mb="6" noOfLines={6} skeletonHeight="20px" spacing="2" />
+        <SkeletonText mb="6" noOfLines={6} skeletonHeight="20px" spacing="2" />
+        <SkeletonText mb="6" noOfLines={6} skeletonHeight="20px" spacing="2" />
+        <SkeletonText mb="6" noOfLines={6} skeletonHeight="20px" spacing="2" />
       </Box>
     </>
   );
