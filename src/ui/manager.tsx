@@ -1,9 +1,9 @@
 import { Flex, ThemeProvider } from '@chakra-ui/react';
 import * as React from 'react';
 import { ActiveReader, ReaderReturn } from '../types';
-import Header from './Header';
 import useColorModeValue from './hooks/useColorModeValue';
 import { getTheme } from './theme';
+import Toolbar from './toolbar/Toolbar';
 
 /**
  * The default Manager UI. This will be broken into individual components
@@ -32,7 +32,7 @@ const WebReaderContent: React.FC<ReaderReturn> = ({ children, ...props }) => {
   return (
     <Flex flexDir="column" w="100%" h="100%" position="relative">
       {lastActiveProps.current && (
-        <Header containerRef={containerRef} {...lastActiveProps.current} />
+        <Toolbar containerRef={containerRef} {...lastActiveProps.current} />
       )}
 
       <Flex

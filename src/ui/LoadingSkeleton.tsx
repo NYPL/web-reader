@@ -8,9 +8,9 @@ import {
 import React from 'react';
 import { HtmlState } from '../HtmlReader/types';
 import { ReaderState } from '../types';
-import { HeaderWrapper } from './Header';
 import useColorModeValue from './hooks/useColorModeValue';
 import { getTheme } from './theme';
+import { ToolbarWrapper } from './toolbar/Toolbar';
 
 const LoadingSkeletonContent = ({
   height,
@@ -20,7 +20,7 @@ const LoadingSkeletonContent = ({
   const bgColor = useColorModeValue('ui.white', 'ui.black', 'ui.sepia');
   return (
     <>
-      <HeaderWrapper bg={bgColor} />
+      <ToolbarWrapper bg={bgColor} />
       <Box
         padding="6"
         bg={bgColor}
