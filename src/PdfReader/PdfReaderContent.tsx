@@ -77,6 +77,7 @@ const PdfReaderContent = ({
   const onPageSizesReadyRef = useRef(onPageSizesReady);
   const measuredPagesRef = useRef<Set<number>>(new Set());
   const initialBatchAppliedRef = useRef(false);
+  const userZoomedRef = useRef(false);
   const pageBaseSizesRef = useRef<PageSize[]>([]);
 
   useEffect(() => {
@@ -155,6 +156,7 @@ const PdfReaderContent = ({
         dispatch({ type: 'PAGES_LOADED', numPages: doc.numPages });
         measuredPagesRef.current = new Set();
         initialBatchAppliedRef.current = false;
+        userZoomedRef.current = false;
         setPageBaseSizes(
           Array.from({ length: doc.numPages }, () => DEFAULT_PAGE_SIZE)
         );
@@ -430,7 +432,7 @@ const PdfReaderContent = ({
       }
 
       setPageBaseSizes(next);
-      if (correctedScale != null) {
+      if (correctedScale != null && !userZoomedRef.current) {
         suppressNextResizeFitRef.current = true;
         dispatch({ type: 'SET_SCALE', scale: correctedScale });
       }
@@ -488,7 +490,7 @@ const PdfReaderContent = ({
         }
 
         setPageBaseSizes(sizes);
-        if (correctedScale != null) {
+        if (correctedScale != null && !userZoomedRef.current) {
           suppressNextResizeFitRef.current = true;
           dispatch({ type: 'SET_SCALE', scale: correctedScale });
         }
@@ -587,6 +589,7 @@ const PdfReaderContent = ({
     if (!pendingAction) return;
 
     if (pendingAction.type === 'ZOOM_IN' || pendingAction.type === 'ZOOM_OUT') {
+      userZoomedRef.current = true;
       captureViewportAnchor();
       dispatch({ type: pendingAction.type });
     }
