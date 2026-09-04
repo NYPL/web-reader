@@ -34,7 +34,7 @@ export default function TableOfContent({
     'ui.sepia'
   );
   return (
-    <Menu>
+    <Menu onOpen={() => navigator.loadToc?.()}>
       {({ isOpen }) => (
         <>
           <Tooltip content="Table of contents">

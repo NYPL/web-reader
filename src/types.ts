@@ -22,6 +22,7 @@ export type Navigator = {
   goToPage: (href: string) => void;
   goToPageNumber: (pageNumber: number) => void;
   setFitMode: (mode: FitMode) => void;
+  loadToc?: () => void;
 };
 
 export type PdfNavigator = Navigator & {
