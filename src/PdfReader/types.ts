@@ -43,6 +43,7 @@ export interface PdfReaderContentProps {
   clearPendingAction: () => void;
   onOutlineLoad: (outlineItems: OutlineItem[]) => void;
   onPageSizesReady: () => void;
+  loadOutline: boolean;
   onError: (error: Error) => void;
 }
 

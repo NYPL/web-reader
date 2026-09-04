@@ -1,6 +1,12 @@
 import type { PDFDocumentProxy, RenderTask } from 'pdfjs-dist';
 import { AnnotationLayer, TextLayer } from 'pdfjs-dist';
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { PageSize, RefProxy } from './types';
 import { getRotatedSize, toError } from './utils';
 
@@ -39,6 +45,7 @@ const PdfPage = React.memo(function PdfPage({
   const renderTaskRef = useRef<RenderTask | null>(null);
   const textLayerTaskRef = useRef<{ cancel: () => void } | null>(null);
   const renderedKeyRef = useRef<string | null>(null);
+  const [isContentReady, setIsContentReady] = useState(false);
 
   const releaseRenderedContent = useCallback(() => {
     const canvas = canvasRef.current;
@@ -71,6 +78,7 @@ const PdfPage = React.memo(function PdfPage({
       textLayerTaskRef.current?.cancel();
       textLayerTaskRef.current = null;
       releaseRenderedContent();
+      setIsContentReady(false);
       return undefined;
     }
 
@@ -221,7 +229,10 @@ const PdfPage = React.memo(function PdfPage({
           // Non-fatal: annotation rendering support varies by pdf.js version.
         }
 
-        if (!cancelled) renderedKeyRef.current = key;
+        if (!cancelled) {
+          renderedKeyRef.current = key;
+          setIsContentReady(true);
+        }
       } catch (err: unknown) {
         if (cancelled) return;
         if (
@@ -285,6 +296,11 @@ const PdfPage = React.memo(function PdfPage({
         className="pdf-annotation-layer annotationLayer"
         style={{ width: displayWidth, height: displayHeight }}
       />
+      {!isContentReady && (
+        <div className="pdf-page-loading" aria-hidden="true">
+          <div className="pdf-page-spinner" />
+        </div>
+      )}
     </div>
   );
 });

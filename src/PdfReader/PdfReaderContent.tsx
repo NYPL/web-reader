@@ -12,7 +12,9 @@ import { MAIN_CONTENT_ID } from '../constants';
 import ReaderErrorAlert from '../ui/ReaderErrorAlert';
 import PdfPage from './PdfPage';
 import {
+  DEFAULT_PAGE_SIZE,
   PAGE_GAP,
+  PAGE_MEASURE_BUFFER,
   PAGE_PADDING,
   RENDER_ROOT_MARGIN,
   SCROLLSPY_ANCHOR_RATIO,
@@ -45,6 +47,7 @@ const PdfReaderContent = ({
   clearPendingAction,
   onOutlineLoad,
   onPageSizesReady,
+  loadOutline,
   onError,
 }: PdfReaderContentProps): React.ReactElement => {
   const [pdfDoc, setPdfDoc] = useState<PDFDocumentProxy | null>(null);
@@ -60,6 +63,7 @@ const PdfReaderContent = ({
   const [pageRenderErrors, setPageRenderErrors] = useState<Map<number, Error>>(
     new Map()
   );
+  const [rangeCapable, setRangeCapable] = useState<boolean>(false);
 
   const rootRef = useRef<HTMLDivElement | null>(null);
   const viewportWrapRef = useRef<HTMLDivElement | null>(null);
@@ -71,6 +75,13 @@ const PdfReaderContent = ({
   const pendingViewportAnchorRef = useRef<ViewportAnchor | null>(null);
   const suppressNextResizeFitRef = useRef(false);
   const onPageSizesReadyRef = useRef(onPageSizesReady);
+  const measuredPagesRef = useRef<Set<number>>(new Set());
+  const initialBatchAppliedRef = useRef(false);
+  const pageBaseSizesRef = useRef<PageSize[]>([]);
+
+  useEffect(() => {
+    pageBaseSizesRef.current = pageBaseSizes;
+  }, [pageBaseSizes]);
 
   useEffect(() => {
     onPageSizesReadyRef.current = onPageSizesReady;
@@ -115,26 +126,39 @@ const PdfReaderContent = ({
     setVisiblePages(new Set());
     setPageRenderErrors(new Map());
     containerRefs.current.clear();
+    setRangeCapable(false);
+
+    fetch(fileUrl, { headers: { Range: 'bytes=0-1' } })
+      .then((res) => {
+        if (cancelled) return;
+        setRangeCapable(
+          res.status === 206 && res.headers.get('Accept-Ranges') === 'bytes'
+        );
+      })
+      .catch(() => {
+        if (!cancelled) setRangeCapable(false);
+      });
 
     const loadDocument = async () => {
       try {
-        loadingTask = getDocument({ url: fileUrl, withCredentials: false });
+        loadingTask = getDocument({
+          url: fileUrl,
+          withCredentials: false,
+          disableStream: true, // Disable streaming to reduce memory pressure
+          disableAutoFetch: true, // Disable background prefetch of non-visible pages
+          rangeChunkSize: 1024 * 1024, // 1MB
+        });
         const doc = await loadingTask.promise;
         if (cancelled) return;
 
         setPdfDoc(doc);
         dispatch({ type: 'PAGES_LOADED', numPages: doc.numPages });
-
-        try {
-          const rawOutline = (await doc.getOutline()) as
-            | PdfOutlineEntry[]
-            | null;
-          if (rawOutline && !cancelled) {
-            onOutlineLoad(await resolveOutline(doc, rawOutline));
-          }
-        } catch {
-          // Outline is optional, ignore failures.
-        }
+        measuredPagesRef.current = new Set();
+        initialBatchAppliedRef.current = false;
+        setPageBaseSizes(
+          Array.from({ length: doc.numPages }, () => DEFAULT_PAGE_SIZE)
+        );
+        onPageSizesReadyRef.current?.();
       } catch (err: unknown) {
         if (cancelled) return;
         const nextError = toError(err, 'Failed to load PDF document');
@@ -152,38 +176,27 @@ const PdfReaderContent = ({
     };
   }, [fileUrl, dispatch, onOutlineLoad]);
 
-  // Read every page's intrinsic size to determine scroll container's height
-  // before any page has actually been painted.
-  // TODO: for very large documents consider windowing this fetch
   useEffect(() => {
-    if (!pdfDoc) return undefined;
+    if (!pdfDoc || !loadOutline) return undefined;
     let cancelled = false;
 
     (async () => {
       try {
-        const sizes: PageSize[] = [];
-        for (let i = 1; i <= pdfDoc.numPages; i += 1) {
-          if (cancelled) return;
-          const page = await pdfDoc.getPage(i);
-          const vp = page.getViewport({ scale: 1, rotation: 0 });
-          sizes.push({ width: vp.width, height: vp.height });
-          // Hint to pdf.js to release temporary resources for this page.
-          page.cleanup();
+        const rawOutline = (await pdfDoc.getOutline()) as
+          | PdfOutlineEntry[]
+          | null;
+        if (rawOutline && !cancelled) {
+          onOutlineLoad(await resolveOutline(pdfDoc, rawOutline));
         }
-        if (cancelled) return;
-        setPageBaseSizes(sizes);
-        onPageSizesReadyRef.current?.();
-      } catch (err: unknown) {
-        if (cancelled) return;
-        const nextError = toError(err, 'Failed to read page dimensions');
-        setError(nextError);
+      } catch {
+        // Outline is optional, ignore failures.
       }
     })();
 
     return () => {
       cancelled = true;
     };
-  }, [pdfDoc]);
+  }, [pdfDoc, onOutlineLoad, loadOutline]);
 
   // Lazy render: observe which pages are near the viewport
   useEffect(() => {
@@ -338,6 +351,159 @@ const PdfReaderContent = ({
     };
   }, [pageBaseSizes, scale, rotation]);
 
+  // Measure the size of the current/visible pages with a buffer, lazily
+  // fetching new pages in view. Only used for linearized PDFs.
+  useEffect(() => {
+    if (!pdfDoc || !pageBaseSizes.length || !rangeCapable) {
+      return undefined;
+    }
+    let cancelled = false;
+
+    const wanted = new Set<number>();
+    const addRange = (center: number) => {
+      const start = Math.max(1, center - PAGE_MEASURE_BUFFER);
+      const end = Math.min(pdfDoc.numPages, center + PAGE_MEASURE_BUFFER);
+      for (let p = start; p <= end; p += 1) wanted.add(p);
+    };
+    addRange(pageNumber);
+    visiblePages.forEach(addRange);
+
+    const toMeasure = Array.from(wanted).filter(
+      (p) => !measuredPagesRef.current.has(p)
+    );
+    if (!toMeasure.length) return undefined;
+
+    (async () => {
+      const updates: { index: number; size: PageSize }[] = [];
+      for (const p of toMeasure) {
+        if (cancelled) return;
+        try {
+          const page = await pdfDoc.getPage(p);
+          if (cancelled) return;
+          const vp = page.getViewport({ scale: 1, rotation: 0 });
+          updates.push({
+            index: p - 1,
+            size: { width: vp.width, height: vp.height },
+          });
+          page.cleanup();
+          measuredPagesRef.current.add(p);
+        } catch (err: unknown) {
+          if (cancelled) return;
+          setError(toError(err, 'Failed to read page dimensions'));
+          return;
+        }
+      }
+      if (cancelled || !updates.length) return;
+      captureViewportAnchor();
+
+      const next = pageBaseSizesRef.current.slice();
+      updates.forEach(({ index, size }) => {
+        next[index] = size;
+      });
+
+      let correctedScale: number | null = null;
+      if (!initialBatchAppliedRef.current) {
+        initialBatchAppliedRef.current = true;
+        const sample = updates[0].size;
+        for (let i = 0; i < next.length; i += 1) {
+          if (!measuredPagesRef.current.has(i + 1)) next[i] = sample;
+        }
+
+        if (fitMode) {
+          const wrap = viewportWrapRef.current;
+          if (wrap) {
+            const refIndex =
+              Math.min(Math.max(currentPageRef.current, 1), next.length) - 1;
+            const rotated = getRotatedSize(next[refIndex], rotation);
+            const widestRotatedPageWidth = next.reduce((maxWidth, page) => {
+              return Math.max(maxWidth, getRotatedSize(page, rotation).width);
+            }, 0);
+            const availWidth = wrap.clientWidth - PAGE_PADDING;
+            const availHeight = wrap.clientHeight - PAGE_PADDING;
+            const newScale =
+              fitMode === 'width'
+                ? availWidth / widestRotatedPageWidth
+                : availHeight / rotated.height;
+            if (newScale > 0) correctedScale = newScale;
+          }
+        }
+      }
+
+      setPageBaseSizes(next);
+      if (correctedScale != null) {
+        suppressNextResizeFitRef.current = true;
+        dispatch({ type: 'SET_SCALE', scale: correctedScale });
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    pdfDoc,
+    pageNumber,
+    visiblePages,
+    pageBaseSizes.length,
+    captureViewportAnchor,
+    rangeCapable,
+  ]);
+
+  // Measure every page's size up front. Only used for non-linearized PDFs.
+  useEffect(() => {
+    if (!pdfDoc || rangeCapable) return undefined;
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const sizes: PageSize[] = [];
+        for (let i = 1; i <= pdfDoc.numPages; i += 1) {
+          if (cancelled) return;
+          const page = await pdfDoc.getPage(i);
+          const vp = page.getViewport({ scale: 1, rotation: 0 });
+          sizes.push({ width: vp.width, height: vp.height });
+          page.cleanup();
+          measuredPagesRef.current.add(i);
+        }
+        if (cancelled) return;
+
+        let correctedScale: number | null = null;
+        if (fitMode) {
+          const wrap = viewportWrapRef.current;
+          if (wrap) {
+            const refIndex =
+              Math.min(Math.max(currentPageRef.current, 1), sizes.length) - 1;
+            const rotated = getRotatedSize(sizes[refIndex], rotation);
+            const widestRotatedPageWidth = sizes.reduce((maxWidth, page) => {
+              return Math.max(maxWidth, getRotatedSize(page, rotation).width);
+            }, 0);
+            const availWidth = wrap.clientWidth - PAGE_PADDING;
+            const availHeight = wrap.clientHeight - PAGE_PADDING;
+            const newScale =
+              fitMode === 'width'
+                ? availWidth / widestRotatedPageWidth
+                : availHeight / rotated.height;
+            if (newScale > 0) correctedScale = newScale;
+          }
+        }
+
+        setPageBaseSizes(sizes);
+        if (correctedScale != null) {
+          suppressNextResizeFitRef.current = true;
+          dispatch({ type: 'SET_SCALE', scale: correctedScale });
+        }
+      } catch (err: unknown) {
+        if (cancelled) return;
+        setError(toError(err, 'Failed to read page dimensions'));
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pdfDoc, rangeCapable]);
+
   // Fit-to-width/height
   const computeFitScaleValue = useCallback(
     (mode: FitMode, rotationForCalc: number): number | null => {
@@ -393,6 +559,11 @@ const PdfReaderContent = ({
     [computeFitScaleValue, rotation, captureViewportAnchor, dispatch]
   );
 
+  useEffect(() => {
+    if (fitMode) applyFitScale(fitMode);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fitMode, pageBaseSizes.length]);
+
   useLayoutEffect(() => {
     const anchor = pendingViewportAnchorRef.current;
     const wrap = viewportWrapRef.current;
@@ -441,11 +612,6 @@ const PdfReaderContent = ({
     rotation,
     dispatch,
   ]);
-
-  useEffect(() => {
-    if (fitMode) applyFitScale(fitMode);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fitMode, pageBaseSizes]);
 
   // Re-apply fit scale on container resize.
   const fitModeRef = useRef(fitMode);

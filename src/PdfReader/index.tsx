@@ -99,11 +99,13 @@ const usePdfReader = ({
   );
   const [pdfLoadError, setPdfLoadError] = useState<Error | null>(null);
   const [pageSizesReady, setPageSizesReady] = useState(false);
+  const [loadOutline, setLoadOutline] = useState(false);
   const hasNavigatedToInitialPageRef = useRef(false);
 
   useEffect(() => {
     setPdfLoadError(null);
     setPageSizesReady(false);
+    setLoadOutline(false);
     hasNavigatedToInitialPageRef.current = false;
   }, [fileUrl]);
 
@@ -151,6 +153,7 @@ const usePdfReader = ({
       zoomIn: async () => setPendingAction({ type: 'ZOOM_IN' }),
       zoomOut: async () => setPendingAction({ type: 'ZOOM_OUT' }),
       rotateCounterClockwise: () => setPendingAction({ type: 'ROTATE_CCW' }),
+      loadToc: () => setLoadOutline(true),
     }),
     []
   );
@@ -211,6 +214,7 @@ const usePdfReader = ({
           clearPendingAction={clearPendingAction}
           onOutlineLoad={setOutline}
           onPageSizesReady={wrappedOnPageSizesReady}
+          loadOutline={loadOutline}
           onError={handlePdfLoadError}
         />
       )}
