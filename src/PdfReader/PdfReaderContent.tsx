@@ -562,7 +562,10 @@ const PdfReaderContent = ({
   );
 
   useEffect(() => {
-    if (fitMode) applyFitScale(fitMode);
+    if (fitMode) {
+      userZoomedRef.current = false;
+      applyFitScale(fitMode);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fitMode, pageBaseSizes.length]);
 
@@ -635,7 +638,9 @@ const PdfReaderContent = ({
         suppressNextResizeFitRef.current = false;
         return;
       }
-      if (fitModeRef.current) applyFitScaleRef.current(fitModeRef.current);
+      if (fitModeRef.current && !userZoomedRef.current) {
+        applyFitScaleRef.current(fitModeRef.current);
+      }
     });
     ro.observe(wrap);
     return () => ro.disconnect();
