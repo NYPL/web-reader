@@ -193,6 +193,7 @@ class PdfReaderPage extends WebReaderPage {
     await this.page.goto(gotoPage, { waitUntil: 'domcontentloaded' });
     await this.loadPage();
     await expect(this.pageOne).toBeVisible();
+    await expect(this.pageOne.locator('.pdf-page-loading')).not.toBeVisible();
     return new WebReaderPage(this.page);
   }
 
