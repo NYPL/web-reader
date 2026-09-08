@@ -22,7 +22,8 @@ const LoadingSkeletonContent = ({
     <>
       <ToolbarWrapper bg={bgColor} />
       <Box
-        padding="6"
+        px="48px"
+        py="110px"
         bg={bgColor}
         mt="0"
         height={height}
@@ -31,12 +32,12 @@ const LoadingSkeletonContent = ({
         role="progressbar"
       >
         <Flex justifyContent="center">
-          <Skeleton height="32px" mb="6" w="30%" />
+          <Skeleton h="32px" mb="6" w="100%" maxW="280px" />
         </Flex>
-        <SkeletonText mb="6" noOfLines={6} skeletonHeight="20px" spacing="2" />
-        <SkeletonText mb="6" noOfLines={6} skeletonHeight="20px" spacing="2" />
-        <SkeletonText mb="6" noOfLines={6} skeletonHeight="20px" spacing="2" />
-        <SkeletonText mb="6" noOfLines={6} skeletonHeight="20px" spacing="2" />
+        <SkeletonText mb="6" noOfLines={6} skeletonHeight="16px" spacing="2" />
+        <SkeletonText mb="6" noOfLines={6} skeletonHeight="16px" spacing="2" />
+        <SkeletonText mb="6" noOfLines={6} skeletonHeight="16px" spacing="2" />
+        <SkeletonText noOfLines={6} skeletonHeight="16px" spacing="2" />
       </Box>
     </>
   );
