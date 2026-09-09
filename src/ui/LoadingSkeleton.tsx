@@ -2,8 +2,9 @@ import {
   Box,
   Flex,
   Skeleton,
-  SkeletonText,
+  Stack,
   ThemeProvider,
+  usePrefersReducedMotion,
 } from '@chakra-ui/react';
 import React from 'react';
 import { HtmlState } from '../HtmlReader/types';
@@ -18,6 +19,9 @@ const LoadingSkeletonContent = ({
   height: string;
 }): JSX.Element => {
   const bgColor = useColorModeValue('ui.white', 'ui.black', 'ui.sepia');
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const speed = prefersReducedMotion ? 0 : undefined;
+
   return (
     <>
       <ToolbarWrapper bg={bgColor} />
@@ -33,27 +37,20 @@ const LoadingSkeletonContent = ({
           role="progressbar"
         >
           <Flex justifyContent="center">
-            <Skeleton h="32px" mb="6" w="100%" maxW="280px" />
+            <Skeleton speed={speed} h="32px" mb="6" w="100%" maxW="280px" />
           </Flex>
-          <SkeletonText
-            mb="6"
-            noOfLines={6}
-            skeletonHeight="16px"
-            spacing="2"
-          />
-          <SkeletonText
-            mb="6"
-            noOfLines={6}
-            skeletonHeight="16px"
-            spacing="2"
-          />
-          <SkeletonText
-            mb="6"
-            noOfLines={6}
-            skeletonHeight="16px"
-            spacing="2"
-          />
-          <SkeletonText noOfLines={6} skeletonHeight="16px" spacing="2" />
+          {[0, 1, 2, 3].map((i) => (
+            <Stack key={i} spacing="2" mb={i < 3 ? '6' : undefined}>
+              {Array.from({ length: 6 }).map((_, j) => (
+                <Skeleton
+                  key={j}
+                  speed={speed}
+                  height="16px"
+                  width={j === 5 ? '20%' : '100%'}
+                />
+              ))}
+            </Stack>
+          ))}
         </Box>
       </Box>
     </>
