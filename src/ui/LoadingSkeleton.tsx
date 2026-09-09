@@ -37,7 +37,15 @@ const LoadingSkeletonContent = ({
           role="progressbar"
         >
           <Flex justifyContent="center">
-            <Skeleton speed={speed} h="32px" mb="6" w="100%" maxW="280px" />
+            <Skeleton
+              speed={speed}
+              h="32px"
+              mb="6"
+              w="100%"
+              maxW="280px"
+              startColor="ui.gray.light-cool"
+              endColor="rgba(233, 233, 233, 0.7)"
+            />
           </Flex>
           {[0, 1, 2, 3].map((i) => (
             <Stack key={i} spacing="2" mb={i < 3 ? '6' : undefined}>
@@ -47,6 +55,8 @@ const LoadingSkeletonContent = ({
                   speed={speed}
                   height="16px"
                   width={j === 5 ? '20%' : '100%'}
+                  startColor="ui.gray.light-cool"
+                  endColor="rgba(233, 233, 233, 0.7)"
                 />
               ))}
             </Stack>
