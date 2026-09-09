@@ -21,23 +21,40 @@ const LoadingSkeletonContent = ({
   return (
     <>
       <ToolbarWrapper bg={bgColor} />
-      <Box
-        px="48px"
-        py="110px"
-        bg={bgColor}
-        mt="0"
-        height={height}
-        aria-label="Loading book..."
-        aria-busy="true"
-        role="progressbar"
-      >
-        <Flex justifyContent="center">
-          <Skeleton h="32px" mb="6" w="100%" maxW="280px" />
-        </Flex>
-        <SkeletonText mb="6" noOfLines={6} skeletonHeight="16px" spacing="2" />
-        <SkeletonText mb="6" noOfLines={6} skeletonHeight="16px" spacing="2" />
-        <SkeletonText mb="6" noOfLines={6} skeletonHeight="16px" spacing="2" />
-        <SkeletonText noOfLines={6} skeletonHeight="16px" spacing="2" />
+      <Box padding="16px" bgColor="ui.gray.xxx-dark">
+        <Box
+          px="48px"
+          py="110px"
+          bg={bgColor}
+          mt="0"
+          height={height}
+          aria-label="Loading book..."
+          aria-busy="true"
+          role="progressbar"
+        >
+          <Flex justifyContent="center">
+            <Skeleton h="32px" mb="6" w="100%" maxW="280px" />
+          </Flex>
+          <SkeletonText
+            mb="6"
+            noOfLines={6}
+            skeletonHeight="16px"
+            spacing="2"
+          />
+          <SkeletonText
+            mb="6"
+            noOfLines={6}
+            skeletonHeight="16px"
+            spacing="2"
+          />
+          <SkeletonText
+            mb="6"
+            noOfLines={6}
+            skeletonHeight="16px"
+            spacing="2"
+          />
+          <SkeletonText noOfLines={6} skeletonHeight="16px" spacing="2" />
+        </Box>
       </Box>
     </>
   );
