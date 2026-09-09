@@ -114,7 +114,7 @@ export default function useWebReader(
   }, [webpubManifestUrl]);
 
   // first if we are still fetching the manifest, return loading
-  if (manifest !== null) {
+  if (manifest === null) {
     return {
       isLoading: true,
       content: <LoadingSkeleton height={height} state={htmlReader?.state} />,
