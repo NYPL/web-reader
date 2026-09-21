@@ -18,8 +18,14 @@ export default function Toolbar(
 ): React.ReactElement {
   const [isFullscreenHook, toggleFullscreenHook] = useFullscreen();
   const [isReaderFullScreen, setIsReaderFullscreen] = useState(false);
-  const { navigator, containerRef, currentPage, totalPages, toggleFullScreen } =
-    props;
+  const {
+    type,
+    navigator,
+    containerRef,
+    currentPage,
+    totalPages,
+    toggleFullScreen,
+  } = props;
 
   const isFullScreen = toggleFullScreen ? isReaderFullScreen : isFullscreenHook;
 
@@ -70,8 +76,10 @@ export default function Toolbar(
     } else {
       toggleFullscreenHook();
     }
-    navigator.setFitMode(!isFullScreen ? 'width' : 'height');
-  }, [isFullScreen, navigator, toggleFullScreen, toggleFullscreenHook]);
+    if (type === 'PDF') {
+      navigator.setFitMode(!isFullScreen ? 'width' : 'height');
+    }
+  }, [isFullScreen, navigator, toggleFullScreen, toggleFullscreenHook, type]);
 
   useEffect(() => {
     if (!toggleFullScreen || !isFullScreen) return;
