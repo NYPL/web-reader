@@ -25,7 +25,7 @@ const LoadingSkeletonContent = ({
   return (
     <>
       <ToolbarWrapper bg={bgColor} />
-      <Box padding="16px" bgColor="ui.gray.xxx-dark">
+      <Box padding="16px" height="100%" bgColor="ui.gray.xxx-dark">
         <Box
           px="48px"
           py="110px"
