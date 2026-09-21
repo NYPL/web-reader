@@ -2,8 +2,9 @@ import {
   Box,
   Flex,
   Skeleton,
-  SkeletonText,
+  Stack,
   ThemeProvider,
+  usePrefersReducedMotion,
 } from '@chakra-ui/react';
 import React from 'react';
 import { HtmlState } from '../HtmlReader/types';
@@ -18,25 +19,49 @@ const LoadingSkeletonContent = ({
   height: string;
 }): JSX.Element => {
   const bgColor = useColorModeValue('ui.white', 'ui.black', 'ui.sepia');
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const speed = prefersReducedMotion ? 0 : undefined;
+
   return (
     <>
       <ToolbarWrapper bg={bgColor} />
-      <Box
-        padding="6"
-        bg={bgColor}
-        mt="0"
-        height={height}
-        aria-label="Loading book..."
-        aria-busy="true"
-        role="progressbar"
-      >
-        <Flex justifyContent="center">
-          <Skeleton height="32px" mb="6" w="30%" />
-        </Flex>
-        <SkeletonText mb="6" noOfLines={6} skeletonHeight="20px" spacing="2" />
-        <SkeletonText mb="6" noOfLines={6} skeletonHeight="20px" spacing="2" />
-        <SkeletonText mb="6" noOfLines={6} skeletonHeight="20px" spacing="2" />
-        <SkeletonText mb="6" noOfLines={6} skeletonHeight="20px" spacing="2" />
+      <Box padding="16px" height="100%" bgColor="ui.gray.xxx-dark">
+        <Box
+          px="48px"
+          py="110px"
+          bg={bgColor}
+          mt="0"
+          height={height}
+          aria-label="Loading book..."
+          aria-busy="true"
+          role="progressbar"
+        >
+          <Flex justifyContent="center">
+            <Skeleton
+              speed={speed}
+              h="32px"
+              mb="6"
+              w="100%"
+              maxW="280px"
+              startColor="ui.gray.light-cool"
+              endColor="rgba(233, 233, 233, 0.7)"
+            />
+          </Flex>
+          {[0, 1, 2, 3].map((i) => (
+            <Stack key={i} spacing="2" mb={i < 3 ? '6' : undefined}>
+              {Array.from({ length: 6 }).map((_, j) => (
+                <Skeleton
+                  key={j}
+                  speed={speed}
+                  height="16px"
+                  width={j === 5 ? '20%' : '100%'}
+                  startColor="ui.gray.light-cool"
+                  endColor="rgba(233, 233, 233, 0.7)"
+                />
+              ))}
+            </Stack>
+          ))}
+        </Box>
       </Box>
     </>
   );
