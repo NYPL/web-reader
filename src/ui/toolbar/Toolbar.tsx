@@ -70,7 +70,8 @@ export default function Toolbar(
     } else {
       toggleFullscreenHook();
     }
-  }, [toggleFullScreen, toggleFullscreenHook]);
+    navigator.setFitMode(!isFullScreen ? 'width' : 'height');
+  }, [isFullScreen, navigator, toggleFullScreen, toggleFullscreenHook]);
 
   useEffect(() => {
     if (!toggleFullScreen || !isFullScreen) return;
@@ -154,7 +155,7 @@ export default function Toolbar(
 export const ToolbarWrapper = React.forwardRef<
   HTMLDivElement,
   ComponentProps<typeof Flex>
->(({ children, ...rest }, ref) => {
+>(({ children, sx, ...rest }, ref) => {
   return (
     <Flex
       ref={ref}
@@ -170,6 +171,10 @@ export const ToolbarWrapper = React.forwardRef<
       borderBottom="1px solid"
       borderColor="gray.100"
       {...rest}
+      sx={{
+        '&:focus-within': { zIndex: 'sticky' },
+        ...sx,
+      }}
     >
       {children}
     </Flex>

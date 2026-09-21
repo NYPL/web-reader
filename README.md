@@ -196,6 +196,40 @@ const SingleResourcePdf = () => {
 
 </details>
 
+## Fullscreen mode and accessibility
+
+Custom `toggleFullScreen` prop used when you want to control fullscreen with your own CSS (e.g. a fixed-position overlay). In this mode, `WebReader` traps focus and applies dialog semantics within its own rendered content, but it has no visibility into the rest of your page's DOM.
+
+If you provide a custom `toggleFullScreen`, you are responsible for hiding the rest of your page from assistive technology and keyboard navigation while the reader is fullscreen. Otherwise, screen reader and keyboard users will be able to reach content behind the reader that is not visually accessible.
+
+Mark everything outside the reader as `inert` when fullscreen is active:
+
+```ts
+const [isFullScreen, setIsFullScreen] = useState(false);
+const restOfPageRef = useRef<HTMLDivElement>(null);
+
+const toggleFullScreen = () => setIsFullScreen((v) => !v);
+
+useEffect(() => {
+  if (restOfPageRef.current) {
+    restOfPageRef.current.inert = isFullScreen;
+  }
+}, [isFullScreen]);
+
+return (
+  <>
+    <div ref={restOfPageRef}>
+      <SiteHeader />
+      <SiteNav />
+    </div>
+    <WebReader
+      webpubManifestUrl={manifestUrl}
+      toggleFullScreen={toggleFullScreen}
+    />
+  </>
+);
+```
+
 ## Architecture
 
 One of the primary architectural goals of the web reader is to abstract away the particularities of the many individual publication formats by using a common manifest to describe all publication types. This is the [Readium Webpub Manifest](https://readium.org/webpub-manifest/profiles/epub.html). This allows the web-reader to consume Webpub Manifests, not manipulate or generate them.

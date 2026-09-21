@@ -13,7 +13,7 @@ import {
   useUnmountEffect,
   useUpdateEffect,
 } from '@chakra-ui/hooks';
-import { usePopper, UsePopperProps } from '@chakra-ui/popper';
+import { UsePopperProps } from '@chakra-ui/popper';
 import {
   createContext,
   EventKeyMap,
@@ -320,6 +320,7 @@ export function useMenuButton(
   const menu = useMenuContext();
 
   const {
+    isOpen,
     onToggle,
     // popper,
     openAndFocusFirstItem,
@@ -330,7 +331,7 @@ export function useMenuButton(
     (event: React.KeyboardEvent) => {
       const eventKey = normalizeEventKey(event);
       const keyMap: EventKeyMap = {
-        Enter: openAndFocusFirstItem,
+        Enter: isOpen ? onToggle : openAndFocusFirstItem,
         ArrowDown: openAndFocusFirstItem,
         ArrowUp: openAndFocusLastItem,
       };
@@ -343,7 +344,7 @@ export function useMenuButton(
         action(event);
       }
     },
-    [openAndFocusFirstItem, openAndFocusLastItem]
+    [isOpen, onToggle, openAndFocusFirstItem, openAndFocusLastItem]
   );
 
   return {
@@ -552,6 +553,7 @@ export function useMenuItem(
     onMouseMove: onMouseMoveProp,
     onMouseLeave: onMouseLeaveProp,
     onClick: onClickProp,
+    onKeyDown: onKeyDownProp,
     isDisabled,
     isFocusable,
     closeOnSelect,
@@ -645,6 +647,7 @@ export function useMenuItem(
     onMouseEnter,
     onMouseMove,
     onMouseLeave,
+    onKeyDown: onKeyDownProp,
     ref: mergeRefs(register, ref, externalRef),
     isDisabled,
     isFocusable,

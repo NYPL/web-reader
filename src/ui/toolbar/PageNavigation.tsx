@@ -1,8 +1,9 @@
-import { HStack, Icon, Input, Text, Tooltip } from '@chakra-ui/react';
+import { HStack, Icon, Input, Text } from '@chakra-ui/react';
 import React from 'react';
 import { ActiveReader } from '../../types';
 import Button from '../Button';
 import { PageDown, PageUp } from '../icons';
+import Tooltip from '../Tooltip';
 
 interface PageNavigationProps {
   navigator: ActiveReader['navigator'];

@@ -1,11 +1,11 @@
-import { Box, Icon, Portal } from '@chakra-ui/react';
+import { Icon, Portal } from '@chakra-ui/react';
 import React from 'react';
 import { Navigator, WebpubManifest } from '../types';
 import { ReadiumLink } from '../WebpubManifestTypes/ReadiumLink';
 import Button from './Button';
 import useColorModeValue from './hooks/useColorModeValue';
 import { TableOfContents } from './icons';
-import { Menu, MenuButton, MenuItem, MenuList } from './menu';
+import { Menu, MenuButton, MenuItem, MenuList, useMenuState } from './menu';
 import Tooltip from './Tooltip';
 
 export default function TableOfContent({
@@ -87,9 +87,7 @@ export default function TableOfContent({
                   </Item>
                 ))
               ) : (
-                <MissingToc>
-                  This publication does not have a Table of Contents.
-                </MissingToc>
+                <MissingTocItem />
               )}
             </MenuList>
           </Portal>
@@ -99,21 +97,31 @@ export default function TableOfContent({
   );
 }
 
-const MissingToc = ({
-  children,
-}: {
-  children: string | React.ReactElement;
-}) => {
+const MissingTocItem = () => {
+  const { onClose } = useMenuState();
+
   return (
-    <Box
+    <MenuItem
+      isDisabled
+      isFocusable
+      closeOnSelect={false}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          onClose();
+        }
+      }}
       display="flex"
       justifyContent="center"
       alignItems="center"
+      textAlign="center"
       height="100%"
       maxHeight="100vmin"
+      cursor="default"
+      _hover={{}}
+      _focus={{}}
     >
-      {children}
-    </Box>
+      This publication does not have a Table of Contents.
+    </MenuItem>
   );
 };
 

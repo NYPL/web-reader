@@ -498,16 +498,16 @@ const PdfReaderContent = ({
   );
 
   return (
-    <div
-      ref={rootRef}
-      className="pdf-root"
-      tabIndex={-1}
-      role="region"
-      aria-label="Reader content"
-      id={MAIN_CONTENT_ID}
-    >
+    <div ref={rootRef} className="pdf-root">
       <div className="pdf-body">
-        <div className="pdf-viewport" ref={viewportWrapRef}>
+        <div
+          className="pdf-viewport"
+          ref={viewportWrapRef}
+          tabIndex={0}
+          role="region"
+          aria-label="Reader content"
+          id={MAIN_CONTENT_ID}
+        >
           {loading && (
             <div className="pdf-status-container">
               <div className="pdf-status">Loading</div>
