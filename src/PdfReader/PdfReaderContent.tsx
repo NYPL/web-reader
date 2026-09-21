@@ -63,7 +63,7 @@ const PdfReaderContent = ({
   const [pageRenderErrors, setPageRenderErrors] = useState<Map<number, Error>>(
     new Map()
   );
-  const [rangeCapable, setRangeCapable] = useState<boolean>(false);
+  const [rangeCapable, setRangeCapable] = useState<boolean | null>(null);
 
   const rootRef = useRef<HTMLDivElement | null>(null);
   const viewportWrapRef = useRef<HTMLDivElement | null>(null);
@@ -126,10 +126,15 @@ const PdfReaderContent = ({
     setVisiblePages(new Set());
     setPageRenderErrors(new Map());
     containerRefs.current.clear();
-    setRangeCapable(false);
+    setRangeCapable(null);
 
-    fetch(fileUrl, { headers: { Range: 'bytes=0-1' } })
+    const probeController = new AbortController();
+    fetch(fileUrl, {
+      headers: { Range: 'bytes=0-1' },
+      signal: probeController.signal,
+    })
       .then((res) => {
+        res.body?.cancel().catch(() => undefined);
         if (cancelled) return;
         setRangeCapable(
           res.status === 206 && res.headers.get('Accept-Ranges') === 'bytes'
@@ -172,6 +177,7 @@ const PdfReaderContent = ({
 
     return () => {
       cancelled = true;
+      probeController.abort();
       loadingTask?.destroy?.();
     };
   }, [fileUrl, dispatch, onOutlineLoad]);
@@ -354,7 +360,7 @@ const PdfReaderContent = ({
   // Measure the size of the current/visible pages with a buffer, lazily
   // fetching new pages in view. Only used for linearized PDFs.
   useEffect(() => {
-    if (!pdfDoc || !pageBaseSizes.length || !rangeCapable) {
+    if (!pdfDoc || !pageBaseSizes.length || rangeCapable !== true) {
       return undefined;
     }
     let cancelled = false;
@@ -386,7 +392,6 @@ const PdfReaderContent = ({
             size: { width: vp.width, height: vp.height },
           });
           page.cleanup();
-          measuredPagesRef.current.add(p);
         } catch (err: unknown) {
           if (cancelled) return;
           setError(toError(err, 'Failed to read page dimensions'));
@@ -399,6 +404,7 @@ const PdfReaderContent = ({
       const next = pageBaseSizesRef.current.slice();
       updates.forEach(({ index, size }) => {
         next[index] = size;
+        measuredPagesRef.current.add(index + 1);
       });
 
       let correctedScale: number | null = null;
@@ -451,7 +457,7 @@ const PdfReaderContent = ({
 
   // Measure every page's size up front. Only used for non-linearized PDFs.
   useEffect(() => {
-    if (!pdfDoc || rangeCapable) return undefined;
+    if (!pdfDoc || rangeCapable !== false) return undefined;
     let cancelled = false;
 
     (async () => {
@@ -463,9 +469,12 @@ const PdfReaderContent = ({
           const vp = page.getViewport({ scale: 1, rotation: 0 });
           sizes.push({ width: vp.width, height: vp.height });
           page.cleanup();
-          measuredPagesRef.current.add(i);
         }
         if (cancelled) return;
+
+        for (let i = 1; i <= pdfDoc.numPages; i += 1) {
+          measuredPagesRef.current.add(i);
+        }
 
         let correctedScale: number | null = null;
         if (fitMode) {
