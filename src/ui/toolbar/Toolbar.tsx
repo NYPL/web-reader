@@ -18,8 +18,14 @@ export default function Toolbar(
 ): React.ReactElement {
   const [isFullscreenHook, toggleFullscreenHook] = useFullscreen();
   const [isReaderFullScreen, setIsReaderFullscreen] = useState(false);
-  const { navigator, containerRef, currentPage, totalPages, toggleFullScreen } =
-    props;
+  const {
+    type,
+    navigator,
+    containerRef,
+    currentPage,
+    totalPages,
+    toggleFullScreen,
+  } = props;
 
   const isFullScreen = toggleFullScreen ? isReaderFullScreen : isFullscreenHook;
 
@@ -70,7 +76,10 @@ export default function Toolbar(
     } else {
       toggleFullscreenHook();
     }
-  }, [toggleFullScreen, toggleFullscreenHook]);
+    if (type === 'PDF') {
+      navigator.setFitMode(!isFullScreen ? 'width' : 'height');
+    }
+  }, [isFullScreen, navigator, toggleFullScreen, toggleFullscreenHook, type]);
 
   useEffect(() => {
     if (!toggleFullScreen || !isFullScreen) return;
@@ -154,7 +163,7 @@ export default function Toolbar(
 export const ToolbarWrapper = React.forwardRef<
   HTMLDivElement,
   ComponentProps<typeof Flex>
->(({ children, ...rest }, ref) => {
+>(({ children, sx, ...rest }, ref) => {
   return (
     <Flex
       ref={ref}
@@ -170,6 +179,10 @@ export const ToolbarWrapper = React.forwardRef<
       borderBottom="1px solid"
       borderColor="gray.100"
       {...rest}
+      sx={{
+        '&:focus-within': { zIndex: 'sticky' },
+        ...sx,
+      }}
     >
       {children}
     </Flex>

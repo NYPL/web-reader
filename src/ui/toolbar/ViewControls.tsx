@@ -1,4 +1,4 @@
-import { HStack, Icon, Tooltip } from '@chakra-ui/react';
+import { HStack, Icon } from '@chakra-ui/react';
 import React from 'react';
 import { ActiveReader } from '../../types';
 import Button from '../Button';
@@ -6,6 +6,7 @@ import useColorModeValue from '../hooks/useColorModeValue';
 import HtmlFontSizeControls from '../HtmlFontSizeControls';
 import { FitHeightWidth, Rotate } from '../icons';
 import PdfZoomControls from '../PdfZoomControls';
+import Tooltip from '../Tooltip';
 
 interface ViewControlsProps {
   reader: ActiveReader;

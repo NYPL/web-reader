@@ -1,10 +1,11 @@
-import { HStack, Icon, Tooltip } from '@chakra-ui/react';
+import { HStack, Icon } from '@chakra-ui/react';
 import React from 'react';
 import { ActiveReader } from '../../types';
 import Button from '../Button';
 import { ToggleFullScreen, ToggleFullScreenExit } from '../icons';
 import SettingsCard from '../SettingsButton';
 import TableOfContent from '../TableOfContent';
+import Tooltip from '../Tooltip';
 
 interface DocActionsProps {
   reader: ActiveReader;
@@ -34,7 +35,6 @@ const DocActions: React.FC<DocActionsProps> = ({
         }
       >
         <Button
-          aria-expanded={isFullScreen}
           aria-label={
             isFullScreen ? 'Exit full screen mode' : 'Enter full screen mode'
           }

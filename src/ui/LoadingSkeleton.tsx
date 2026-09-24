@@ -25,13 +25,19 @@ const LoadingSkeletonContent = ({
   return (
     <>
       <ToolbarWrapper bg={bgColor} />
-      <Box padding="16px" height="100%" bgColor="ui.gray.xxx-dark">
+      <Box
+        padding="16px"
+        height="100%"
+        overflow="hidden"
+        bgColor="ui.gray.xxx-dark"
+      >
         <Box
           px="48px"
           py="110px"
           bg={bgColor}
           mt="0"
           height={height}
+          overflow="hidden"
           aria-label="Loading book..."
           aria-busy="true"
           role="progressbar"

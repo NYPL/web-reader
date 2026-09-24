@@ -24,7 +24,7 @@ export const Tooltip: ChakraComponent<
 
       return (
         <ChakraTooltip
-          aria-label={typeof content !== 'string' ? 'Tooltip' : undefined}
+          aria-label={typeof content !== 'string' ? 'Tooltip' : ' '}
           closeDelay={750}
           closeOnClick
           closeOnEsc
