@@ -746,6 +746,7 @@ const PdfReaderContent = ({
             </div>
           )}
         </div>
+        <div className="pdf-focus-ring" aria-hidden="true" />
       </div>
     </div>
   );
