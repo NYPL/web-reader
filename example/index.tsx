@@ -182,6 +182,30 @@ const PdfReaders = () => {
           <Text as="p">Here is some more content below the reader</Text>
         </Box>
       </Route>
+      <Route path={`/pdf/aspect-ratio-embedded-collection`}>
+        <Box bg="lavenderblush" p={6} w="100vw">
+          <Heading>Aspect-ratio Locked Embedded PDF</Heading>
+          <Text as="p">
+            This example shows how a web reader looks within a container with a
+            fixed aspect ratio.
+          </Text>
+          <Box
+            margin="0 auto"
+            width="50%"
+            style={{ aspectRatio: '3 / 4' }}
+            position="relative"
+          >
+            <WebReader
+              webpubManifestUrl={`${origin}/samples/pdf/single-resource-short.json`}
+              proxyUrl={pdfProxyUrl}
+              pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.mjs`}
+              height="100%"
+            />
+          </Box>
+          <Heading>The page continues...</Heading>
+          <Text as="p">Here is some more content below the reader</Text>
+        </Box>
+      </Route>
     </>
   );
 };
@@ -442,6 +466,11 @@ const HomePage = () => {
             <ListItem>
               <Link to="/pdf/growing-height-embedded-collection">
                 Growing-height embedded PDF
+              </Link>
+            </ListItem>
+            <ListItem>
+              <Link to="/pdf/aspect-ratio-embedded-collection">
+                Aspect-ratio locked embedded PDF
               </Link>
             </ListItem>
           </UnorderedList>

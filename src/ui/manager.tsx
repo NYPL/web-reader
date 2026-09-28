@@ -42,6 +42,7 @@ const WebReaderContent: React.FC<ReaderReturn> = ({ children, ...props }) => {
         flexDir="column"
         alignItems="stretch"
         flex="1 1 auto"
+        minH={0}
       >
         {children}
       </Flex>
