@@ -24,7 +24,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             bgColor: 'ui.gray.x-dark',
             ring: '2px',
             ringInset: 'inset',
-            ringColor: 'ui.white',
           },
           padding: 1,
           height: '2rem',

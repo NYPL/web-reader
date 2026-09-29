@@ -105,8 +105,52 @@ const App = () => {
 
 const PdfReaders = () => {
   const [isFullViewport, setIsFullViewport] = React.useState(false);
+  const dialogRef = React.useRef<HTMLDivElement>(null);
+  const siblingsBeforeRef = React.useRef<HTMLDivElement>(null);
+  const siblingsAfterRef = React.useRef<HTMLDivElement>(null);
+  const startSentinelRef = React.useRef<HTMLDivElement>(null);
+  const endSentinelRef = React.useRef<HTMLDivElement>(null);
 
   const toggleFullScreen = () => setIsFullViewport((v) => !v);
+
+  // Hide everything else on the page from keyboard/screen reader users
+  // while the reader is presented as a full screen dialog.
+  React.useEffect(() => {
+    [siblingsBeforeRef.current, siblingsAfterRef.current].forEach((el) => {
+      if (el) el.inert = isFullViewport;
+    });
+  }, [isFullViewport]);
+
+  const focusableSelector =
+    'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
+
+  const focusEdge = React.useCallback((edge: 'first' | 'last') => {
+    const dialogEl = dialogRef.current;
+    if (!dialogEl) return;
+    const focusable = Array.from(
+      dialogEl.querySelectorAll<HTMLElement>(focusableSelector)
+    ).filter(
+      (el) =>
+        el.offsetParent !== null &&
+        el !== startSentinelRef.current &&
+        el !== endSentinelRef.current
+    );
+    const target =
+      edge === 'first' ? focusable[0] : focusable[focusable.length - 1];
+    target?.focus();
+  }, []);
+
+  // Move focus into the dialog, and restore it on exit. Wrapping Tab/Shift+Tab
+  // at the edges is handled by the sentinel divs rendered around the dialog
+  // content below.
+  React.useEffect(() => {
+    if (!isFullViewport) return;
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    focusEdge('first');
+    return () => {
+      previouslyFocused?.focus();
+    };
+  }, [isFullViewport, focusEdge]);
 
   return (
     <>
@@ -137,13 +181,19 @@ const PdfReaders = () => {
       </Route>
       <Route path={`/pdf/fixed-height-embedded-collection`}>
         <Box bg="lavenderblush" p={6}>
-          <Heading>Fixed-height Embedded PDF</Heading>
-          <Text as="p">
-            This example shows how a web reader looks embedded within a page
-            instead of taking over the full page. It is fixed height, which
-            means it will not grow to fit content in scrolling mode.
-          </Text>
+          <Box ref={siblingsBeforeRef}>
+            <Heading>Fixed-height Embedded PDF</Heading>
+            <Text as="p">
+              This example shows how a web reader looks embedded within a page
+              instead of taking over the full page. It is fixed height, which
+              means it will not grow to fit content in scrolling mode.
+            </Text>
+          </Box>
           <Box
+            ref={dialogRef}
+            role={isFullViewport ? 'dialog' : undefined}
+            aria-modal={isFullViewport ? true : undefined}
+            aria-label={isFullViewport ? 'Reader, full screen view' : undefined}
             margin="0 auto"
             width={isFullViewport ? '100vw' : '50%'}
             height={isFullViewport ? '100vh' : 'auto'}
@@ -152,6 +202,18 @@ const PdfReaders = () => {
             left={isFullViewport ? 0 : undefined}
             zIndex={isFullViewport ? 9999 : undefined}
           >
+            {isFullViewport && (
+              <Box
+                ref={startSentinelRef}
+                as="div"
+                tabIndex={0}
+                position="fixed"
+                w="1px"
+                h="1px"
+                overflow="hidden"
+                onFocus={() => focusEdge('last')}
+              />
+            )}
             <WebReader
               webpubManifestUrl={`${origin}/samples/pdf/single-resource-short.json`}
               proxyUrl={pdfProxyUrl}
@@ -159,9 +221,23 @@ const PdfReaders = () => {
               growWhenScrolling={false}
               toggleFullScreen={toggleFullScreen}
             />
+            {isFullViewport && (
+              <Box
+                ref={endSentinelRef}
+                as="div"
+                tabIndex={0}
+                position="fixed"
+                w="1px"
+                h="1px"
+                overflow="hidden"
+                onFocus={() => focusEdge('first')}
+              />
+            )}
           </Box>
-          <Heading>The page continues...</Heading>
-          <Text as="p">Here is some more content below the reader</Text>
+          <Box ref={siblingsAfterRef}>
+            <Heading>The page continues...</Heading>
+            <Text as="p">Here is some more content below the reader</Text>
+          </Box>
         </Box>
       </Route>
       <Route path={`/pdf/growing-height-embedded-collection`}>
@@ -178,6 +254,30 @@ const PdfReaders = () => {
             proxyUrl={pdfProxyUrl}
             pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.mjs`}
           />
+          <Heading>The page continues...</Heading>
+          <Text as="p">Here is some more content below the reader</Text>
+        </Box>
+      </Route>
+      <Route path={`/pdf/aspect-ratio-embedded-collection`}>
+        <Box bg="lavenderblush" p={6} w="100vw">
+          <Heading>Aspect-ratio Locked Embedded PDF</Heading>
+          <Text as="p">
+            This example shows how a web reader looks within a container with a
+            fixed aspect ratio.
+          </Text>
+          <Box
+            margin="0 auto"
+            width="50%"
+            style={{ aspectRatio: '3 / 4' }}
+            position="relative"
+          >
+            <WebReader
+              webpubManifestUrl={`${origin}/samples/pdf/single-resource-short.json`}
+              proxyUrl={pdfProxyUrl}
+              pdfWorkerSrc={`${origin}/pdf-worker/pdf.worker.min.mjs`}
+              height="100%"
+            />
+          </Box>
           <Heading>The page continues...</Heading>
           <Text as="p">Here is some more content below the reader</Text>
         </Box>
@@ -442,6 +542,11 @@ const HomePage = () => {
             <ListItem>
               <Link to="/pdf/growing-height-embedded-collection">
                 Growing-height embedded PDF
+              </Link>
+            </ListItem>
+            <ListItem>
+              <Link to="/pdf/aspect-ratio-embedded-collection">
+                Aspect-ratio locked embedded PDF
               </Link>
             </ListItem>
           </UnorderedList>

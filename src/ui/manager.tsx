@@ -21,6 +21,8 @@ const ManagerUI: React.FC<ReaderReturn> = (props) => {
 const WebReaderContent: React.FC<ReaderReturn> = ({ children, ...props }) => {
   const bgColor = useColorModeValue('ui.white', 'ui.black', 'ui.sepia');
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const rootRef = React.useRef<HTMLDivElement>(null);
+  const toolbarWrapRef = React.useRef<HTMLDivElement>(null);
 
   // Keep the last known active props so the Header stays mounted during
   // chapter-boundary loading transitions, preserving focus on nav buttons.
@@ -29,10 +31,30 @@ const WebReaderContent: React.FC<ReaderReturn> = ({ children, ...props }) => {
     lastActiveProps.current = props as ActiveReader;
   }
 
+  React.useEffect(() => {
+    const toolbarEl = toolbarWrapRef.current;
+    const rootEl = rootRef.current;
+    if (!toolbarEl || !rootEl) return;
+
+    const updateHeight = () => {
+      rootEl.style.setProperty(
+        '--wr-toolbar-height',
+        `${toolbarEl.offsetHeight}px`
+      );
+    };
+    updateHeight();
+
+    const resizeObserver = new ResizeObserver(updateHeight);
+    resizeObserver.observe(toolbarEl);
+    return () => resizeObserver.disconnect();
+  }, []);
+
   return (
-    <Flex flexDir="column" w="100%" h="100%" position="relative">
+    <Flex ref={rootRef} flexDir="column" w="100%" h="100%" position="relative">
       {lastActiveProps.current && (
-        <Toolbar containerRef={containerRef} {...lastActiveProps.current} />
+        <Flex ref={toolbarWrapRef} flexDir="column">
+          <Toolbar containerRef={containerRef} {...lastActiveProps.current} />
+        </Flex>
       )}
 
       <Flex
@@ -42,6 +64,7 @@ const WebReaderContent: React.FC<ReaderReturn> = ({ children, ...props }) => {
         flexDir="column"
         alignItems="stretch"
         flex="1 1 auto"
+        minH={0}
       >
         {children}
       </Flex>

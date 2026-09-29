@@ -17,6 +17,7 @@
   display: flex;
   flex: 1;
   min-height: 0;
+  position: relative;
 }
 
 /* Viewport (scroll container) */
@@ -26,6 +27,21 @@
   position: relative;
   background: #252525;
   color-scheme: dark;
+  scroll-margin-top: var(--wr-toolbar-height, 0px);
+  outline: none;
+}
+
+.pdf-focus-ring {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: none;
+}
+
+.pdf-viewport:focus ~ .pdf-focus-ring {
+  display: block;
+  outline: 2px solid #4181f1;
+  outline-offset: -2px;
 }
 
 /* Loading / error states */

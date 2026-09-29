@@ -427,7 +427,7 @@ export function useMenuList(
       const eventKey = normalizeEventKey(event);
 
       const keyMap: EventKeyMap = {
-        Tab: (event) => event.preventDefault(),
+        Tab: onClose,
         Escape: onClose,
         ArrowDown: () => {
           const next = descendants.nextEnabled(focusedIndex);
