@@ -304,5 +304,6 @@ export default function useHtmlReader(args: HtmlReaderArguments): ReaderReturn {
     currentPage,
     totalPages,
     toggleFullScreen,
+    onTrackEvent,
   };
 }
