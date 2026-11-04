@@ -176,6 +176,7 @@ export type WebReaderUiEvent = {
     | 'Previous page'
     | 'Next page'
     | 'Table of contents'
-    | 'Enter full screen mode';
+    | 'Enter full screen mode'
+    | 'Exit full screen mode';
   uiState: string;
 };

@@ -178,7 +178,7 @@ describe('Toolbar onTrackEvent', () => {
     });
     fireEvent.click(exitButton);
     expect(onTrackEvent).toHaveBeenLastCalledWith({
-      uiText: 'Enter full screen mode',
+      uiText: 'Exit full screen mode',
       uiState: 'closed',
     });
   });

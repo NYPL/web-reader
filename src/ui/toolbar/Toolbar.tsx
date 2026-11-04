@@ -82,7 +82,7 @@ export default function Toolbar(
       navigator.setFitMode(!isFullScreen ? 'width' : 'height');
     }
     onTrackEvent?.({
-      uiText: 'Enter full screen mode',
+      uiText: isFullScreen ? 'Exit full screen mode' : 'Enter full screen mode',
       uiState: isFullScreen ? 'closed' : 'opened',
     });
   }, [
