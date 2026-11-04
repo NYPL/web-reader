@@ -171,6 +171,8 @@ export type WebReaderUiEvent = {
     | 'Zoom in'
     | 'Zoom out'
     | 'Fit to width'
+    | 'Fit to height'
+    | 'Rotate left'
     | 'Previous page'
     | 'Next page'
     | 'Table of contents'

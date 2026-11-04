@@ -39,7 +39,7 @@ describe('Toolbar onTrackEvent', () => {
   const totalPages = 5;
   const currentPage = 2;
 
-  test('fires onTrackEvent for zoom in and zoom out on PDF toolbar', () => {
+  test('fires onTrackEvent for zoom in and zoom out', () => {
     const onTrackEvent = jest.fn();
     const containerRef = React.createRef<HTMLDivElement>();
     render(
@@ -65,12 +65,49 @@ describe('Toolbar onTrackEvent', () => {
     });
   });
 
-  test('fires onTrackEvent when toggling fit to width/height', () => {
+  test('fires onTrackEvent with fit to width/height', () => {
+    const onTrackEvent = jest.fn();
+
+    const { rerender } = render(
+      <Toolbar
+        {...MockHtmlReaderProps}
+        containerRef={React.createRef<HTMLDivElement>()}
+        totalPages={totalPages}
+        currentPage={currentPage}
+        onTrackEvent={onTrackEvent}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Fit to width' }));
+    expect(onTrackEvent).toHaveBeenCalledWith({
+      uiText: 'Fit to width',
+      uiState: 'fit to width',
+    });
+
+    rerender(
+      <Toolbar
+        {...MockHtmlReaderProps}
+        state={{ ...MockHtmlReaderProps.state, fitMode: 'width' }}
+        containerRef={React.createRef<HTMLDivElement>()}
+        totalPages={totalPages}
+        currentPage={currentPage}
+        onTrackEvent={onTrackEvent}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Fit to height' }));
+    expect(onTrackEvent).toHaveBeenCalledWith({
+      uiText: 'Fit to height',
+      uiState: 'fit to height',
+    });
+  });
+
+  test('fires onTrackEvent when rotating left', () => {
     const onTrackEvent = jest.fn();
     const containerRef = React.createRef<HTMLDivElement>();
     render(
       <Toolbar
-        {...MockHtmlReaderProps}
+        {...MockPdfReaderProps}
         containerRef={containerRef}
         totalPages={totalPages}
         currentPage={currentPage}
@@ -78,11 +115,10 @@ describe('Toolbar onTrackEvent', () => {
       />
     );
 
-    const fitButton = screen.getByRole('button', { name: 'Fit to width' });
-    fireEvent.click(fitButton);
+    fireEvent.click(screen.getByRole('button', { name: 'Rotate left' }));
     expect(onTrackEvent).toHaveBeenCalledWith({
-      uiText: 'Fit to width',
-      uiState: 'fit to width',
+      uiText: 'Rotate left',
+      uiState: 'rotate left',
     });
   });
 
@@ -113,7 +149,7 @@ describe('Toolbar onTrackEvent', () => {
     });
   });
 
-  test('fires onTrackEvent when entering and exiting full screen mode', () => {
+  test('fires onTrackEvent when opening and closing full screen', () => {
     const onTrackEvent = jest.fn();
     const toggleFullScreen = jest.fn();
     const containerRef = React.createRef<HTMLDivElement>();

@@ -31,7 +31,7 @@ const ViewControls: React.FC<ViewControlsProps> = ({
     const nextFitMode = fitMode === 'width' ? 'height' : 'width';
     navigator.setFitMode(nextFitMode);
     onTrackEvent?.({
-      uiText: 'Fit to width',
+      uiText: nextFitMode === 'width' ? 'Fit to width' : 'Fit to height',
       uiState: nextFitMode === 'width' ? 'fit to width' : 'fit to height',
     });
   };
@@ -66,7 +66,10 @@ const ViewControls: React.FC<ViewControlsProps> = ({
         <Tooltip content="Rotate left">
           <Button
             isIcon
-            onClick={navigator.rotateCounterClockwise}
+            onClick={() => {
+              navigator.rotateCounterClockwise();
+              onTrackEvent?.({ uiText: 'Rotate left', uiState: 'rotate left' });
+            }}
             aria-label="Rotate left"
           >
             <Icon as={Rotate} w={18} h={18} />
