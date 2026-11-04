@@ -152,7 +152,7 @@ export type UseWebReaderArguments<T extends string | Uint8Array> = {
    */
   toggleFullScreen?: () => void;
   /**
-   * Optional callback for tracking ui events in consuming application.
+   * Optional callback for tracking PDFReader ui interactions in consuming application.
    */
   onTrackEvent?: (event: WebReaderUiEvent) => void;
 };
