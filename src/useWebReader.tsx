@@ -47,6 +47,7 @@ export default function useWebReader(
 ): HTMLActiveReader | PDFActiveReader | LoadingReader {
   const {
     webpubManifestUrl,
+    isLoading = false,
     getContent,
     proxyUrl,
     pdfWorkerSrc,
@@ -105,16 +106,22 @@ export default function useWebReader(
           height,
           toggleFullScreen,
           onTrackEvent,
+          isLoading,
         }
-      : {}
+      : { isLoading }
   );
 
   // fetch the manifest and set it in state
   React.useEffect(() => {
+    if (!webpubManifestUrl || isLoading) return;
     fetchJson<WebpubManifest>(webpubManifestUrl)
       .then(setManifest)
       .catch(setError);
-  }, [webpubManifestUrl]);
+  }, [webpubManifestUrl, isLoading]);
+
+  if (isLoading) {
+    return pdfReader;
+  }
 
   // first if we are still fetching the manifest, return loading
   if (manifest === null) {

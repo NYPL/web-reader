@@ -29,6 +29,7 @@ export interface PdfReaderProps {
   height?: string | number;
   toggleFullScreen?: () => void;
   onTrackEvent?: (event: WebReaderUiEvent) => void;
+  isLoading?: boolean;
 }
 
 export interface PdfReaderContentProps {

@@ -40,6 +40,7 @@ const usePdfReader = ({
   height = DEFAULT_HEIGHT,
   toggleFullScreen,
   onTrackEvent,
+  isLoading: isLoadingProp = false,
 }: PdfReaderProps): Exclude<ReaderReturn, null> => {
   // Resolve fileUrl from manifest. `resolutionError` surfaces malformed
   // manifests.
@@ -191,7 +192,8 @@ const usePdfReader = ({
   }
 
   const hasSource = !!fileUrl;
-  const isDocLoading = hasSource && !pageSizesReady && !pdfLoadError;
+  const isDocLoading =
+    isLoadingProp || (hasSource && !pageSizesReady && !pdfLoadError);
   const heightValue = typeof height === 'number' ? `${height}px` : height;
 
   const content = (
