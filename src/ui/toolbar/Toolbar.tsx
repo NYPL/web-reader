@@ -1,6 +1,6 @@
 import { Flex, Grid, GridItem } from '@chakra-ui/react';
 import React, { ComponentProps, useEffect, useState } from 'react';
-import { ActiveReader } from '../../types';
+import { ActiveReader, WebReaderUiEvent } from '../../types';
 import useColorModeValue from '../hooks/useColorModeValue';
 import useFullscreen from '../hooks/useFullScreen';
 import SkipNavigation from '../SkipNavigation';
@@ -14,6 +14,7 @@ export default function Toolbar(
     totalPages: number;
     currentPage: number;
     toggleFullScreen?: () => void;
+    onTrackEvent?: (event: WebReaderUiEvent) => void;
   }
 ): React.ReactElement {
   const [isFullscreenHook, toggleFullscreenHook] = useFullscreen();
@@ -25,6 +26,7 @@ export default function Toolbar(
     currentPage,
     totalPages,
     toggleFullScreen,
+    onTrackEvent,
   } = props;
 
   const isFullScreen = toggleFullScreen ? isReaderFullScreen : isFullscreenHook;

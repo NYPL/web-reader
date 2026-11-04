@@ -79,6 +79,7 @@ type CommonReader = {
   currentPage: number;
   totalPages: number;
   toggleFullScreen?: () => void;
+  onTrackEvent?: (event: WebReaderUiEvent) => void;
 };
 
 export type PDFActiveReader = CommonReader & {
@@ -149,6 +150,10 @@ export type UseWebReaderArguments<T extends string | Uint8Array> = {
    * Optional callback to expand the reader to full viewport.
    */
   toggleFullScreen?: () => void;
+  /**
+   * Optional callback for tracking ui events in consuming application.
+   */
+  onTrackEvent?: (event: WebReaderUiEvent) => void;
 };
 
 export type ActiveReaderArguments<T extends string | Uint8Array> =
@@ -159,3 +164,15 @@ export type ActiveReaderArguments<T extends string | Uint8Array> =
 export type InactiveReaderArguments = undefined;
 
 export type GetColor = (light: string, dark: string, sepia: string) => string;
+
+export type WebReaderUiEvent = {
+  uiText:
+    | 'Zoom in'
+    | 'Zoom out'
+    | 'Fit to width'
+    | 'Previous page'
+    | 'Next page'
+    | 'Table of contents'
+    | 'Enter full screen mode';
+  uiState: string;
+};

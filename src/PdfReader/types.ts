@@ -1,5 +1,5 @@
 import { Dispatch } from 'react';
-import { WebpubManifest } from '../types';
+import { WebpubManifest, WebReaderUiEvent } from '../types';
 import { PdfReaderAction } from './reducer';
 
 export type FitMode = 'width' | 'height' | null;
@@ -28,6 +28,7 @@ export interface PdfReaderProps {
   pdfWorkerSrc?: string;
   height?: string | number;
   toggleFullScreen?: () => void;
+  onTrackEvent?: (event: WebReaderUiEvent) => void;
 }
 
 export interface PdfReaderContentProps {
