@@ -47,3 +47,4 @@ export { default as useWebReader } from './useWebReader';
 export { clearWebReaderLocalStorage } from './utils/localstorage';
 export type { ReadiumLink } from './WebpubManifestTypes/ReadiumLink';
 export type { WebpubManifest } from './WebpubManifestTypes/WebpubManifest';
+export type { WebReaderUiEvent } from './types';

@@ -1,6 +1,6 @@
 import { HStack, Icon } from '@chakra-ui/react';
 import React from 'react';
-import { ActiveReader } from '../../types';
+import { ActiveReader, WebReaderUiEvent } from '../../types';
 import Button from '../Button';
 import useColorModeValue from '../hooks/useColorModeValue';
 import HtmlFontSizeControls from '../HtmlFontSizeControls';
@@ -11,9 +11,14 @@ import Tooltip from '../Tooltip';
 interface ViewControlsProps {
   reader: ActiveReader;
   fitMode: 'width' | 'height';
+  onTrackEvent?: (event: WebReaderUiEvent) => void;
 }
 
-const ViewControls: React.FC<ViewControlsProps> = ({ reader, fitMode }) => {
+const ViewControls: React.FC<ViewControlsProps> = ({
+  reader,
+  fitMode,
+  onTrackEvent,
+}) => {
   const { type, navigator, state: readerState } = reader;
 
   const iconFill = useColorModeValue(
@@ -23,12 +28,19 @@ const ViewControls: React.FC<ViewControlsProps> = ({ reader, fitMode }) => {
   );
 
   const toggleFitMode = () => {
-    navigator.setFitMode(fitMode === 'width' ? 'height' : 'width');
+    const nextFitMode = fitMode === 'width' ? 'height' : 'width';
+    navigator.setFitMode(nextFitMode);
+    onTrackEvent?.({
+      uiText: 'Fit to width',
+      uiState: nextFitMode === 'width' ? 'fit to width' : 'fit to height',
+    });
   };
 
   return (
     <HStack spacing={2}>
-      {type === 'PDF' && <PdfZoomControls navigator={navigator} />}
+      {type === 'PDF' && (
+        <PdfZoomControls navigator={navigator} onTrackEvent={onTrackEvent} />
+      )}
       {type === 'HTML' && (
         <HtmlFontSizeControls
           navigator={navigator}
