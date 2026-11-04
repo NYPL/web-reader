@@ -104,7 +104,8 @@ export type GetContent<T extends string | Uint8Array> = (
 ) => Promise<T>;
 
 export type UseWebReaderArguments<T extends string | Uint8Array> = {
-  webpubManifestUrl: string;
+  webpubManifestUrl?: string;
+  isLoading?: boolean;
   proxyUrl?: string;
   getContent?: GetContent<T>;
   pdfWorkerSrc?: string;

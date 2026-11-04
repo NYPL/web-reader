@@ -28,6 +28,7 @@ export interface PdfReaderProps {
   pdfWorkerSrc?: string;
   height?: string | number;
   toggleFullScreen?: () => void;
+  isLoading?: boolean;
 }
 
 export interface PdfReaderContentProps {
