@@ -1,6 +1,6 @@
 import { HStack, Icon } from '@chakra-ui/react';
 import React from 'react';
-import { ActiveReader } from '../../types';
+import { ActiveReader, WebReaderUiEvent } from '../../types';
 import Button from '../Button';
 import { ToggleFullScreen, ToggleFullScreenExit } from '../icons';
 import SettingsCard from '../SettingsButton';
@@ -13,6 +13,7 @@ interface DocActionsProps {
   isFullScreen: boolean;
   handleFullscreen: () => void;
   mainBgColor: string;
+  onTrackEvent?: (event: WebReaderUiEvent) => void;
 }
 const DocActions: React.FC<DocActionsProps> = ({
   reader,
@@ -20,6 +21,7 @@ const DocActions: React.FC<DocActionsProps> = ({
   isFullScreen,
   handleFullscreen,
   mainBgColor,
+  onTrackEvent,
 }) => {
   const { type, navigator, manifest } = reader;
   return (
@@ -28,6 +30,7 @@ const DocActions: React.FC<DocActionsProps> = ({
         containerRef={containerRef}
         navigator={navigator}
         manifest={manifest}
+        onTrackEvent={onTrackEvent}
       />
       <Tooltip
         content={

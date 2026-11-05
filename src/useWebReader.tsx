@@ -58,6 +58,7 @@ export default function useWebReader(
     persistLastLocation = true,
     persistSettings = true,
     toggleFullScreen,
+    onTrackEvent,
   } = args;
   const [manifest, setManifest] = React.useState<WebpubManifest | null>(null);
   const [error, setError] = React.useState<Error | null>(null);
@@ -90,6 +91,7 @@ export default function useWebReader(
           persistLastLocation,
           persistSettings,
           toggleFullScreen,
+          onTrackEvent,
         }
       : undefined
   );
@@ -103,6 +105,7 @@ export default function useWebReader(
           pdfWorkerSrc,
           height,
           toggleFullScreen,
+          onTrackEvent,
           isLoading,
         }
       : { isLoading }

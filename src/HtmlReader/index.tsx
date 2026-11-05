@@ -42,6 +42,7 @@ export default function useHtmlReader(args: HtmlReaderArguments): ReaderReturn {
     persistLastLocation = true,
     persistSettings = true,
     toggleFullScreen,
+    onTrackEvent,
   } = args ?? {};
 
   const [state, dispatch] = React.useReducer(
@@ -303,5 +304,6 @@ export default function useHtmlReader(args: HtmlReaderArguments): ReaderReturn {
     currentPage,
     totalPages,
     toggleFullScreen,
+    onTrackEvent,
   };
 }

@@ -135,3 +135,31 @@ describe('Table Of Content rendering', () => {
     expect(screen.queryByText('Chapter 4 part 3.1')).toBeNull();
   });
 });
+
+describe('Table Of Content onTrackEvent', () => {
+  test('fires onTrackEvent when opening and closing the menu', async () => {
+    const onTrackEvent = jest.fn();
+    render(
+      <TestTOC
+        navigator={MockNavigator}
+        manifest={MockWebpubManifest}
+        onTrackEvent={onTrackEvent}
+      />
+    );
+
+    const toggleBtn = screen.getByRole('button', { name: 'Table of contents' });
+    fireEvent.click(toggleBtn);
+
+    await screen.findByRole('menuitem', { name: 'Chapter 1' });
+    expect(onTrackEvent).toHaveBeenCalledWith({
+      uiText: 'Table of contents',
+      uiState: 'opened',
+    });
+
+    fireEvent.click(toggleBtn);
+    expect(onTrackEvent).toHaveBeenCalledWith({
+      uiText: 'Table of contents',
+      uiState: 'closed',
+    });
+  });
+});

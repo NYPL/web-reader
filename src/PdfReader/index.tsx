@@ -39,6 +39,7 @@ const usePdfReader = ({
   pdfWorkerSrc,
   height = DEFAULT_HEIGHT,
   toggleFullScreen,
+  onTrackEvent,
   isLoading: isLoadingProp = false,
 }: PdfReaderProps): Exclude<ReaderReturn, null> => {
   // Resolve fileUrl from manifest. `resolutionError` surfaces malformed
@@ -233,6 +234,7 @@ const usePdfReader = ({
     currentPage: pageNumber,
     totalPages: numPages,
     toggleFullScreen,
+    onTrackEvent,
   };
 };
 

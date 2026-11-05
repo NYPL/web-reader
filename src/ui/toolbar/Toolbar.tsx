@@ -1,6 +1,6 @@
 import { Flex, Grid, GridItem } from '@chakra-ui/react';
 import React, { ComponentProps, useEffect, useState } from 'react';
-import { ActiveReader } from '../../types';
+import { ActiveReader, WebReaderUiEvent } from '../../types';
 import useColorModeValue from '../hooks/useColorModeValue';
 import useFullscreen from '../hooks/useFullScreen';
 import SkipNavigation from '../SkipNavigation';
@@ -14,6 +14,7 @@ export default function Toolbar(
     totalPages: number;
     currentPage: number;
     toggleFullScreen?: () => void;
+    onTrackEvent?: (event: WebReaderUiEvent) => void;
   }
 ): React.ReactElement {
   const [isFullscreenHook, toggleFullscreenHook] = useFullscreen();
@@ -25,6 +26,7 @@ export default function Toolbar(
     currentPage,
     totalPages,
     toggleFullScreen,
+    onTrackEvent,
   } = props;
 
   const isFullScreen = toggleFullScreen ? isReaderFullScreen : isFullscreenHook;
@@ -79,7 +81,18 @@ export default function Toolbar(
     if (type === 'PDF') {
       navigator.setFitMode(!isFullScreen ? 'width' : 'height');
     }
-  }, [isFullScreen, navigator, toggleFullScreen, toggleFullscreenHook, type]);
+    onTrackEvent?.({
+      uiText: isFullScreen ? 'Exit full screen mode' : 'Enter full screen mode',
+      uiState: isFullScreen ? 'closed' : 'opened',
+    });
+  }, [
+    isFullScreen,
+    navigator,
+    onTrackEvent,
+    toggleFullScreen,
+    toggleFullscreenHook,
+    type,
+  ]);
 
   useEffect(() => {
     if (!toggleFullScreen || !isFullScreen) return;
@@ -119,7 +132,11 @@ export default function Toolbar(
         }}
       >
         <GridItem area="view">
-          <ViewControls reader={props} fitMode={fitMode} />
+          <ViewControls
+            reader={props}
+            fitMode={fitMode}
+            onTrackEvent={onTrackEvent}
+          />
         </GridItem>
         <GridItem area="nav" justifySelf="center">
           <PageNavigation
@@ -130,6 +147,7 @@ export default function Toolbar(
             inputValue={inputValue}
             onInputChange={inputChange}
             onInputKeyDown={inputKeyDown}
+            onTrackEvent={onTrackEvent}
           />
         </GridItem>
         <GridItem area="actions" justifySelf="end">
@@ -139,6 +157,7 @@ export default function Toolbar(
             isFullScreen={isFullScreen}
             handleFullscreen={handleFullscreen}
             mainBgColor={mainBgColor}
+            onTrackEvent={onTrackEvent}
           />
         </GridItem>
         <GridItem

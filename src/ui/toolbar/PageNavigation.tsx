@@ -1,6 +1,6 @@
 import { HStack, Icon, Input, Text } from '@chakra-ui/react';
 import React from 'react';
-import { ActiveReader } from '../../types';
+import { ActiveReader, WebReaderUiEvent } from '../../types';
 import Button from '../Button';
 import { PageDown, PageUp } from '../icons';
 import Tooltip from '../Tooltip';
@@ -13,6 +13,7 @@ interface PageNavigationProps {
   totalPages: number;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onInputKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onTrackEvent?: (event: WebReaderUiEvent) => void;
 }
 
 const PageNavigation: React.FC<PageNavigationProps> = ({
@@ -23,12 +24,23 @@ const PageNavigation: React.FC<PageNavigationProps> = ({
   totalPages,
   onInputChange,
   onInputKeyDown,
+  onTrackEvent,
 }) => {
+  const handlePrevious = () => {
+    navigator.goBackward();
+    onTrackEvent?.({ uiText: 'Previous page', uiState: 'previous page' });
+  };
+
+  const handleNext = () => {
+    navigator.goForward();
+    onTrackEvent?.({ uiText: 'Next page', uiState: 'next page' });
+  };
+
   return (
     <HStack spacing={2}>
       <Tooltip content="Previous page">
         <Button
-          onClick={navigator.goBackward}
+          onClick={handlePrevious}
           aria-label="Previous page"
           isDisabled={isAtStart}
           isIcon
@@ -59,7 +71,7 @@ const PageNavigation: React.FC<PageNavigationProps> = ({
       </HStack>
       <Tooltip content="Next page">
         <Button
-          onClick={navigator.goForward}
+          onClick={handleNext}
           aria-label="Next page"
           isDisabled={isAtEnd}
           isIcon

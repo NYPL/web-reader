@@ -1,6 +1,6 @@
 import { Icon, Portal } from '@chakra-ui/react';
 import React from 'react';
-import { Navigator, WebpubManifest } from '../types';
+import { Navigator, WebpubManifest, WebReaderUiEvent } from '../types';
 import { ReadiumLink } from '../WebpubManifestTypes/ReadiumLink';
 import Button from './Button';
 import useColorModeValue from './hooks/useColorModeValue';
@@ -12,10 +12,12 @@ export default function TableOfContent({
   navigator,
   manifest,
   containerRef,
+  onTrackEvent,
 }: {
   navigator: Navigator;
   manifest: WebpubManifest;
   containerRef: React.MutableRefObject<HTMLDivElement | null>;
+  onTrackEvent?: (event: WebReaderUiEvent) => void;
 }): React.ReactElement {
   const tocLinkHandler = (href: string) => {
     navigator.goToPage(href);
@@ -34,7 +36,15 @@ export default function TableOfContent({
     'ui.sepia'
   );
   return (
-    <Menu onOpen={() => navigator.loadToc?.()}>
+    <Menu
+      onOpen={() => {
+        navigator.loadToc?.();
+        onTrackEvent?.({ uiText: 'Table of contents', uiState: 'opened' });
+      }}
+      onClose={() =>
+        onTrackEvent?.({ uiText: 'Table of contents', uiState: 'closed' })
+      }
+    >
       {({ isOpen }) => (
         <>
           <Tooltip content="Table of contents">
